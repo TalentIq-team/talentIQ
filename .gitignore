@@ -34,6 +34,9 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+build-output.txt
+clean-output.txt
+rebuild-output.txt
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -483,5 +486,6 @@ $RECYCLE.BIN/
 n o d e _ m o d u l e s / 
  . e n v 
  b i n / 
- o b j /  
+ o b j / 
+ 
  

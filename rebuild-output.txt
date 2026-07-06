@@ -1,0 +1,32 @@
+﻿  Determining projects to restore...
+  Restored D:\NSBM\TalentIQ\src\TalentIQ.Api\TalentIQ.Api.csproj (in 633 ms).
+  22 of 23 projects are up-to-date for restore.
+  AI.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\AI\AI.Infrastructure\bin\Release\net8.0\AI.Infrastructure.dll
+  AI.Domain -> D:\NSBM\TalentIQ\src\Modules\AI\AI.Domain\bin\Release\net8.0\AI.Domain.dll
+  Candidate.Application -> D:\NSBM\TalentIQ\src\Modules\Candidate\Candidate.Application\bin\Release\net8.0\Candidate.Application.dll
+  Analytics.Domain -> D:\NSBM\TalentIQ\src\Modules\Analytics\Analytics.Domain\bin\Release\net8.0\Analytics.Domain.dll
+  Analytics.Application -> D:\NSBM\TalentIQ\src\Modules\Analytics\Analytics.Application\bin\Release\net8.0\Analytics.Application.dll
+  Interview.Domain -> D:\NSBM\TalentIQ\src\Modules\Interview\Interview.Domain\bin\Release\net8.0\Interview.Domain.dll
+  AI.Application -> D:\NSBM\TalentIQ\src\Modules\AI\AI.Application\bin\Release\net8.0\AI.Application.dll
+  Candidate.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Candidate\Candidate.Infrastructure\bin\Release\net8.0\Candidate.Infrastructure.dll
+  Analytics.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Analytics\Analytics.Infrastructure\bin\Release\net8.0\Analytics.Infrastructure.dll
+  Candidate.Domain -> D:\NSBM\TalentIQ\src\Modules\Candidate\Candidate.Domain\bin\Release\net8.0\Candidate.Domain.dll
+  Notification.Domain -> D:\NSBM\TalentIQ\src\Modules\Notification\Notification.Domain\bin\Release\net8.0\Notification.Domain.dll
+  Identity.Application -> D:\NSBM\TalentIQ\src\Modules\Identity\Identity.Application\bin\Release\net8.0\Identity.Application.dll
+  Notification.Application -> D:\NSBM\TalentIQ\src\Modules\Notification\Notification.Application\bin\Release\net8.0\Notification.Application.dll
+  Interview.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Interview\Interview.Infrastructure\bin\Release\net8.0\Interview.Infrastructure.dll
+  Recruitment.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Recruitment\Recruitment.Infrastructure\bin\Release\net8.0\Recruitment.Infrastructure.dll
+  Identity.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Identity\Identity.Infrastructure\bin\Release\net8.0\Identity.Infrastructure.dll
+  Recruitment.Domain -> D:\NSBM\TalentIQ\src\Modules\Recruitment\Recruitment.Domain\bin\Release\net8.0\Recruitment.Domain.dll
+  TalentIQ.Shared.Kernel -> D:\NSBM\TalentIQ\src\Shared\TalentIQ.Shared.Kernel\bin\Release\net8.0\TalentIQ.Shared.Kernel.dll
+  Notification.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Notification\Notification.Infrastructure\bin\Release\net8.0\Notification.Infrastructure.dll
+  Interview.Application -> D:\NSBM\TalentIQ\src\Modules\Interview\Interview.Application\bin\Release\net8.0\Interview.Application.dll
+  Identity.Domain -> D:\NSBM\TalentIQ\src\Modules\Identity\Identity.Domain\bin\Release\net8.0\Identity.Domain.dll
+  Recruitment.Application -> D:\NSBM\TalentIQ\src\Modules\Recruitment\Recruitment.Application\bin\Release\net8.0\Recruitment.Application.dll
+  TalentIQ.Api -> D:\NSBM\TalentIQ\src\TalentIQ.Api\bin\Release\net8.0\TalentIQ.Api.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:07.50

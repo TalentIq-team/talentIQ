@@ -1,0 +1,61 @@
+﻿  Determining projects to restore...
+  Restored D:\NSBM\TalentIQ\src\Modules\Recruitment\Recruitment.Domain\Recruitment.Domain.csproj (in 14.21 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Analytics\Analytics.Infrastructure\Analytics.Infrastructure.csproj (in 14.22 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\AI\AI.Domain\AI.Domain.csproj (in 14.22 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Identity\Identity.Application\Identity.Application.csproj (in 14.2 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Candidate\Candidate.Application\Candidate.Application.csproj (in 14.22 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Interview\Interview.Infrastructure\Interview.Infrastructure.csproj (in 14.22 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Identity\Identity.Infrastructure\Identity.Infrastructure.csproj (in 14.22 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Identity\Identity.Domain\Identity.Domain.csproj (in 14.21 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Candidate\Candidate.Infrastructure\Candidate.Infrastructure.csproj (in 14.22 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Analytics\Analytics.Domain\Analytics.Domain.csproj (in 14.22 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Interview\Interview.Domain\Interview.Domain.csproj (in 14.21 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Recruitment\Recruitment.Infrastructure\Recruitment.Infrastructure.csproj (in 14.2 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Interview\Interview.Application\Interview.Application.csproj (in 14.22 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Notification\Notification.Infrastructure\Notification.Infrastructure.csproj (in 14.2 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Analytics\Analytics.Application\Analytics.Application.csproj (in 14.21 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\Candidate\Candidate.Domain\Candidate.Domain.csproj (in 14.21 sec).
+  Restored D:\NSBM\TalentIQ\src\Modules\AI\AI.Infrastructure\AI.Infrastructure.csproj (in 29 ms).
+  Restored D:\NSBM\TalentIQ\src\Modules\Notification\Notification.Domain\Notification.Domain.csproj (in 23 ms).
+  Restored D:\NSBM\TalentIQ\src\Modules\AI\AI.Application\AI.Application.csproj (in 28 ms).
+  Restored D:\NSBM\TalentIQ\src\Modules\Recruitment\Recruitment.Application\Recruitment.Application.csproj (in 33 ms).
+  Restored D:\NSBM\TalentIQ\src\Modules\Notification\Notification.Application\Notification.Application.csproj (in 31 ms).
+  Restored D:\NSBM\TalentIQ\src\Shared\TalentIQ.Shared.Kernel\TalentIQ.Shared.Kernel.csproj (in 32 ms).
+  Restored D:\NSBM\TalentIQ\src\TalentIQ.Api\TalentIQ.Api.csproj (in 4.84 sec).
+  AI.Application -> D:\NSBM\TalentIQ\src\Modules\AI\AI.Application\bin\Release\net8.0\AI.Application.dll
+  Identity.Application -> D:\NSBM\TalentIQ\src\Modules\Identity\Identity.Application\bin\Release\net8.0\Identity.Application.dll
+  Identity.Domain -> D:\NSBM\TalentIQ\src\Modules\Identity\Identity.Domain\bin\Release\net8.0\Identity.Domain.dll
+  Interview.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Interview\Interview.Infrastructure\bin\Release\net8.0\Interview.Infrastructure.dll
+  Analytics.Domain -> D:\NSBM\TalentIQ\src\Modules\Analytics\Analytics.Domain\bin\Release\net8.0\Analytics.Domain.dll
+  Notification.Application -> D:\NSBM\TalentIQ\src\Modules\Notification\Notification.Application\bin\Release\net8.0\Notification.Application.dll
+  Interview.Domain -> D:\NSBM\TalentIQ\src\Modules\Interview\Interview.Domain\bin\Release\net8.0\Interview.Domain.dll
+  Interview.Application -> D:\NSBM\TalentIQ\src\Modules\Interview\Interview.Application\bin\Release\net8.0\Interview.Application.dll
+  Analytics.Application -> D:\NSBM\TalentIQ\src\Modules\Analytics\Analytics.Application\bin\Release\net8.0\Analytics.Application.dll
+  Analytics.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Analytics\Analytics.Infrastructure\bin\Release\net8.0\Analytics.Infrastructure.dll
+  Identity.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Identity\Identity.Infrastructure\bin\Release\net8.0\Identity.Infrastructure.dll
+  Candidate.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Candidate\Candidate.Infrastructure\bin\Release\net8.0\Candidate.Infrastructure.dll
+  AI.Domain -> D:\NSBM\TalentIQ\src\Modules\AI\AI.Domain\bin\Release\net8.0\AI.Domain.dll
+  Candidate.Application -> D:\NSBM\TalentIQ\src\Modules\Candidate\Candidate.Application\bin\Release\net8.0\Candidate.Application.dll
+  AI.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\AI\AI.Infrastructure\bin\Release\net8.0\AI.Infrastructure.dll
+  Candidate.Domain -> D:\NSBM\TalentIQ\src\Modules\Candidate\Candidate.Domain\bin\Release\net8.0\Candidate.Domain.dll
+  Recruitment.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Recruitment\Recruitment.Infrastructure\bin\Release\net8.0\Recruitment.Infrastructure.dll
+  TalentIQ.Shared.Kernel -> D:\NSBM\TalentIQ\src\Shared\TalentIQ.Shared.Kernel\bin\Release\net8.0\TalentIQ.Shared.Kernel.dll
+  Notification.Infrastructure -> D:\NSBM\TalentIQ\src\Modules\Notification\Notification.Infrastructure\bin\Release\net8.0\Notification.Infrastructure.dll
+  Notification.Domain -> D:\NSBM\TalentIQ\src\Modules\Notification\Notification.Domain\bin\Release\net8.0\Notification.Domain.dll
+  Recruitment.Application -> D:\NSBM\TalentIQ\src\Modules\Recruitment\Recruitment.Application\bin\Release\net8.0\Recruitment.Application.dll
+  Recruitment.Domain -> D:\NSBM\TalentIQ\src\Modules\Recruitment\Recruitment.Domain\bin\Release\net8.0\Recruitment.Domain.dll
+D:\NSBM\TalentIQ\src\TalentIQ.Api\obj\Release\net8.0\Microsoft.AspNetCore.OpenApi.SourceGenerators\Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator\OpenApiXmlCommentSupport.generated.cs(342,49): error CS0246: The type or namespace name 'IOpenApiOperationTransformer' could not be found (are you missing a using directive or an assembly reference?) [D:\NSBM\TalentIQ\src\TalentIQ.Api\TalentIQ.Api.csproj]
+D:\NSBM\TalentIQ\src\TalentIQ.Api\obj\Release\net8.0\Microsoft.AspNetCore.OpenApi.SourceGenerators\Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator\OpenApiXmlCommentSupport.generated.cs(508,46): error CS0246: The type or namespace name 'IOpenApiSchemaTransformer' could not be found (are you missing a using directive or an assembly reference?) [D:\NSBM\TalentIQ\src\TalentIQ.Api\TalentIQ.Api.csproj]
+D:\NSBM\TalentIQ\src\TalentIQ.Api\obj\Release\net8.0\Microsoft.AspNetCore.OpenApi.SourceGenerators\Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator\OpenApiXmlCommentSupport.generated.cs(344,64): error CS0246: The type or namespace name 'OpenApiOperationTransformerContext' could not be found (are you missing a using directive or an assembly reference?) [D:\NSBM\TalentIQ\src\TalentIQ.Api\TalentIQ.Api.csproj]
+D:\NSBM\TalentIQ\src\TalentIQ.Api\obj\Release\net8.0\Microsoft.AspNetCore.OpenApi.SourceGenerators\Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator\OpenApiXmlCommentSupport.generated.cs(510,58): error CS0246: The type or namespace name 'OpenApiSchemaTransformerContext' could not be found (are you missing a using directive or an assembly reference?) [D:\NSBM\TalentIQ\src\TalentIQ.Api\TalentIQ.Api.csproj]
+
+Build FAILED.
+
+D:\NSBM\TalentIQ\src\TalentIQ.Api\obj\Release\net8.0\Microsoft.AspNetCore.OpenApi.SourceGenerators\Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator\OpenApiXmlCommentSupport.generated.cs(342,49): error CS0246: The type or namespace name 'IOpenApiOperationTransformer' could not be found (are you missing a using directive or an assembly reference?) [D:\NSBM\TalentIQ\src\TalentIQ.Api\TalentIQ.Api.csproj]
+D:\NSBM\TalentIQ\src\TalentIQ.Api\obj\Release\net8.0\Microsoft.AspNetCore.OpenApi.SourceGenerators\Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator\OpenApiXmlCommentSupport.generated.cs(508,46): error CS0246: The type or namespace name 'IOpenApiSchemaTransformer' could not be found (are you missing a using directive or an assembly reference?) [D:\NSBM\TalentIQ\src\TalentIQ.Api\TalentIQ.Api.csproj]
+D:\NSBM\TalentIQ\src\TalentIQ.Api\obj\Release\net8.0\Microsoft.AspNetCore.OpenApi.SourceGenerators\Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator\OpenApiXmlCommentSupport.generated.cs(344,64): error CS0246: The type or namespace name 'OpenApiOperationTransformerContext' could not be found (are you missing a using directive or an assembly reference?) [D:\NSBM\TalentIQ\src\TalentIQ.Api\TalentIQ.Api.csproj]
+D:\NSBM\TalentIQ\src\TalentIQ.Api\obj\Release\net8.0\Microsoft.AspNetCore.OpenApi.SourceGenerators\Microsoft.AspNetCore.OpenApi.SourceGenerators.XmlCommentGenerator\OpenApiXmlCommentSupport.generated.cs(510,58): error CS0246: The type or namespace name 'OpenApiSchemaTransformerContext' could not be found (are you missing a using directive or an assembly reference?) [D:\NSBM\TalentIQ\src\TalentIQ.Api\TalentIQ.Api.csproj]
+    0 Warning(s)
+    4 Error(s)
+
+Time Elapsed 00:00:40.09

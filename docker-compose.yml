@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: talentiq-sql
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "TalentIq2026!Secure"
+    ports:
+      - "11433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: talentiq-azurite
+    ports:
+      - "10000:10000"   # Blob service
+    volumes:
+      - azuritedata:/data
+
+  mailtrap-sink:
+    image: axllent/mailpit
+    container_name: talentiq-mail
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI to view sent emails
+
+volumes:
+  sqldata:
+  azuritedata:

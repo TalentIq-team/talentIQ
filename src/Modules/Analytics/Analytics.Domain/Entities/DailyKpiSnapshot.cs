@@ -2,9 +2,14 @@ namespace Analytics.Domain.Entities;
 
 public class DailyKpiSnapshot
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = Guid.NewGuid();
     public Guid OrganizationId { get; set; }
-    public DateOnly SnapshotDate { get; set; }
+    public DateTime SnapshotDate { get; set; } = DateTime.UtcNow;
+
     public int TotalApplications { get; set; }
-    public decimal AvgTimeToHireDays { get; set; }
+    public int ShortlistedCount { get; set; }
+    public int InterviewsScheduled { get; set; }
+    public int OffersAccepted { get; set; }
+
+    public decimal AverageTimeToHireDays { get; set; }
 }

@@ -55,9 +55,9 @@ public sealed class RegisterUserCommandHandler
             Id = Guid.NewGuid(),
             Email = normalizedEmail,
             PasswordHash = _passwordHasher.HashPassword(request.Password),
-            Role = request.Role,
-            OrganizationId = request.OrganizationId,
-            DepartmentId = request.DepartmentId,
+            Role = UserRole.Candidate,
+            OrganizationId = Guid.Empty,
+            DepartmentId = null,
             IsActive = true
         };
 

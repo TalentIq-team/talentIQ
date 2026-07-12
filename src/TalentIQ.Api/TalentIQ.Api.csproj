@@ -7,7 +7,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.28">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Member 3 modules (Candidate + Recruitment). Other members register their own modules here. -->
+    <ProjectReference Include="..\Modules\Candidate\Candidate.Infrastructure\Candidate.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Recruitment\Recruitment.Infrastructure\Recruitment.Infrastructure.csproj" />
+    <ProjectReference Include="..\Shared\TalentIQ.Shared.Kernel\TalentIQ.Shared.Kernel.csproj" />
   </ItemGroup>
 
 </Project>

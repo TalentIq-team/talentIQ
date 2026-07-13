@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Identity.Application.Commands;
 using Identity.Application.DTOs;
 using Identity.Application.Queries;
@@ -39,6 +40,14 @@ public sealed class AdminController : ControllerBase
         CreateStaffUserRequest request,
         CancellationToken cancellationToken)
     {
+        if (!TryGetCurrentUserId(out var actorUserId))
+        {
+            return Unauthorized(new
+            {
+                message = "Authenticated user ID was not found."
+            });
+        }
+
         try
         {
             var result = await _sender.Send(
@@ -47,7 +56,9 @@ public sealed class AdminController : ControllerBase
                     request.Password,
                     request.Role,
                     request.OrganizationId,
-                    request.DepartmentId),
+                    request.DepartmentId,
+                    actorUserId,
+                    GetIpAddress()),
                 cancellationToken);
 
             return Ok(result);
@@ -68,11 +79,27 @@ public sealed class AdminController : ControllerBase
         ChangeUserRoleRequest request,
         CancellationToken cancellationToken)
     {
+        if (!TryGetCurrentUserId(out var actorUserId))
+        {
+            return Unauthorized(new
+            {
+                message = "Authenticated user ID was not found."
+            });
+        }
+
         try
         {
             return Ok(await _sender.Send(
-                new ChangeUserRoleCommand(id, request.Role),
+                new ChangeUserRoleCommand(
+                    id,
+                    request.Role,
+                    actorUserId,
+                    GetIpAddress()),
                 cancellationToken));
+        }
+        catch (ArgumentException exception)
+        {
+            return BadRequest(new { message = exception.Message });
         }
         catch (KeyNotFoundException exception)
         {
@@ -85,15 +112,41 @@ public sealed class AdminController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
+        if (!TryGetCurrentUserId(out var actorUserId))
+        {
+            return Unauthorized(new
+            {
+                message = "Authenticated user ID was not found."
+            });
+        }
+
         try
         {
             return Ok(await _sender.Send(
-                new DeactivateUserCommand(id),
+                new DeactivateUserCommand(
+                    id,
+                    actorUserId,
+                    GetIpAddress()),
                 cancellationToken));
         }
         catch (KeyNotFoundException exception)
         {
             return NotFound(new { message = exception.Message });
         }
+    }
+
+    private bool TryGetCurrentUserId(out Guid userId)
+    {
+        var claimValue =
+            User.FindFirstValue("userId")
+            ?? User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? User.FindFirstValue("sub");
+
+        return Guid.TryParse(claimValue, out userId);
+    }
+
+    private string? GetIpAddress()
+    {
+        return HttpContext.Connection.RemoteIpAddress?.ToString();
     }
 }

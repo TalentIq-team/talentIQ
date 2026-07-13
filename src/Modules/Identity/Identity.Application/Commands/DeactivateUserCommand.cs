@@ -1,20 +1,28 @@
 using Identity.Application.DTOs;
 using Identity.Application.Interfaces;
+using Identity.Domain.Entities;
 using MediatR;
 
 namespace Identity.Application.Commands;
 
-public sealed record DeactivateUserCommand(Guid UserId)
-    : IRequest<AdminUserDto>;
+public sealed record DeactivateUserCommand(
+    Guid UserId,
+    Guid ActorUserId,
+    string? IpAddress
+) : IRequest<AdminUserDto>;
 
 public sealed class DeactivateUserCommandHandler
     : IRequestHandler<DeactivateUserCommand, AdminUserDto>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
 
-    public DeactivateUserCommandHandler(IUserRepository userRepository)
+    public DeactivateUserCommandHandler(
+        IUserRepository userRepository,
+        IAuditLogRepository auditLogRepository)
     {
         _userRepository = userRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     public async Task<AdminUserDto> Handle(
@@ -31,6 +39,18 @@ public sealed class DeactivateUserCommandHandler
         }
 
         user.IsActive = false;
+
+        await _auditLogRepository.AddAsync(
+            new AuditLog
+            {
+                Id = Guid.NewGuid(),
+                UserId = request.ActorUserId,
+                Action =
+                    $"Deactivated user {user.Id} ({user.Email}).",
+                Timestamp = DateTime.UtcNow,
+                IpAddress = request.IpAddress
+            },
+            cancellationToken);
 
         await _userRepository.SaveChangesAsync(cancellationToken);
 

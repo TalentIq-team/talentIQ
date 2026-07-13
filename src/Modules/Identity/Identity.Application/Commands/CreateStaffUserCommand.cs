@@ -10,7 +10,9 @@ public sealed record CreateStaffUserCommand(
     string Password,
     UserRole Role,
     Guid OrganizationId,
-    Guid? DepartmentId
+    Guid? DepartmentId,
+    Guid ActorUserId,
+    string? IpAddress
 ) : IRequest<AdminUserDto>;
 
 public sealed class CreateStaffUserCommandHandler
@@ -18,19 +20,27 @@ public sealed class CreateStaffUserCommandHandler
 {
     private readonly IUserRepository _userRepository;
     private readonly IAppPasswordHasher _passwordHasher;
+    private readonly IAuditLogRepository _auditLogRepository;
 
     public CreateStaffUserCommandHandler(
         IUserRepository userRepository,
-        IAppPasswordHasher passwordHasher)
+        IAppPasswordHasher passwordHasher,
+        IAuditLogRepository auditLogRepository)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
+        _auditLogRepository = auditLogRepository;
     }
 
     public async Task<AdminUserDto> Handle(
         CreateStaffUserCommand request,
         CancellationToken cancellationToken)
     {
+        if (!Enum.IsDefined(typeof(UserRole), request.Role))
+        {
+            throw new ArgumentException("Invalid user role.");
+        }
+
         if (request.Role == UserRole.Candidate)
         {
             throw new ArgumentException(
@@ -60,6 +70,19 @@ public sealed class CreateStaffUserCommandHandler
         };
 
         await _userRepository.AddAsync(user, cancellationToken);
+
+        await _auditLogRepository.AddAsync(
+            new AuditLog
+            {
+                Id = Guid.NewGuid(),
+                UserId = request.ActorUserId,
+                Action =
+                    $"Created staff user {user.Id} ({user.Email}) with role {user.Role}.",
+                Timestamp = DateTime.UtcNow,
+                IpAddress = request.IpAddress
+            },
+            cancellationToken);
+
         await _userRepository.SaveChangesAsync(cancellationToken);
 
         return new AdminUserDto

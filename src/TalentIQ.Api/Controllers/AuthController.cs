@@ -61,4 +61,24 @@ public sealed class AuthController : ControllerBase
             return Unauthorized(new { message = exception.Message });
         }
     }
+
+    [HttpPost("refresh")]
+    public async Task<ActionResult<AuthResultDto>> Refresh(
+        [FromBody] RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await _sender.Send(
+                new RefreshAccessTokenCommand(
+                    request.RefreshToken),
+                cancellationToken);
+
+            return Ok(result);
+        }
+        catch (UnauthorizedAccessException exception)
+        {
+            return Unauthorized(new { message = exception.Message });
+        }
+    }
 }

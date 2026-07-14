@@ -11,15 +11,18 @@ public sealed class RegisterUserCommandHandler
     private readonly IUserRepository _userRepository;
     private readonly IAppPasswordHasher _passwordHasher;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
+    private readonly IRefreshTokenRepository _refreshTokenRepository;
 
     public RegisterUserCommandHandler(
         IUserRepository userRepository,
         IAppPasswordHasher passwordHasher,
-        IJwtTokenGenerator jwtTokenGenerator)
+        IJwtTokenGenerator jwtTokenGenerator,
+        IRefreshTokenRepository refreshTokenRepository)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _jwtTokenGenerator = jwtTokenGenerator;
+        _refreshTokenRepository = refreshTokenRepository;
     }
 
     public async Task<AuthResultDto> Handle(
@@ -54,24 +57,48 @@ public sealed class RegisterUserCommandHandler
         {
             Id = Guid.NewGuid(),
             Email = normalizedEmail,
-            PasswordHash = _passwordHasher.HashPassword(request.Password),
+            PasswordHash =
+                _passwordHasher.HashPassword(request.Password),
             Role = UserRole.Candidate,
             OrganizationId = Guid.Empty,
             DepartmentId = null,
             IsActive = true
         };
 
-        await _userRepository.AddAsync(user, cancellationToken);
-        await _userRepository.SaveChangesAsync(cancellationToken);
+        var refreshTokenValue =
+            _jwtTokenGenerator.GenerateRefreshToken();
+
+        var refreshToken = new RefreshToken
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Token = refreshTokenValue,
+            CreatedAt = DateTime.UtcNow,
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
+            IsRevoked = false
+        };
+
+        await _userRepository.AddAsync(
+            user,
+            cancellationToken);
+
+        await _refreshTokenRepository.AddAsync(
+            refreshToken,
+            cancellationToken);
+
+        await _refreshTokenRepository.SaveChangesAsync(
+            cancellationToken);
 
         return new AuthResultDto
         {
             UserId = user.Id,
             Email = user.Email,
             Role = user.Role.ToString(),
-            AccessToken = _jwtTokenGenerator.GenerateAccessToken(user),
-            RefreshToken = _jwtTokenGenerator.GenerateRefreshToken(),
-            ExpiresAt = _jwtTokenGenerator.GetAccessTokenExpiry()
+            AccessToken =
+                _jwtTokenGenerator.GenerateAccessToken(user),
+            RefreshToken = refreshTokenValue,
+            ExpiresAt =
+                _jwtTokenGenerator.GetAccessTokenExpiry()
         };
     }
 }

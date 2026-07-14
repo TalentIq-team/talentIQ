@@ -81,4 +81,23 @@ public sealed class AuthController : ControllerBase
             return Unauthorized(new { message = exception.Message });
         }
     }
+
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout(
+        [FromBody] RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _sender.Send(
+                new LogoutCommand(request.RefreshToken),
+                cancellationToken);
+
+            return NoContent();
+        }
+        catch (UnauthorizedAccessException exception)
+        {
+            return Unauthorized(new { message = exception.Message });
+        }
+    }
 }

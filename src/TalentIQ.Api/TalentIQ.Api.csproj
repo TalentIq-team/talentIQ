@@ -10,4 +10,10 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Modules\Interview\Interview.Infrastructure\Interview.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Notification\Notification.Application\Notification.Application.csproj" />
+    <ProjectReference Include="..\Modules\Notification\Notification.Infrastructure\Notification.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

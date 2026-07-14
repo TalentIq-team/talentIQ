@@ -6,4 +6,17 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="DTOs\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    
+    <ProjectReference Include="..\Interview.Domain\Interview.Domain.csproj" />
+	<ProjectReference Include="..\..\Notification\Notification.Application\Notification.Application.csproj" />
+    <ProjectReference Include="..\..\Candidate\Candidate.Application\Candidate.Application.csproj" />
+	<ProjectReference Include="..\..\Recruitment\Recruitment.Domain\Recruitment.Domain.csproj" />
+	<ProjectReference Include="..\..\Identity\Identity.Application\Identity.Application.csproj" /> 
+  </ItemGroup>
+
 </Project>

@@ -8,15 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
- 
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.13">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13" />
-    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="MediatR" Version="14.2.0" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
   </ItemGroup>
 
@@ -29,6 +27,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Modules\Identity\Identity.Infrastructure\Identity.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Modules\Interview\Interview.Infrastructure\Interview.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Notification\Notification.Application\Notification.Application.csproj" />
+    <ProjectReference Include="..\Modules\Notification\Notification.Infrastructure\Notification.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

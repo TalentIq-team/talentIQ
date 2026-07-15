@@ -24,6 +24,10 @@ using Notification.Infrastructure.Settings;
 using Recruitment.Infrastructure;
 using TalentIQ.Api.Middleware;
 
+// Load secrets from the git-ignored .env before the configuration system reads
+// environment variables, so nothing sensitive needs to live in appsettings.json.
+LoadEnvFile();
+
 var builder = WebApplication.CreateBuilder(args);
 
 // ---------------------------------------------------------------------------
@@ -54,30 +58,6 @@ builder.Services.AddSwaggerGen(options =>
         [new OpenApiSecuritySchemeReference("Bearer", doc, null)] = new List<string>()
     });
 });
-
-// ---------------------------------------------------------------------------
-// JWT Bearer authentication (signing key issued/shared by the Identity module)
-// ---------------------------------------------------------------------------
-var signingKey = builder.Configuration["Jwt:SigningKey"]
-    ?? builder.Configuration["JWT_SIGNING_KEY"]
-    ?? "insecure-development-signing-key-change-me-minimum-32-chars";
-
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
-            ValidateIssuer = false,
-            ValidateAudience = false,
-            ValidateLifetime = true,
-            ClockSkew = TimeSpan.FromMinutes(1)
-        };
-    });
-
-builder.Services.AddAuthorization();
 
 // ---------------------------------------------------------------------------
 // CORS for the React (Vite) frontend
@@ -318,6 +298,37 @@ app.MapGet("/api/ai/execution-logs", async (
 .WithTags("AI");
 
 app.Run();
+
+// Reads KEY=VALUE lines from the nearest .env (searched upward from the app's
+// base directory) and promotes them to process environment variables so
+// IConfiguration picks them up. Existing environment variables are never
+// overwritten, so real shell/CI values still take precedence over .env.
+static void LoadEnvFile()
+{
+    var dir = new DirectoryInfo(AppContext.BaseDirectory);
+    while (dir is not null && !File.Exists(Path.Combine(dir.FullName, ".env")))
+        dir = dir.Parent;
+
+    if (dir is null)
+        return;
+
+    foreach (var raw in File.ReadAllLines(Path.Combine(dir.FullName, ".env")))
+    {
+        var line = raw.Trim();
+        if (line.Length == 0 || line.StartsWith('#'))
+            continue;
+
+        var separator = line.IndexOf('=');
+        if (separator <= 0)
+            continue;
+
+        var key = line[..separator].Trim();
+        var value = line[(separator + 1)..].Trim().Trim('"');
+
+        if (Environment.GetEnvironmentVariable(key) is null)
+            Environment.SetEnvironmentVariable(key, value);
+    }
+}
 
 // Exposed so integration tests can use WebApplicationFactory<Program>.
 public partial class Program { }

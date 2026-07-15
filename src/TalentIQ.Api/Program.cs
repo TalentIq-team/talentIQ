@@ -4,6 +4,7 @@ using AI.Application.DTOs;
 using AI.Application.Interfaces;
 using AI.Application.Services;
 using AI.Infrastructure;
+using Analytics.Infrastructure;
 using Candidate.Infrastructure;
 using Identity.Application.Commands;
 using Identity.Infrastructure;
@@ -14,6 +15,7 @@ using Interview.Application.Services;
 using Interview.Infrastructure;
 using Interview.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using Notification.Application.Interfaces;
@@ -174,6 +176,9 @@ builder.Services.AddAuthorization();
 
 // Register the AI module (DbContext, repositories, Gemini client, services)
 builder.Services.AddAiModule(builder.Configuration);
+
+builder.Services.AddDbContext<AnalyticsDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 

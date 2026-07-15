@@ -40,4 +40,8 @@
     <ProjectReference Include="..\Modules\AI\AI.Infrastructure\AI.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Modules\Analytics\Analytics.Infrastructure\Analytics.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -13,6 +13,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.13" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
     <PackageReference Include="MediatR" Version="14.2.0" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
@@ -33,6 +34,10 @@
     <ProjectReference Include="..\Modules\Interview\Interview.Infrastructure\Interview.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\Notification\Notification.Application\Notification.Application.csproj" />
     <ProjectReference Include="..\Modules\Notification\Notification.Infrastructure\Notification.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Modules\AI\AI.Infrastructure\AI.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -9,7 +9,8 @@ public class RecruitmentDbContextFactory : IDesignTimeDbContextFactory<Recruitme
     public RecruitmentDbContext CreateDbContext(string[] args)
     {
         var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Default")
-            ?? "Server=localhost,11433;Database=TalentIQ;User Id=sa;Password=TalentIq2026!Secure;TrustServerCertificate=True";
+            ?? throw new InvalidOperationException(
+                "ConnectionStrings__Default environment variable is not configured.");
 
         var options = new DbContextOptionsBuilder<RecruitmentDbContext>()
             .UseSqlServer(connectionString, sql => sql.MigrationsHistoryTable("__EFMigrationsHistory", RecruitmentDbContext.Schema))

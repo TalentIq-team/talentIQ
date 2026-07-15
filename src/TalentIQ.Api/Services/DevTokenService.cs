@@ -13,12 +13,21 @@ namespace TalentIQ.Api.Services;
 public class DevTokenService
 {
     private readonly string _signingKey;
+    private readonly string _issuer;
+    private readonly string _audience;
 
     public DevTokenService(IConfiguration configuration)
     {
-        _signingKey = configuration["Jwt:SigningKey"]
+        // Prefer Jwt:Key (the key the API validates against) so dev tokens always verify.
+        _signingKey = configuration["Jwt:Key"]
+            ?? configuration["Jwt:SigningKey"]
             ?? configuration["JWT_SIGNING_KEY"]
-            ?? "insecure-development-signing-key-change-me-minimum-32-chars";
+            ?? throw new InvalidOperationException(
+                "JWT signing key is not configured. Set it in .env (Jwt__Key).");
+
+        // Match the issuer/audience the API validates (same defaults as Program.cs).
+        _issuer = configuration["Jwt:Issuer"] ?? "TalentIQ.Api";
+        _audience = configuration["Jwt:Audience"] ?? "TalentIQ.Client";
     }
 
     public (string Token, Guid UserId, DateTime ExpiresAt) CreateToken(Guid? userId = null, int lifetimeHours = 8)
@@ -31,6 +40,8 @@ public class DevTokenService
             SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
+            issuer: _issuer,
+            audience: _audience,
             claims: new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, id.ToString()),

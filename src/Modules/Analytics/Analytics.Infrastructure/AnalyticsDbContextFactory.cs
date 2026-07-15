@@ -7,10 +7,14 @@ public class AnalyticsDbContextFactory : IDesignTimeDbContextFactory<AnalyticsDb
 {
     public AnalyticsDbContext CreateDbContext(string[] args)
     {
+        var connectionString =
+            Environment.GetEnvironmentVariable("ConnectionStrings__Default")
+            ?? throw new InvalidOperationException(
+                "ConnectionStrings__Default environment variable is not configured.");
+
         var optionsBuilder = new DbContextOptionsBuilder<AnalyticsDbContext>();
 
-        optionsBuilder.UseSqlServer(
-       "Server=localhost,11433;Database=TalentIQ;User Id=sa;Password=TalentIq2026!Secure;TrustServerCertificate=True");
+        optionsBuilder.UseSqlServer(connectionString);
         return new AnalyticsDbContext(optionsBuilder.Options);
     }
 }

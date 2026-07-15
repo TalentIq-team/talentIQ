@@ -5,7 +5,7 @@ services:
     container_name: talentiq-sql
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "TalentIq2026!Secure"
+      SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
     ports:
       - "11433:1433"
     volumes:

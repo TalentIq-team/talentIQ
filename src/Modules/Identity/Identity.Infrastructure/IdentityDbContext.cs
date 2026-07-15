@@ -11,6 +11,7 @@ namespace Identity.Infrastructure
         public DbSet<Organization> Organizations => Set<Organization>();
         public DbSet<Department> Departments => Set<Department>();
         public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -20,6 +21,7 @@ namespace Identity.Infrastructure
             builder.Entity<Department>().ToTable("Departments");
             builder.Entity<AuditLog>().ToTable("AuditLogs");
             base.OnModelCreating(builder);
+            builder.Entity<RefreshToken>().ToTable("RefreshTokens");
         }
     }
 }

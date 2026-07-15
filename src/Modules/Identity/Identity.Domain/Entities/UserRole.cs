@@ -4,6 +4,6 @@ public enum UserRole
 {
     Admin = 1,
     Recruiter = 2,
-    Interviewer = 3,
+    HiringManager = 3,
     Candidate = 4
 }

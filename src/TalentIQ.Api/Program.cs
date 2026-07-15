@@ -1,8 +1,19 @@
 using System.Text;
 using Candidate.Infrastructure;
+using Identity.Application.Commands;
+using Identity.Infrastructure;
+using Interview.Application.Commands.RescheduleInterview;
+using Interview.Application.Commands.ScheduleInterview;
+using Interview.Application.Commands.SubmitEvaluation;
+using Interview.Application.Services;
+using Interview.Infrastructure;
+using Interview.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Notification.Application.Interfaces;
+using Notification.Infrastructure.Services;
+using Notification.Infrastructure.Settings;
 using Recruitment.Infrastructure;
 using TalentIQ.Api.Middleware;
 
@@ -94,6 +105,25 @@ builder.Services.AddMediatR(configuration =>
     configuration.RegisterServicesFromAssembly(
         typeof(RegisterUserCommand).Assembly);
 });
+
+// ---------------------------------------------------------------------------
+// Member 4 module — Interview scheduling + evaluations (with Notification/email).
+// ---------------------------------------------------------------------------
+builder.Services.AddInterviewInfrastructure(builder.Configuration);
+builder.Services.AddScoped<ScheduleInterviewCommandHandler>();
+builder.Services.AddScoped<RescheduleInterviewCommandHandler>();
+builder.Services.AddScoped<SubmitEvaluationCommandHandler>();
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddSingleton(sp =>
+{
+    var settings = new EmailSettings();
+    builder.Configuration.GetSection("EmailSettings").Bind(settings);
+    return settings;
+});
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ICalendarService, CalendarService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException(

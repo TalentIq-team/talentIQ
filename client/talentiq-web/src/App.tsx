@@ -1,40 +1,29 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import React from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { RouterProvider } from 'react-router-dom'
+import { AuthProvider } from '@/context/AuthContext'
+import { ToastProvider } from '@/context/ToastContext'
+import router from './router'
 
-const NAV = [
-  { to: '/candidate/profile', label: 'My Profile' },
-  { to: '/candidate/jobs', label: 'Job Search' },
-  { to: '/candidate/applications', label: 'My Applications' },
-  { to: '/recruiter/jobs', label: 'Job Postings' },
-]
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5, // 5 minutes default cache time
+    },
+  },
+})
 
-function App() {
+export const App: React.FC = () => {
   return (
-    <div className="min-h-full bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-6 py-4">
-          <span className="text-lg font-bold text-indigo-600">TalentIQ</span>
-          <nav className="flex flex-wrap gap-1">
-            {NAV.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                className={({ isActive }) =>
-                  `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                    isActive ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-100'
-                  }`
-                }
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-6xl px-6 py-8">
-        <Outlet />
-      </main>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <ToastProvider>
+          <RouterProvider router={router} />
+        </ToastProvider>
+      </AuthProvider>
+    </QueryClientProvider>
   )
 }
 

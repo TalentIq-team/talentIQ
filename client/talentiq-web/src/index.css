@@ -1,11 +1,86 @@
 @import "tailwindcss";
 
-html,
-body,
-#root {
-  height: 100%;
+@theme {
+  /* Unique & Premium Obsidian/Amethyst Dark Theme Palette */
+  --color-ink: #06050F;
+  --color-panel: #0E0D1F;
+  --color-panel-2: #15132C;
+  --color-line: #201E3D;
+  --color-text: #C3C0DC;
+  --color-head: #F1EDFF;
+  --color-muted: #7F7A9E;
+  --color-alert: #FF4A70;
+  --color-ok: #00E594;
+
+  /* Teammate Specific Vibrant Accents */
+  --color-m1: #FF6B8B;
+  --color-m2: #A352FA;
+  --color-m3: #00F3D3;
+  --color-m4: #FF1A8B;
+  --color-m5: #00E584;
+  --color-m6: #FFAE00;
+
+  /* Premium Typography */
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
-body {
-  margin: 0;
+@layer base {
+  html, body, #root {
+    height: 100%;
+    background-color: var(--color-ink);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    color: var(--color-head);
+    letter-spacing: -0.02em;
+  }
+
+  /* Custom Sleek Scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--color-ink);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-muted);
+  }
+
+  /* Custom selection highlight */
+  ::selection {
+    background: rgba(163, 82, 250, 0.25);
+    color: var(--color-head);
+  }
+}
+
+/* Glassmorphism & Custom Gradient Effects */
+.bg-glass {
+  background: rgba(14, 13, 31, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.border-glow:focus-within {
+  border-color: var(--color-m2);
+  box-shadow: 0 0 0 1px rgba(163, 82, 250, 0.25);
+}
+
+/* Background Gradients similar to the Framer templates */
+.bg-radial-gradient {
+  background: radial-gradient(circle at 50% -20%, rgba(163, 82, 250, 0.12), transparent 70%);
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/hooks/useToast'
 import Button from '@/components/ui/Button'
@@ -100,6 +100,13 @@ export const LoginPage: React.FC = () => {
               Sign In
             </Button>
           </form>
+
+          <div className="mt-6 text-center text-xs">
+            <span className="text-muted">Don't have an account? </span>
+            <Link to="/register" className="font-semibold text-m2 hover:text-head transition-all">
+              Register
+            </Link>
+          </div>
 
           {/* Dev bypass option for easy local testing */}
           <div className="mt-8 border-t border-line/65 pt-6">

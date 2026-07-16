@@ -76,7 +76,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (email: string, password: string): Promise<UserSession> => {
     const { data } = await apiClient.post<UserSession>('/api/v1/auth/register', { email, password })
-    saveSession(data)
     return data
   }
 

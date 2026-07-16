@@ -28,8 +28,8 @@ export const RegisterPage: React.FC = () => {
     setIsSubmitting(true)
     try {
       await register(email, password)
-      toast.success('Registration successful. Welcome to TalentIQ!')
-      navigate('/candidate/profile')
+      toast.success('Registration successful. Please sign in to continue.')
+      navigate('/login')
     } catch (err) {
       toast.error(toErrorMessage(err))
     } finally {

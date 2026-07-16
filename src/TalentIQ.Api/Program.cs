@@ -6,6 +6,8 @@ using AI.Application.Services;
 using AI.Infrastructure;
 using Analytics.Infrastructure;
 using Candidate.Infrastructure;
+using Candidate.Infrastructure.Persistence;
+using Recruitment.Infrastructure.Persistence;
 using Identity.Application.Commands;
 using Identity.Infrastructure;
 using Interview.Application.Commands.RescheduleInterview;
@@ -296,6 +298,97 @@ app.MapGet("/api/ai/execution-logs", async (
 })
 .WithName("GetAiExecutionLogs")
 .WithTags("AI");
+
+// Automatic Migration & Seeding for local Development
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<Program>>();
+
+        try
+        {
+            logger.LogInformation("Applying migrations and seeding database...");
+
+            // List of DbContexts to migrate
+            var identityDb = services.GetRequiredService<IdentityDbContext>();
+            await identityDb.Database.MigrateAsync();
+
+            var candidateDb = services.GetRequiredService<CandidateDbContext>();
+            await candidateDb.Database.MigrateAsync();
+
+            var recruitmentDb = services.GetRequiredService<RecruitmentDbContext>();
+            await recruitmentDb.Database.MigrateAsync();
+
+            var interviewDb = services.GetRequiredService<InterviewDbContext>();
+            await interviewDb.Database.MigrateAsync();
+
+            var analyticsDb = services.GetRequiredService<AnalyticsDbContext>();
+            await analyticsDb.Database.MigrateAsync();
+
+            var aiDb = services.GetRequiredService<AiDbContext>();
+            await aiDb.Database.MigrateAsync();
+
+            // Seed default users in IdentityDbContext
+            var passwordHasher = services.GetRequiredService<Identity.Application.Interfaces.IAppPasswordHasher>();
+            var devUsers = new[]
+            {
+                new { Email = "candidate@talentiq.dev", Role = Identity.Domain.Entities.UserRole.Candidate },
+                new { Email = "recruiter@talentiq.dev", Role = Identity.Domain.Entities.UserRole.Recruiter },
+                new { Email = "manager@talentiq.dev", Role = Identity.Domain.Entities.UserRole.HiringManager },
+                new { Email = "admin@talentiq.dev", Role = Identity.Domain.Entities.UserRole.Admin }
+            };
+
+            foreach (var devUser in devUsers)
+            {
+                var existingUser = await identityDb.Users.FirstOrDefaultAsync(u => u.Email == devUser.Email);
+                if (existingUser is not null)
+                {
+                    bool modified = false;
+                    if (existingUser.Role != devUser.Role)
+                    {
+                        existingUser.Role = devUser.Role;
+                        modified = true;
+                    }
+
+                    if (!passwordHasher.VerifyPassword(existingUser.PasswordHash, "Password123!"))
+                    {
+                        existingUser.PasswordHash = passwordHasher.HashPassword("Password123!");
+                        modified = true;
+                    }
+
+                    if (modified)
+                    {
+                        identityDb.Users.Update(existingUser);
+                        logger.LogInformation("Updated existing dev user: {Email} to role {Role}", devUser.Email, devUser.Role);
+                    }
+                }
+                else
+                {
+                    var newUser = new Identity.Domain.Entities.User
+                    {
+                        Id = Guid.NewGuid(),
+                        Email = devUser.Email,
+                        PasswordHash = passwordHasher.HashPassword("Password123!"),
+                        Role = devUser.Role,
+                        OrganizationId = Guid.Empty,
+                        DepartmentId = null,
+                        IsActive = true
+                    };
+                    await identityDb.Users.AddAsync(newUser);
+                    logger.LogInformation("Seeded dev user: {Email} ({Role})", devUser.Email, devUser.Role);
+                }
+            }
+            await identityDb.SaveChangesAsync();
+            logger.LogInformation("Database migration and seeding completed successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+        }
+    }
+}
 
 app.Run();
 

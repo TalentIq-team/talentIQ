@@ -5,6 +5,28 @@
 
 # dotenv files
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env.local
+
+# doc files
+.files/
+
+# Dependency directories
+node_modules/
+
+# Production/build outputs
+dist/
+dist-ssr/
+out/
+build/
+.vite/
+
+# Editor / IDE directories
+.idea/
+.vscode/
 
 # User-specific files
 *.rsuser
@@ -483,9 +505,13 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
-n o d e _ m o d u l e s / 
- . e n v 
- b i n / 
- o b j / 
- 
- 
+files/01-SRS.md
+files/02-Architecture-Design.md
+files/03-Implementation-Plan.md
+files/04-Setup-Guide.md
+files/06-Complete-File-Structure.md
+files/07-Team-Member-Setup-Guide.md
+files/Github Guide.md
+files/SE205.3 Coursework (1).docx
+files/TalentIQ-Frontend-Team-Handbook.html
+files/TalentIQ-Requirements-Coverage.html

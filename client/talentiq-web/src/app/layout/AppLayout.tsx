@@ -2,7 +2,7 @@ import React, { useState, Component, type ErrorInfo, type ReactNode } from 'reac
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import Topbar from './Topbar'
-import ErrorState from '../ui/ErrorState'
+import { ErrorState } from '../../components/ui/ErrorState'
 
 interface ErrorBoundaryProps {
   children: ReactNode

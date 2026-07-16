@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router-dom'
+import type { RouteObject } from 'react-router-dom'
 import { RoleGuard } from '@/app/guards/RoleGuard'
 
 const ShortlistReviewStub = () => (

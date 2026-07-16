@@ -1,4 +1,4 @@
-import { RouteObject } from 'react-router-dom'
+import type { RouteObject } from 'react-router-dom'
 import ProfilePage from './pages/ProfilePage'
 import JobSearchPage from './pages/JobSearchPage'
 import ApplicationTrackerPage from './pages/ApplicationTrackerPage'

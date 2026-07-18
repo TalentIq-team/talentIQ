@@ -1,46 +1,27 @@
 import type { RouteObject } from 'react-router-dom'
 import { RoleGuard } from '@/app/guards/RoleGuard'
+import ShortlistReviewPage from './pages/ShortlistReviewPage'
+import EvaluationFormPage from './pages/EvaluationFormPage'
 
-const ShortlistReviewStub = () => (
-  <div className="space-y-6">
-    <header>
-      <h1 className="text-2xl font-bold">Shortlist Review</h1>
-      <p className="text-sm text-muted">Review shortlisted candidate profiles and details.</p>
-    </header>
-    <div className="rounded-2xl border border-line bg-panel p-8 text-center text-muted">
-      This page is owned by Member 4 (Thilina) and will be implemented in Phase 1.
-    </div>
-  </div>
+const shortlist = (
+  <RoleGuard allowedRoles={['HiringManager']}>
+    <ShortlistReviewPage />
+  </RoleGuard>
 )
 
-const EvaluationScorecardStub = () => (
-  <div className="space-y-6">
-    <header>
-      <h1 className="text-2xl font-bold">Evaluations Scorecard</h1>
-      <p className="text-sm text-muted">Submit and manage scores and hiring recommendations.</p>
-    </header>
-    <div className="rounded-2xl border border-line bg-panel p-8 text-center text-muted">
-      This page is owned by Member 4 (Thilina) and will be implemented in Phase 1.
-    </div>
-  </div>
+const evaluation = (
+  <RoleGuard allowedRoles={['HiringManager']}>
+    <EvaluationFormPage />
+  </RoleGuard>
 )
 
 export const interviewRoutes: RouteObject[] = [
-  {
-    path: 'hiring-manager/shortlist',
-    element: (
-      <RoleGuard allowedRoles={['HiringManager']}>
-        <ShortlistReviewStub />
-      </RoleGuard>
-    ),
-  },
-  {
-    path: 'hiring-manager/evaluations',
-    element: (
-      <RoleGuard allowedRoles={['HiringManager']}>
-        <EvaluationScorecardStub />
-      </RoleGuard>
-    ),
-  },
+  // Task-defined paths.
+  { path: 'interview/shortlist', element: shortlist },
+  { path: 'interview/evaluation/:id', element: evaluation },
+  // Paths used by the shared Sidebar navigation (kept working).
+  { path: 'hiring-manager/shortlist', element: shortlist },
+  { path: 'hiring-manager/evaluations', element: evaluation },
+  { path: 'hiring-manager/evaluations/:id', element: evaluation },
 ]
 export default interviewRoutes

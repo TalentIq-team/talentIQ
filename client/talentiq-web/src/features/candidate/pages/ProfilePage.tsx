@@ -12,6 +12,7 @@ import { Spinner, ErrorBanner } from '@/components/Feedback'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
+import JobRecommendations from '@/features/ai/components/JobRecommendations'
 
 export default function ProfilePage() {
   const queryClient = useQueryClient()
@@ -118,44 +119,48 @@ export default function ProfilePage() {
       </Card>
 
       {profileId && (
-        <Card variant="glass" className="p-6">
-          <h3 className="text-lg font-bold mb-4">Resume Document</h3>
-          <div className="space-y-4">
-            {profileQuery.data?.resumeBlobUrl ? (
-              <div className="text-sm text-head">
-                Current Resume:{' '}
-                <a
-                  href={profileQuery.data.resumeBlobUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-medium text-m3 hover:underline"
-                >
-                  Download PDF/DOCX
-                </a>
-              </div>
-            ) : (
-              <div className="text-sm text-muted">No resume uploaded yet (PDF or DOCX max 5MB).</div>
-            )}
+        <>
+          <Card variant="glass" className="p-6">
+            <h3 className="text-lg font-bold mb-4">Resume Document</h3>
+            <div className="space-y-4">
+              {profileQuery.data?.resumeBlobUrl ? (
+                <div className="text-sm text-head">
+                  Current Resume:{' '}
+                  <a
+                    href={profileQuery.data.resumeBlobUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-medium text-m3 hover:underline"
+                  >
+                    Download PDF/DOCX
+                  </a>
+                </div>
+              ) : (
+                <div className="text-sm text-muted">No resume uploaded yet (PDF or DOCX max 5MB).</div>
+              )}
 
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <input
-                type="file"
-                accept=".pdf,.docx"
-                onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
-                className="flex-1 rounded-xl border border-line bg-panel-2 px-4 py-2 text-sm text-head focus:outline-none"
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={!resumeFile}
-                isLoading={resumeMutation.isPending}
-                onClick={() => resumeMutation.mutate()}
-              >
-                Upload
-              </Button>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <input
+                  type="file"
+                  accept=".pdf,.docx"
+                  onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
+                  className="flex-1 rounded-xl border border-line bg-panel-2 px-4 py-2 text-sm text-head focus:outline-none"
+                />
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={!resumeFile}
+                  isLoading={resumeMutation.isPending}
+                  onClick={() => resumeMutation.mutate()}
+                >
+                  Upload
+                </Button>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+
+          <JobRecommendations candidateProfileId={profileId} />
+        </>
       )}
     </div>
   )

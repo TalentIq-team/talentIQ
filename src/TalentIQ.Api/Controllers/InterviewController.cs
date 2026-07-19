@@ -1,7 +1,9 @@
-﻿using Interview.Application.Commands.RescheduleInterview;
+using Interview.Application.Commands.RescheduleInterview;
 using Interview.Application.Commands.ScheduleInterview;
 using Interview.Application.Commands.SubmitEvaluation;
+using Interview.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace TalentIQ.Api.Controllers;
 
@@ -12,15 +14,25 @@ public class InterviewController : ControllerBase
     private readonly ScheduleInterviewCommandHandler _handler;
     private readonly RescheduleInterviewCommandHandler _rescheduleHandler;
     private readonly SubmitEvaluationCommandHandler _evaluationHandler;
+    private readonly InterviewDbContext _dbContext;
 
     public InterviewController(
         ScheduleInterviewCommandHandler handler,
         RescheduleInterviewCommandHandler rescheduleHandler,
-        SubmitEvaluationCommandHandler evaluationHandler)
+        SubmitEvaluationCommandHandler evaluationHandler,
+        InterviewDbContext dbContext)
     {
         _handler = handler;
         _rescheduleHandler = rescheduleHandler;
         _evaluationHandler = evaluationHandler;
+        _dbContext = dbContext;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetInterviews()
+    {
+        var interviews = await _dbContext.Interviews.ToListAsync();
+        return Ok(interviews);
     }
 
     [HttpPost("schedule")]

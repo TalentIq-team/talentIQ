@@ -100,4 +100,46 @@ public sealed class AuthController : ControllerBase
             return Unauthorized(new { message = exception.Message });
         }
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(
+        [FromBody] ForgotPasswordRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _sender.Send(
+                new ForgotPasswordCommand(request.Email),
+                cancellationToken);
+
+            return Ok(new { message = "If your email is registered, you will receive a reset code." });
+        }
+        catch (ArgumentException exception)
+        {
+            return BadRequest(new { message = exception.Message });
+        }
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(
+        [FromBody] ResetPasswordRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _sender.Send(
+                new ResetPasswordCommand(
+                    request.Email,
+                    request.Token,
+                    request.NewPassword),
+                cancellationToken);
+
+            return Ok(new { message = "Password reset successfully. You can now sign in with your new password." });
+        }
+        catch (ArgumentException exception)
+        {
+            return BadRequest(new { message = exception.Message });
+        }
+    }
 }
+

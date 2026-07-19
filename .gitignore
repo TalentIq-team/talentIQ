@@ -505,13 +505,4 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
-files/01-SRS.md
-files/02-Architecture-Design.md
-files/03-Implementation-Plan.md
-files/04-Setup-Guide.md
-files/06-Complete-File-Structure.md
-files/07-Team-Member-Setup-Guide.md
-files/Github Guide.md
-files/SE205.3 Coursework (1).docx
-files/TalentIQ-Frontend-Team-Handbook.html
-files/TalentIQ-Requirements-Coverage.html
+files/

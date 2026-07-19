@@ -1,14 +1,14 @@
 import { ApplicationStage, ApplicationStageLabels } from '../api/types'
 
 const STAGE_STYLES: Record<ApplicationStage, string> = {
-  [ApplicationStage.Applied]: 'bg-slate-100 text-slate-700',
-  [ApplicationStage.Screening]: 'bg-blue-100 text-blue-700',
-  [ApplicationStage.Shortlisted]: 'bg-indigo-100 text-indigo-700',
-  [ApplicationStage.InterviewScheduled]: 'bg-violet-100 text-violet-700',
-  [ApplicationStage.Interviewed]: 'bg-purple-100 text-purple-700',
-  [ApplicationStage.Offered]: 'bg-amber-100 text-amber-700',
-  [ApplicationStage.Hired]: 'bg-green-100 text-green-700',
-  [ApplicationStage.Rejected]: 'bg-red-100 text-red-700',
+  [ApplicationStage.Applied]: 'bg-panel-2 text-text border border-line',
+  [ApplicationStage.Screening]: 'bg-m1/40 text-text border border-m1',
+  [ApplicationStage.Shortlisted]: 'bg-m1/70 text-text border border-m1',
+  [ApplicationStage.InterviewScheduled]: 'bg-m2/10 text-m2 border border-m2/25',
+  [ApplicationStage.Interviewed]: 'bg-m2/15 text-m2 border border-m2/30',
+  [ApplicationStage.Offered]: 'bg-m2/20 text-m2 border border-m2/35',
+  [ApplicationStage.Hired]: 'bg-m2 text-white border border-m2 shadow-sm shadow-m2/15',
+  [ApplicationStage.Rejected]: 'bg-alert/10 text-alert border border-alert/20',
 }
 
 export function StageBadge({ stage }: { stage: ApplicationStage }) {

@@ -40,7 +40,7 @@ apiClient.interceptors.response.use(
       
       // Redirect if not on public routes
       const path = window.location.pathname
-      if (path !== '/login' && path !== '/register') {
+      if (path !== '/login' && path !== '/register' && path !== '/forgot-password') {
         window.location.href = '/login'
       }
     }

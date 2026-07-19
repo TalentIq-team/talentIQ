@@ -24,31 +24,31 @@ export const StageBadge: React.FC<StageBadgeProps> = ({ stage }) => {
   const config: Record<StageValue, { label: string; style: string }> = {
     [ApplicationStage.Applied]: {
       label: 'Applied',
-      style: 'bg-line/50 text-head border-line/30',
+      style: 'bg-panel-2 text-text border-line',
     },
     [ApplicationStage.Screening]: {
-      label: 'Screening',
-      style: 'bg-m3/10 text-m3 border-m3/20',
+      label: 'AI Screening',
+      style: 'bg-m1/40 text-text border-m1',
     },
     [ApplicationStage.Shortlisted]: {
-      label: 'Shortlisted',
-      style: 'bg-m2/10 text-m2 border-m2/20',
+      label: 'HR Review',
+      style: 'bg-m1/70 text-text border-m1',
     },
     [ApplicationStage.InterviewScheduled]: {
-      label: 'Interview Scheduled',
-      style: 'bg-m1/10 text-m1 border-m1/20',
+      label: 'Technical Interview',
+      style: 'bg-m2/10 text-m2 border-m2/25',
     },
     [ApplicationStage.Interviewed]: {
-      label: 'Interviewed',
-      style: 'bg-m4/10 text-m4 border-m4/20',
+      label: 'Final Interview',
+      style: 'bg-m2/15 text-m2 border-m2/30',
     },
     [ApplicationStage.Offered]: {
       label: 'Offered',
-      style: 'bg-m6/10 text-m6 border-m6/20',
+      style: 'bg-m2/20 text-m2 border-m2/35',
     },
     [ApplicationStage.Hired]: {
       label: 'Hired',
-      style: 'bg-ok/10 text-ok border-ok/20',
+      style: 'bg-m2 text-white border-m2 shadow-sm shadow-m2/15',
     },
     [ApplicationStage.Rejected]: {
       label: 'Rejected',

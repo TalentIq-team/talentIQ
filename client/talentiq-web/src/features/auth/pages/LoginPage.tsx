@@ -67,7 +67,7 @@ export const LoginPage: React.FC = () => {
     <div className="flex min-h-screen items-center justify-center bg-radial-gradient px-4 py-12 sm:px-6 lg:px-8 bg-ink">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-m2 text-white font-bold text-xl shadow-lg shadow-m2/20">
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-m2 text-button-primary-text font-bold text-xl shadow-lg shadow-m2/25">
             IQ
           </span>
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-head">Welcome back</h2>
@@ -95,6 +95,12 @@ export const LoginPage: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
             />
+
+            <div className="flex justify-end -mt-3">
+              <Link to="/forgot-password" className="text-xs font-semibold text-m2 hover:text-head transition-all">
+                Forgot password?
+              </Link>
+            </div>
 
             <Button type="submit" variant="primary" className="w-full" isLoading={isSubmitting}>
               Sign In

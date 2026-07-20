@@ -7,12 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="DTOs\" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
   </ItemGroup>
 
   <ItemGroup>
-    
+
     <ProjectReference Include="..\Interview.Domain\Interview.Domain.csproj" />
+	<ProjectReference Include="..\..\..\Shared\TalentIQ.Shared.Kernel\TalentIQ.Shared.Kernel.csproj" />
 	<ProjectReference Include="..\..\Notification\Notification.Application\Notification.Application.csproj" />
     <ProjectReference Include="..\..\Candidate\Candidate.Application\Candidate.Application.csproj" />
 	<ProjectReference Include="..\..\Recruitment\Recruitment.Domain\Recruitment.Domain.csproj" />

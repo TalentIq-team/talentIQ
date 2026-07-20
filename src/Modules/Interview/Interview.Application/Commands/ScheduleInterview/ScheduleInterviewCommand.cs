@@ -1,6 +1,8 @@
-﻿namespace Interview.Application.Commands.ScheduleInterview;
+using MediatR;
 
-public class ScheduleInterviewCommand
+namespace Interview.Application.Commands.ScheduleInterview;
+
+public class ScheduleInterviewCommand : IRequest<Guid>
 {
     public Guid ApplicationId { get; set; }
 

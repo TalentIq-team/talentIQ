@@ -1,6 +1,8 @@
-﻿namespace Interview.Application.Commands.RescheduleInterview;
+using MediatR;
 
-public class RescheduleInterviewCommand
+namespace Interview.Application.Commands.RescheduleInterview;
+
+public class RescheduleInterviewCommand : IRequest
 {
     public Guid InterviewId { get; set; }
 

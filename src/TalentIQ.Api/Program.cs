@@ -98,10 +98,13 @@ builder.Services.AddMediatR(configuration =>
 // ---------------------------------------------------------------------------
 // Member 4 module — Interview scheduling + evaluations (with Notification/email).
 // ---------------------------------------------------------------------------
-builder.Services.AddInterviewInfrastructure(builder.Configuration);
-builder.Services.AddScoped<ScheduleInterviewCommandHandler>();
-builder.Services.AddScoped<RescheduleInterviewCommandHandler>();
-builder.Services.AddScoped<SubmitEvaluationCommandHandler>();
+// Registers the DbContext, repository, calendar service and the module's MediatR handlers.
+builder.Services.AddInterviewModule(builder.Configuration);
+
+// Composition-root adapter: lets the Interview shortlist view read Shortlisted applications
+// from the Recruitment module without either module referencing the other.
+builder.Services.AddScoped<Interview.Application.Interfaces.IShortlistedCandidateReader,
+    TalentIQ.Api.Services.ShortlistedCandidateReader>();
 
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
@@ -112,7 +115,6 @@ builder.Services.AddSingleton(sp =>
     return settings;
 });
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<ICalendarService, CalendarService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"]
     ?? throw new InvalidOperationException(

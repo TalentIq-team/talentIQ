@@ -8,4 +8,8 @@ public class Interview
     public Guid InterviewerUserId { get; set; }
     public string MeetingLink { get; set; } = string.Empty;
     public InterviewStatus Status { get; set; }
+
+    /// <summary>Set when the interview is soft-cancelled. Records are never deleted.</summary>
+    public string? CancellationReason { get; set; }
+    public DateTime? CancelledAt { get; set; }
 }

@@ -1,11 +1,12 @@
-﻿using Interview.Application.Interfaces;
+using Interview.Application.Interfaces;
 using Interview.Application.Services;
 using Interview.Domain.Entities;
+using MediatR;
 using Notification.Application.Interfaces;
 
 namespace Interview.Application.Commands.ScheduleInterview;
 
-public class ScheduleInterviewCommandHandler
+public class ScheduleInterviewCommandHandler : IRequestHandler<ScheduleInterviewCommand, Guid>
 {
     private readonly IInterviewRepository _repository;
     private readonly IEmailService _emailService;
@@ -21,7 +22,7 @@ public class ScheduleInterviewCommandHandler
         _calendarService = calendarService;
     }
 
-    public async Task Handle(ScheduleInterviewCommand command)
+    public async Task<Guid> Handle(ScheduleInterviewCommand command, CancellationToken cancellationToken)
     {
         var interview = new Interview.Domain.Entities.Interview
         {
@@ -65,5 +66,7 @@ public class ScheduleInterviewCommandHandler
             body,
             calendarFile,
             "Interview.ics");
+
+        return interview.Id;
     }
 }

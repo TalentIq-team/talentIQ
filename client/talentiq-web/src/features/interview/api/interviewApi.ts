@@ -93,10 +93,14 @@ function toEvaluationRequest(evaluation: InterviewEvaluation): EvaluationRequest
       evaluation.problemSolvingScore +
       evaluation.cultureFitScore) /
     3
+  const behavioralScore = Number(behavioral.toFixed(2))
+  const overall = (evaluation.technicalScore + behavioralScore) / 2
   return {
     interviewId: evaluation.interviewId,
     technicalScore: evaluation.technicalScore,
-    behavioralScore: Number(behavioral.toFixed(2)),
+    behavioralScore,
+    overallScore: Number(overall.toFixed(2)),
+    comments: evaluation.comments,
     recommendation: evaluation.recommendation,
   }
 }

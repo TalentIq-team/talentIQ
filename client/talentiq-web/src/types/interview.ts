@@ -72,5 +72,7 @@ export interface EvaluationRequest {
   interviewId: string
   technicalScore: number
   behavioralScore: number
+  overallScore: number
+  comments: string
   recommendation: string
 }

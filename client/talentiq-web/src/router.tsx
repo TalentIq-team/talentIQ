@@ -6,6 +6,8 @@ import candidateRoutes from '@/features/candidate/routes'
 import recruitmentRoutes from '@/features/recruitment/routes'
 import interviewRoutes from '@/features/interview/routes'
 import adminRoutes from '@/features/admin/routes'
+import analyticsRoutes from '@/features/analytics/routes'
+import talentPoolRoutes from '@/features/talent-pool/routes'
 import { RoleGuard } from '@/app/guards/RoleGuard'
 
 export const router = createBrowserRouter([
@@ -23,6 +25,8 @@ export const router = createBrowserRouter([
       ...recruitmentRoutes,
       ...interviewRoutes,
       ...adminRoutes,
+      ...analyticsRoutes,
+      ...talentPoolRoutes,
     ],
   },
   ...authRoutes,

@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-
+import logo from '@/assets/logo.jpeg'
 interface SidebarProps {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
@@ -104,14 +104,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen }) => {
       } md:translate-x-0`}
     >
       {/* Brand Logo Header */}
-      <div className="flex h-16 items-center px-6 border-b border-line bg-panel-2/30">
-        <span className="text-lg font-bold font-display tracking-tight text-head flex items-center gap-2">
-          <span className="w-6 h-6 rounded-lg bg-m2 flex items-center justify-center text-white text-xs font-bold">
-            IQ
-          </span>
-          TalentIQ
-        </span>
-      </div>
+      <div className="flex items-center gap-3">
+  <img
+    src={logo}
+    alt="TalentIQ logo"
+    className="h-9 w-9 rounded-lg object-cover"
+  />
+
+  <span className="text-lg font-bold text-head">
+    TalentIQ
+  </span>
+</div>
 
       {/* Role Tag Banner */}
       <div className="px-6 py-3 border-b border-line bg-ink/40">

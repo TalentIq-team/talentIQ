@@ -1,30 +1,44 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
-  /* Classy retro-modern Bohemian/Nordic Palette */
-  --color-ink: #F4F6F6;          /* Clean light gray-blue background */
-  --color-panel: #FFFFFF;        /* Solid white cards */
-  --color-panel-2: #EAEFED;      /* Soft verdigris light gray */
-  --color-line: #D5DFDC;         /* Soft slate/verdigris borders */
-  --color-text: #264653;         /* Charcoal Blue - elegant deep text */
-  --color-head: #1D353F;         /* Darker Charcoal Blue for titles */
-  --color-muted: #507683;        /* Muted slate text */
-  --color-alert: #E76F51;        /* Burnt Peach for alerts/errors */
-  --color-ok: #2A9D8F;           /* Verdigris for success/ok states */
+  /* ===== Background & Surface ===== */
+  --color-ink: #F8FAFC;
+  --color-panel: #FFFFFF;
+  --color-panel-2: #EEF1F6;
+  --color-line: #D7D8E0;
+
+  /* ===== Text ===== */
+  --color-text: #33415C;
+  --color-head: #1B2434;
+  --color-muted: #7D8597;
+
+  /* ===== Semantic ===== */
+  --color-alert: #DC2626;
+  --color-ok: #16A34A;
+
+  /* ===== Glass ===== */
   --color-glass: rgba(255, 255, 255, 0.85);
-  --radial-glow: rgba(42, 157, 143, 0.08); /* Verdigris glow */
-  --color-selection: rgba(42, 157, 143, 0.15);
-  --color-glow: rgba(42, 157, 143, 0.2);
-  --button-primary-shadow: rgba(42, 157, 143, 0.25);
+
+  /* ===== Effects ===== */
+  --radial-glow: rgba(4, 102, 200, 0.08);
+  --color-selection: rgba(4, 102, 200, 0.15);
+  --color-glow: rgba(4, 102, 200, 0.20);
+
+  --button-primary-shadow: rgba(4, 102, 200, 0.25);
   --button-primary-text: #FFFFFF;
 
-  /* Accent Palette */
-  --color-m1: #E9F5F3;         /* Very Light Verdigris background tint */
-  --color-m2: #2A9D8F;         /* Verdigris (Primary Accent) */
-  --color-m3: #E9C46A;         /* Jasmine (Secondary Golden) */
-  --color-m4: #F4A261;         /* Sandy Brown (Warm Orange) */
-  --color-m5: #E76F51;         /* Burnt Peach (Terracotta Accent) */
-  --color-m6: #507683;         /* Charcoal Sage */
+  /* ===== Primary (Navy Blue) ===== */
+  --color-m1: #E8F1FC;
+  --color-m2: #0466C8;
+
+  /* ===== Accent (Amethyst Violet) ===== */
+  --color-m3: #AF5FFF;
+  --color-m4: #7B2CBF;
+
+  /* ===== Status / Neutral ===== */
+  --color-m5: #DC2626;
+  --color-m6: #7D8597;
 }
 
 .dark {

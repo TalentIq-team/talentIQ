@@ -24,12 +24,12 @@ export const UserManagementPage: React.FC = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [role, setRole] = useState('Recruiter')
-  const [deptId, setDeptId] = useState('')
+  const [deptId] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
 
   // Query users
-  const { data: users = [], isLoading, isError } = useQuery<AdminUser[]>({
+  const { data: users = [], isLoading } = useQuery<AdminUser[]>({
     queryKey: ['admin-users'],
     queryFn: async () => {
       const { data } = await apiClient.get('/api/v1/admin/users')

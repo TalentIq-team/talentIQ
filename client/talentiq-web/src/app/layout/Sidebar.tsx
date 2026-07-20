@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import logo from "../../assets/logo.jpeg";
 
 interface SidebarProps {
   isOpen: boolean
@@ -96,19 +97,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   return (
     <aside
-      className={`fixed top-0 bottom-0 left-0 z-20 flex flex-col w-64 bg-[#022B3A] border-r border-white/10 transition-all duration-300 ${
+      className={`fixed top-0 bottom-0 left-0 z-20 flex flex-col w-64 bg-[#001845] border-r border-white/10 transition-all duration-300 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } md:translate-x-0 shadow-xl`}
     >
       {/* Brand Header */}
-      <div className="flex h-16 items-center px-6 border-b border-white/10">
-        <span className="text-lg font-bold font-display tracking-tight text-white flex items-center gap-2">
-          <span className="w-6 h-6 rounded-lg bg-m2 flex items-center justify-center text-white text-xs font-bold shadow-[0_4px_10px_rgba(31,122,140,0.3)]">
-            IQ
-          </span>
-          TalentIQ
-        </span>
-      </div>
+<div className="flex items-center gap-3 px-5 py-5 border-b border-white/10">
+  <img
+    src={logo}
+    alt="TalentIQ Logo"
+    className="h-10 w-10 object-contain rounded-xl bg-white p-1 shadow-sm"
+  />
+
+  <div className="flex flex-col">
+    <h1 className="text-lg font-bold text-white leading-none">
+      TalentIQ
+    </h1>
+
+    <span className="text-[10px] uppercase tracking-[0.15em] text-white/60">
+      AI Recruitment Platform
+    </span>
+  </div>
+</div>
 
       {/* Search Input */}
       <div className="px-4 py-3 border-b border-white/10 bg-white/5">

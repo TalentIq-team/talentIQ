@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
 import { apiClient, toErrorMessage } from '@/lib/api'
+import logo from '@/assets/logo.jpeg'
 
 export const ForgotPasswordPage: React.FC = () => {
   const toast = useToast()
@@ -72,9 +73,11 @@ export const ForgotPasswordPage: React.FC = () => {
     <div className="flex min-h-screen items-center justify-center bg-radial-gradient px-4 py-12 sm:px-6 lg:px-8 bg-ink">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-m2 text-button-primary-text font-bold text-xl shadow-lg shadow-m2/25">
-            IQ
-          </span>
+         <img
+  src={logo}
+  alt="TalentIQ Logo"
+  className="mx-auto h-14 w-14 rounded-2xl object-contain bg-white p-1 shadow-lg"
+/>
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-head">
             {phase === 'request' ? 'Reset your password' : 'Enter reset details'}
           </h2>

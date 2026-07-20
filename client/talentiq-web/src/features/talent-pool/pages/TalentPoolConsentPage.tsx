@@ -1,3 +1,4 @@
+import '../../analytics/m6-design.css'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Button from '@/components/ui/Button'
@@ -254,7 +255,7 @@ export default function TalentPoolConsentPage() {
   const isWithdrawing = withdrawMutation.isPending
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="m6-page mx-auto max-w-3xl space-y-6">
       <header>
         <h1 className="text-2xl font-bold text-head">
           Talent Pool Consent
@@ -296,6 +297,7 @@ export default function TalentPoolConsentPage() {
 
               <Button
                 variant="primary"
+                className="m6-primary-action"
                 isLoading={isResponding}
                 onClick={() =>
                   respondMutation.mutate({

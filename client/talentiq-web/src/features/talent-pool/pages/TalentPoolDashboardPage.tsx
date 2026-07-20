@@ -1,3 +1,4 @@
+import '../../analytics/m6-design.css'
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Button from '@/components/ui/Button'
@@ -210,7 +211,7 @@ export default function TalentPoolDashboardPage() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="m6-page space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-head">
@@ -279,13 +280,15 @@ export default function TalentPoolDashboardPage() {
         </Card>
       </section>
 
-      <DataTable
-        columns={columns}
-        data={dashboardQuery.data ?? []}
-        isLoading={dashboardQuery.isLoading}
-        emptyMessage="No candidates have active accepted talent pool consent."
-        pageSize={8}
-      />
+      <div className="m6-table-shell">
+        <DataTable
+          columns={columns}
+          data={dashboardQuery.data ?? []}
+          isLoading={dashboardQuery.isLoading}
+          emptyMessage="No candidates have active accepted talent pool consent."
+          pageSize={8}
+        />
+      </div>
 
       <p className="text-xs leading-relaxed text-muted">
         Candidate ordering uses available improvement signals such as profile

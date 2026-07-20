@@ -1,3 +1,4 @@
+import '../m6-design.css'
 import { useQuery } from '@tanstack/react-query'
 import Card from '@/components/ui/Card'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -56,7 +57,7 @@ function FunnelRow({ stage }: { stage: HiringFunnelStage }) {
         aria-valuenow={percentage}
       >
         <div
-          className="h-full rounded-full bg-m2 transition-all duration-500"
+          className="m6-progress-fill h-full rounded-full transition-all duration-500"
           style={{ width: `${percentage}%` }}
         />
       </div>
@@ -128,7 +129,7 @@ export default function AnalyticsDashboardPage() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="m6-page space-y-6">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-head">
@@ -186,8 +187,8 @@ export default function AnalyticsDashboardPage() {
         </Card>
 
         <div className="space-y-6">
-          <Card variant="glass" className="p-6">
-            <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+          <Card variant="glass" className="m6-ai-card p-6">
+            <p className="text-xs font-semibold uppercase tracking-wider text-m3">
               Estimated days to fill
             </p>
 

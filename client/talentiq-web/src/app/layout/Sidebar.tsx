@@ -101,13 +101,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       } md:translate-x-0 shadow-xl`}
     >
       {/* Brand Header */}
-      <div className="flex h-16 items-center px-6 border-b border-white/10">
-        <span className="text-lg font-bold font-display tracking-tight text-white flex items-center gap-2">
-          <span className="w-6 h-6 rounded-lg bg-m2 flex items-center justify-center text-white text-xs font-bold shadow-[0_4px_10px_rgba(31,122,140,0.3)]">
-            IQ
+      <div className="flex h-16 items-center px-5 border-b border-white/10">
+        <div className="flex items-center gap-3">
+          <img
+            src="/TalentIQ-mark.png"
+            alt="TalentIQ logo"
+            className="h-9 w-9 rounded-xl bg-white object-contain p-0.5 shadow-md"
+          />
+          <span className="text-lg font-bold font-display tracking-tight text-white">
+            TalentIQ
           </span>
-          TalentIQ
-        </span>
+        </div>
       </div>
 
       {/* Search Input */}

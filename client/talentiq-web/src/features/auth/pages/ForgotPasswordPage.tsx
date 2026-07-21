@@ -1,10 +1,24 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useToast } from '@/hooks/useToast'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
 import { apiClient, toErrorMessage } from '@/lib/api'
+import { isValidEmail, getPasswordError } from '@/lib/validators'
+import logoMark from '@/assets/talentiq-mark.png'
+
+const TOKEN_PATTERN = /^\d{6}$/
+
+interface RequestErrors {
+  email?: string
+}
+
+interface ResetErrors {
+  token?: string
+  newPassword?: string
+  confirmPassword?: string
+}
 
 export const ForgotPasswordPage: React.FC = () => {
   const toast = useToast()
@@ -18,12 +32,45 @@ export const ForgotPasswordPage: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const emailRef = useRef<HTMLInputElement>(null)
+  const tokenRef = useRef<HTMLInputElement>(null)
+  const newPasswordRef = useRef<HTMLInputElement>(null)
+  const confirmRef = useRef<HTMLInputElement>(null)
+
+  const [requestErrors, setRequestErrors] = useState<RequestErrors>({})
+  const [resetErrors, setResetErrors] = useState<ResetErrors>({})
+
+  const validateRequest = (): boolean => {
+    const next: RequestErrors = {}
+    if (!email.trim()) next.email = 'Email address is required.'
+    else if (!isValidEmail(email)) next.email = 'Enter a valid email address.'
+
+    setRequestErrors(next)
+    if (next.email) emailRef.current?.focus()
+    return Object.keys(next).length === 0
+  }
+
+  const validateReset = (): boolean => {
+    const next: ResetErrors = {}
+    if (!token) next.token = 'Verification code is required.'
+    else if (!TOKEN_PATTERN.test(token)) next.token = 'Enter the 6-digit code.'
+
+    const passwordError = getPasswordError(newPassword)
+    if (passwordError) next.newPassword = passwordError
+
+    if (!confirmPassword) next.confirmPassword = 'Please confirm your new password.'
+    else if (newPassword !== confirmPassword) next.confirmPassword = 'Passwords do not match.'
+
+    setResetErrors(next)
+    if (next.token) tokenRef.current?.focus()
+    else if (next.newPassword) newPasswordRef.current?.focus()
+    else if (next.confirmPassword) confirmRef.current?.focus()
+    return Object.keys(next).length === 0
+  }
+
   const handleRequestReset = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!email) {
-      toast.error('Email is required.')
-      return
-    }
+    if (!validateRequest()) return
 
     setIsSubmitting(true)
     try {
@@ -39,18 +86,7 @@ export const ForgotPasswordPage: React.FC = () => {
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!token) {
-      toast.error('Verification code is required.')
-      return
-    }
-    if (!newPassword) {
-      toast.error('New password is required.')
-      return
-    }
-    if (newPassword !== confirmPassword) {
-      toast.error('Passwords do not match.')
-      return
-    }
+    if (!validateReset()) return
 
     setIsSubmitting(true)
     try {
@@ -68,14 +104,27 @@ export const ForgotPasswordPage: React.FC = () => {
     }
   }
 
+  const handleResend = () => {
+    setToken('')
+    setNewPassword('')
+    setConfirmPassword('')
+    setResetErrors({})
+    setPhase('request')
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-radial-gradient px-4 py-12 sm:px-6 lg:px-8 bg-ink">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-m2 text-button-primary-text font-bold text-xl shadow-lg shadow-m2/25">
-            IQ
-          </span>
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-head">
+          <div className="inline-flex flex-col items-center gap-3">
+            <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white p-2.5 shadow-lg shadow-accent/25 ring-1 ring-accent/20">
+              <img src={logoMark} alt="TalentIQ" className="h-full w-full object-contain" />
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
+              Building Better Teams Together
+            </span>
+          </div>
+          <h2 className="mt-5 text-3xl font-bold tracking-tight text-head">
             {phase === 'request' ? 'Reset your password' : 'Enter reset details'}
           </h2>
           <p className="mt-2 text-sm text-muted">
@@ -87,14 +136,20 @@ export const ForgotPasswordPage: React.FC = () => {
 
         <Card variant="glass" className="p-8 shadow-2xl">
           {phase === 'request' ? (
-            <form className="space-y-6" onSubmit={handleRequestReset}>
+            <form className="space-y-6" onSubmit={handleRequestReset} noValidate>
               <Input
+                ref={emailRef}
                 label="Email Address"
                 type="email"
+                autoComplete="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (requestErrors.email) setRequestErrors({})
+                }}
                 placeholder="you@company.com"
+                error={requestErrors.email}
               />
 
               <Button type="submit" variant="primary" className="w-full" isLoading={isSubmitting}>
@@ -102,42 +157,62 @@ export const ForgotPasswordPage: React.FC = () => {
               </Button>
             </form>
           ) : (
-            <form className="space-y-5" onSubmit={handleResetPassword}>
+            <form className="space-y-5" onSubmit={handleResetPassword} noValidate>
               <Input
                 label="Email Address"
                 type="email"
                 disabled
+                readOnly
                 value={email}
                 placeholder="you@company.com"
                 className="opacity-70 cursor-not-allowed"
               />
 
               <Input
+                ref={tokenRef}
                 label="Verification Code (6-digit)"
                 type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
                 required
                 maxLength={6}
                 value={token}
-                onChange={(e) => setToken(e.target.value)}
+                onChange={(e) => {
+                  setToken(e.target.value.replace(/\D/g, '').slice(0, 6))
+                  if (resetErrors.token) setResetErrors((prev) => ({ ...prev, token: undefined }))
+                }}
                 placeholder="123456"
+                error={resetErrors.token}
               />
 
               <Input
+                ref={newPasswordRef}
                 label="New Password"
                 type="password"
+                autoComplete="new-password"
                 required
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={(e) => {
+                  setNewPassword(e.target.value)
+                  if (resetErrors.newPassword) setResetErrors((prev) => ({ ...prev, newPassword: undefined }))
+                }}
                 placeholder="••••••••"
+                error={resetErrors.newPassword}
               />
 
               <Input
+                ref={confirmRef}
                 label="Confirm New Password"
                 type="password"
+                autoComplete="new-password"
                 required
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value)
+                  if (resetErrors.confirmPassword) setResetErrors((prev) => ({ ...prev, confirmPassword: undefined }))
+                }}
                 placeholder="••••••••"
+                error={resetErrors.confirmPassword}
               />
 
               <Button type="submit" variant="primary" className="w-full mt-2" isLoading={isSubmitting}>
@@ -147,7 +222,7 @@ export const ForgotPasswordPage: React.FC = () => {
               <div className="text-center mt-2">
                 <button
                   type="button"
-                  onClick={() => setPhase('request')}
+                  onClick={handleResend}
                   className="text-xs font-semibold text-m2 hover:text-head transition-all cursor-pointer"
                 >
                   Resend verification code

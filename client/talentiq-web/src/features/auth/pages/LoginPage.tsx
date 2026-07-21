@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useToast } from '@/hooks/useToast'
@@ -6,29 +6,56 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
 import { toErrorMessage } from '@/lib/api'
+import { isValidEmail } from '@/lib/validators'
+import logoMark from '@/assets/talentiq-mark.png'
+
+interface FormErrors {
+  email?: string
+  password?: string
+}
 
 export const LoginPage: React.FC = () => {
   const { login } = useAuth()
   const toast = useToast()
   const navigate = useNavigate()
-  
+
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState<FormErrors>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const redirectForRole = (role: string) => {
+    if (role === 'Candidate') navigate('/candidate/jobs')
+    else if (role === 'Recruiter') navigate('/recruiter/jobs')
+    else if (role === 'HiringManager') navigate('/hiring-manager/shortlist')
+    else if (role === 'Admin') navigate('/admin/analytics')
+    else navigate('/')
+  }
+
+  const validate = (): boolean => {
+    const next: FormErrors = {}
+    if (!email.trim()) next.email = 'Email address is required.'
+    else if (!isValidEmail(email)) next.email = 'Enter a valid email address.'
+    if (!password) next.password = 'Password is required.'
+
+    setErrors(next)
+    if (next.email) emailRef.current?.focus()
+    else if (next.password) passwordRef.current?.focus()
+    return Object.keys(next).length === 0
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!validate()) return
+
     setIsSubmitting(true)
     try {
       const session = await login(email, password)
       toast.success(`Logged in as ${session.email} (${session.role})`)
-      
-      // Role aware redirection
-      if (session.role === 'Candidate') navigate('/candidate/jobs')
-      else if (session.role === 'Recruiter') navigate('/recruiter/jobs')
-      else if (session.role === 'HiringManager') navigate('/hiring-manager/shortlist')
-      else if (session.role === 'Admin') navigate('/admin/analytics')
-      else navigate('/')
+      redirectForRole(session.role)
     } catch (err) {
       toast.error(toErrorMessage(err))
     } finally {
@@ -45,18 +72,15 @@ export const LoginPage: React.FC = () => {
   ]
 
   const handleDevLogin = async (cred: typeof devLogins[0]) => {
+    setErrors({})
     setIsSubmitting(true)
     setEmail(cred.email)
     setPassword(cred.password)
     try {
       const session = await login(cred.email, cred.password)
       toast.success(`Dev Mode: Logged in as ${session.role}`)
-      
-      if (session.role === 'Candidate') navigate('/candidate/jobs')
-      else if (session.role === 'Recruiter') navigate('/recruiter/jobs')
-      else if (session.role === 'HiringManager') navigate('/hiring-manager/shortlist')
-      else if (session.role === 'Admin') navigate('/admin/analytics')
-    } catch (err) {
+      redirectForRole(session.role)
+    } catch {
       toast.error('Dev account login failed. Make sure the API is running and seeded.')
     } finally {
       setIsSubmitting(false)
@@ -67,39 +91,57 @@ export const LoginPage: React.FC = () => {
     <div className="flex min-h-screen items-center justify-center bg-radial-gradient px-4 py-12 sm:px-6 lg:px-8 bg-ink">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-m2 text-button-primary-text font-bold text-xl shadow-lg shadow-m2/25">
-            IQ
-          </span>
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-head">Welcome back</h2>
+          <div className="inline-flex flex-col items-center gap-3">
+            <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white p-2.5 shadow-lg shadow-accent/25 ring-1 ring-accent/20">
+              <img src={logoMark} alt="TalentIQ" className="h-full w-full object-contain" />
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
+              Building Better Teams Together
+            </span>
+          </div>
+          <h2 className="mt-5 text-3xl font-bold tracking-tight text-head">Welcome back</h2>
           <p className="mt-2 text-sm text-muted">
             Sign in to access your recruitment workspace.
           </p>
         </div>
 
         <Card variant="glass" className="p-8 shadow-2xl">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit} noValidate>
             <Input
+              ref={emailRef}
               label="Email Address"
               type="email"
+              autoComplete="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value)
+                if (errors.email) setErrors((prev) => ({ ...prev, email: undefined }))
+              }}
               placeholder="you@company.com"
-            />
-            
-            <Input
-              label="Password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              error={errors.email}
             />
 
-            <div className="flex justify-end -mt-3">
-              <Link to="/forgot-password" className="text-xs font-semibold text-m2 hover:text-head transition-all">
-                Forgot password?
-              </Link>
+            <div>
+              <Input
+                ref={passwordRef}
+                label="Password"
+                type="password"
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value)
+                  if (errors.password) setErrors((prev) => ({ ...prev, password: undefined }))
+                }}
+                placeholder="••••••••"
+                error={errors.password}
+              />
+              <div className="flex justify-end mt-2">
+                <Link to="/forgot-password" className="text-xs font-semibold text-m2 hover:text-head transition-all">
+                  Forgot password?
+                </Link>
+              </div>
             </div>
 
             <Button type="submit" variant="primary" className="w-full" isLoading={isSubmitting}>
@@ -123,8 +165,10 @@ export const LoginPage: React.FC = () => {
               {devLogins.map((cred) => (
                 <button
                   key={cred.role}
+                  type="button"
                   onClick={() => handleDevLogin(cred)}
-                  className="px-3 py-2 text-xs font-semibold rounded-lg bg-panel-2 hover:bg-panel border border-line text-text hover:text-head hover:border-m2/40 transition-all text-left cursor-pointer"
+                  disabled={isSubmitting}
+                  className="px-3 py-2 text-xs font-semibold rounded-lg bg-panel-2 hover:bg-panel border border-line text-text hover:text-head hover:border-m2/40 transition-all text-left cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <div className="text-[10px] text-muted">{cred.role}</div>
                   <div className="truncate font-semibold">{cred.email.split('@')[0]}</div>

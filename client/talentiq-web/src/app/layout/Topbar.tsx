@@ -234,7 +234,7 @@ export const Topbar: React.FC<TopbarProps> = ({ sidebarOpen, setSidebarOpen }) =
 
         {/* User Card info (Header display) */}
         <div className="hidden sm:flex items-center gap-2.5 rounded-xl border border-line bg-panel-2/40 px-3 py-1.5">
-          <div className="w-6.5 h-6.5 rounded-full bg-m2 flex items-center justify-center text-[10px] font-bold text-button-primary-text uppercase">
+          <div className="w-6.5 h-6.5 rounded-full bg-button-primary-bg flex items-center justify-center text-[10px] font-bold text-button-primary-text uppercase">
             {user?.email ? user.email.charAt(0) : 'U'}
           </div>
           <span className="text-xs font-semibold text-head">{user?.email || 'User Account'}</span>

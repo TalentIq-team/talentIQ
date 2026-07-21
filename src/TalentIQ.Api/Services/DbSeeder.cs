@@ -179,7 +179,21 @@ public static class DbSeeder
         var janeProfile = await candidateDb.CandidateProfiles.FirstAsync(p => p.UserId == janeUser.Id);
 
         // 5. Seed Job Postings (Recruitment)
-        if (!await recruitmentDb.JobPostings.AnyAsync())
+        var publishedCount = await recruitmentDb.JobPostings.CountAsync(j => j.Status == JobPostingStatus.Published);
+        if (publishedCount == 0)
+        {
+            var existingDrafts = await recruitmentDb.JobPostings.Where(j => j.Status == JobPostingStatus.Draft).ToListAsync();
+            foreach (var draft in existingDrafts)
+            {
+                draft.Publish();
+            }
+            if (existingDrafts.Any())
+            {
+                await recruitmentDb.SaveChangesAsync();
+            }
+        }
+
+        if (!await recruitmentDb.JobPostings.AnyAsync(j => j.Status == JobPostingStatus.Published))
         {
             var job1 = JobPosting.Create(
                 defaultOrg.Id, recruiterUser.Id,
@@ -221,10 +235,18 @@ public static class DbSeeder
                 "UI/UX Product Designer",
                 "Design intuitive design systems, interactive prototypes, and design token scales. Conduct user research and accessibility audits for enterprise applications.",
                 "Colombo, Sri Lanka",
-                EmploymentType.Internship, 1);
+                EmploymentType.FullTime, 2);
             job5.Publish();
 
-            await recruitmentDb.JobPostings.AddRangeAsync(job1, job2, job3, job4, job5);
+            var job6 = JobPosting.Create(
+                defaultOrg.Id, recruiterUser.Id,
+                "Data Engineer & BigQuery Specialist",
+                "Build automated ELT pipelines using dbt, BigQuery, and Python. Design scalable analytics schemas and real-time streaming architectures.",
+                "Remote",
+                EmploymentType.FullTime, 4);
+            job6.Publish();
+
+            await recruitmentDb.JobPostings.AddRangeAsync(job1, job2, job3, job4, job5, job6);
             await recruitmentDb.SaveChangesAsync();
         }
 

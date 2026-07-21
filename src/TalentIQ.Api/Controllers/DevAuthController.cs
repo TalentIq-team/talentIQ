@@ -44,4 +44,14 @@ public class DevAuthController : ControllerBase
             usage = "Click Authorize in Swagger and paste ONLY the token value (no 'Bearer ' prefix)."
         });
     }
+
+    /// <summary>Triggers database seeding for sample jobs, candidates, and applications.</summary>
+    [HttpPost("seed")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> SeedDatabase([FromServices] ILoggerFactory loggerFactory)
+    {
+        var logger = loggerFactory.CreateLogger("DbSeeder");
+        await DbSeeder.SeedDatabaseAsync(HttpContext.RequestServices, logger);
+        return Ok(new { message = "Database seeded successfully with sample jobs, candidate profiles, and applications." });
+    }
 }

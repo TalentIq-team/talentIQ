@@ -9,25 +9,13 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import JobRecommendations from '@/features/ai/components/JobRecommendations'
+import CandidateJobDetailModal from '@/features/candidate/components/CandidateJobDetailModal'
 import '@/features/ai/components/AiPanels.css'
-
-import logo from '@/assets/logo.jpeg'
-
-<div className="flex items-center gap-3 px-5 py-4">
-  <img
-    src={logo}
-    alt="TalentIQ"
-    className="h-10 w-10 rounded-xl object-cover"
-  />
-
-  <span className="text-xl font-bold text-white">
-    TalentIQ
-  </span>
-</div>
 
 export default function JobSearchPage() {
   const [filters, setFilters] = useState<JobSearchFilters>({})
   const [applied, setApplied] = useState<Record<string, string>>({})
+  const [selectedJob, setSelectedJob] = useState<JobPosting | null>(null)
   const profileId = getCandidateProfileId()
 
   const jobsQuery = useQuery({
@@ -67,10 +55,10 @@ export default function JobSearchPage() {
   )
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in text-left">
       <header>
         <h1 className="text-2xl font-black text-head tracking-tight">Job Opportunities</h1>
-        <p className="text-xs text-muted mt-1">Browse open positions, check skill matching suggestions, and apply.</p>
+        <p className="text-xs text-muted mt-1">Browse open positions, check AI Gemini skill matching suggestions, and apply.</p>
       </header>
 
       {/* AI Recommendations Section */}
@@ -113,7 +101,7 @@ export default function JobSearchPage() {
           type="button"
           onClick={() => jobsQuery.refetch()}
           variant="primary"
-          className="w-full h-[42px] font-bold rounded-xl"
+          className="w-full h-[42px] font-bold rounded-xl cursor-pointer"
         >
           Search Jobs
         </Button>
@@ -131,12 +119,20 @@ export default function JobSearchPage() {
           return (
             <div
               key={job.id}
-              className="rounded-xl border border-line bg-panel p-6 shadow-sm hover:border-accent/40 transition-all duration-200"
+              onClick={() => setSelectedJob(job)}
+              className="group rounded-xl border border-line bg-panel p-6 shadow-sm hover:border-accent/60 transition-all duration-200 cursor-pointer hover:shadow-md"
             >
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="space-y-2">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="space-y-2 flex-1">
                   <div>
-                    <h3 className="text-base font-bold text-head">{job.title}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-head group-hover:text-accent transition-colors">
+                        {job.title}
+                      </h3>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                        View Description & Compare →
+                      </span>
+                    </div>
                     <div className="flex flex-wrap gap-2 items-center text-[11px] text-muted mt-1 font-mono">
                       <span>{job.location || 'Remote'}</span>
                       <span>•</span>
@@ -146,18 +142,29 @@ export default function JobSearchPage() {
                     </div>
                   </div>
                   {job.description && (
-                    <p className="mt-3 text-xs text-text leading-relaxed bg-panel-2/10 p-3 rounded-lg border border-line/50">
+                    <p className="mt-3 text-xs text-text leading-relaxed bg-panel-2/10 p-3 rounded-lg border border-line/50 line-clamp-2">
                       {job.description}
                     </p>
                   )}
                 </div>
-                <div className="text-right self-center">
+
+                <div className="flex items-center gap-2 self-center" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedJob(job)}
+                    className="btn-ai-accent text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 font-bold"
+                  >
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z" />
+                    </svg>
+                    Compare Me
+                  </button>
                   <Button
                     type="button"
                     variant={isApplied ? 'outline' : 'primary'}
                     disabled={applyMutation.isPending || isApplied}
                     onClick={() => applyMutation.mutate(job.id)}
-                    className="font-semibold text-xs px-5 py-2 rounded-xl"
+                    className="font-semibold text-xs px-4 py-2 rounded-xl"
                   >
                     {buttonText}
                   </Button>
@@ -167,6 +174,19 @@ export default function JobSearchPage() {
           )
         })}
       </div>
+
+      {/* Job Detail & Gemini Compare Me Modal */}
+      {selectedJob && (
+        <CandidateJobDetailModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          onApply={(jobId) => applyMutation.mutate(jobId)}
+          isApplied={applied[selectedJob.id] === 'Applied ✓'}
+          appliedText={applied[selectedJob.id]}
+          candidateProfileId={profileId}
+        />
+      )}
     </div>
   )
 }
+

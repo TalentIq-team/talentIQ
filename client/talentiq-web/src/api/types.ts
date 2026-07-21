@@ -76,6 +76,13 @@ export interface JobPosting {
   closedAt: string | null
 }
 
+export interface JobSearchFilters {
+  title?: string
+  skillId?: string
+  location?: string
+  employmentType?: EmploymentType
+}
+
 export interface ApplicationStageHistory {
   fromStage: ApplicationStage
   toStage: ApplicationStage

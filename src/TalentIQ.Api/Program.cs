@@ -213,6 +213,24 @@ app.MapPost("/api/ai/analyze-resume", async (
 .Produces<ResumeAnalysisResult>()
 .Produces(400);
 
+// Candidate Job Search: Compare Job Posting with Candidate CV/Profile using Gemini API
+app.MapPost("/api/ai/compare-job", async (
+    CompareJobRequest request,
+    ResumeAnalysisService service,
+    CancellationToken ct) =>
+{
+    if (string.IsNullOrWhiteSpace(request.JobTitle))
+        return Results.BadRequest(new { error = "JobTitle is required" });
+
+    var result = await service.CompareJobWithCandidateAsync(request, ct);
+    return Results.Ok(result);
+})
+.WithName("CompareJobWithCandidate")
+.WithTags("AI")
+.Produces<JobComparisonResult>()
+.Produces(400);
+
+
 // FR-AI-04: Generate tailored interview questions
 app.MapPost("/api/ai/generate-interview-questions", async (
     GenerateQuestionsRequest request,

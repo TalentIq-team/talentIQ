@@ -10,6 +10,8 @@ import analyticsRoutes from '@/features/analytics/routes'
 import talentPoolRoutes from '@/features/talent-pool/routes'
 import { RoleGuard } from '@/app/guards/RoleGuard'
 
+import TestAiPanelsPage from '@/features/ai/pages/TestAiPanelsPage'
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -30,6 +32,10 @@ export const router = createBrowserRouter([
     ],
   },
   ...authRoutes,
+  {
+    path: '/test-ai-panels',
+    element: <TestAiPanelsPage />,
+  },
   {
     path: '*',
     element: <Navigate to="/login" replace />,

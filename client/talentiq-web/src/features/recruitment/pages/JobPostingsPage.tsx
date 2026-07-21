@@ -1,8 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { closeJob, createJob, publishJob, searchJobs } from '@/api/endpoints'
-import { EmploymentType, EmploymentTypeLabels, JobPostingStatus } from '@/api/types'
+import {
+  closeJob,
+  createJob,
+  publishJob,
+  searchJobs,
+} from '@/api/endpoints'
+import {
+  EmploymentType,
+  EmploymentTypeLabels,
+  JobPostingStatus,
+} from '@/api/types'
 import { toErrorMessage } from '@/lib/api'
 import { getOrganizationId } from '@/api/session'
 import { Spinner, ErrorBanner } from '@/components/Feedback'
@@ -10,6 +19,8 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 import Card from '@/components/ui/Card'
+
+
 
 const STATUS_LABEL: Record<JobPostingStatus, string> = {
   [JobPostingStatus.Draft]: 'Draft',
@@ -19,16 +30,24 @@ const STATUS_LABEL: Record<JobPostingStatus, string> = {
 
 export default function JobPostingsPage() {
   const queryClient = useQueryClient()
+
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [location, setLocation] = useState('')
-  const [employmentType, setEmploymentType] = useState<EmploymentType>(EmploymentType.FullTime)
+  const [employmentType, setEmploymentType] =
+    useState<EmploymentType>(EmploymentType.FullTime)
   const [minExp, setMinExp] = useState(0)
   const [banner, setBanner] = useState<string | null>(null)
 
-  const jobsQuery = useQuery({ queryKey: ['jobs', {}], queryFn: () => searchJobs({}) })
+  const jobsQuery = useQuery({
+    queryKey: ['jobs', {}],
+    queryFn: () => searchJobs({}),
+  })
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: ['jobs'] })
+  const invalidate = () =>
+    queryClient.invalidateQueries({
+      queryKey: ['jobs'],
+    })
 
   const createMutation = useMutation({
     mutationFn: () =>
@@ -42,49 +61,76 @@ export default function JobPostingsPage() {
         skillIds: [],
       }),
     onSuccess: (job) => {
-      setBanner(`Created draft "${job.title}". Publish it to make it visible to candidates.`)
+      setBanner(
+        `Created draft "${job.title}". Publish it to make it visible to candidates.`,
+      )
       setTitle('')
       setDescription('')
       setLocation('')
       invalidate()
     },
-    onError: (error) => setBanner(toErrorMessage(error)),
+    onError: (error) => {
+      setBanner(toErrorMessage(error))
+    },
   })
 
   const publishMutation = useMutation({
     mutationFn: (id: string) => publishJob(id),
-    onSuccess: () => invalidate(),
-    onError: (error) => setBanner(toErrorMessage(error)),
+    onSuccess: () => {
+      invalidate()
+    },
+    onError: (error) => {
+      setBanner(toErrorMessage(error))
+    },
   })
 
   const closeMutation = useMutation({
     mutationFn: (id: string) => closeJob(id),
-    onSuccess: () => invalidate(),
-    onError: (error) => setBanner(toErrorMessage(error)),
+    onSuccess: () => {
+      invalidate()
+    },
+    onError: (error) => {
+      setBanner(toErrorMessage(error))
+    },
   })
 
   const selectOptions = Object.values(EmploymentType)
-    .filter((v): v is EmploymentType => typeof v === 'number')
-    .map((t) => ({ value: t, label: EmploymentTypeLabels[t] }))
+    .filter((value): value is EmploymentType => typeof value === 'number')
+    .map((type) => ({
+      value: type,
+      label: EmploymentTypeLabels[type],
+    }))
 
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-bold">Job Postings</h1>
-        <p className="text-sm text-muted">Create, publish and close job postings.</p>
+        <h1 className="font-display text-2xl font-semibold tracking-tight text-[var(--heading)]">
+          Job Postings
+        </h1>
+
+        <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+          Create, publish and close job postings.
+        </p>
       </header>
 
       {banner && (
-        <Card variant="borderless" className="bg-m2/10 border border-m2/20 px-4 py-3 text-sm text-head font-medium">
+        <Card
+          variant="borderless"
+          className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-sm font-medium text-[var(--text)] shadow-[var(--shadow-e1)]"
+          role="status"
+        >
           {banner}
         </Card>
       )}
 
-      <Card variant="glass" className="p-6">
+      <Card
+        variant="glass"
+        className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-e1)]"
+      >
         <form
           className="grid gap-4 sm:grid-cols-2"
-          onSubmit={(e) => {
-            e.preventDefault()
+          onSubmit={(event) => {
+            event.preventDefault()
             createMutation.mutate()
           }}
         >
@@ -93,40 +139,63 @@ export default function JobPostingsPage() {
             label="Job Title"
             placeholder="e.g. Lead Designer"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(event) => setTitle(event.target.value)}
+            className="min-h-11 rounded-lg border-[var(--border-strong)] bg-[var(--surface)] text-[var(--text)] placeholder:text-[var(--placeholder)] focus:border-[var(--ring)] focus:ring-[color-mix(in_srgb,var(--ring)_22%,transparent)]"
           />
+
           <Input
             label="Location"
             placeholder="e.g. Remote / Colombo"
             value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            onChange={(event) => setLocation(event.target.value)}
+            className="min-h-11 rounded-lg border-[var(--border-strong)] bg-[var(--surface)] text-[var(--text)] placeholder:text-[var(--placeholder)] focus:border-[var(--ring)] focus:ring-[color-mix(in_srgb,var(--ring)_22%,transparent)]"
           />
+
           <div className="sm:col-span-2">
-            <label className="mb-1.5 block text-xs font-semibold text-muted uppercase tracking-wider">
+            <label
+              htmlFor="job-description"
+              className="mb-1.5 block text-xs font-semibold text-[var(--text)]"
+            >
               Description
             </label>
+
             <textarea
-              className="w-full rounded-xl border border-line bg-panel-2 px-4 py-2.5 text-sm text-head placeholder-muted transition-all duration-200 focus:border-m2 focus:ring-1 focus:ring-m2/30 focus:outline-none"
+              id="job-description"
+              className="w-full resize-y rounded-lg border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--placeholder)] transition-[border-color,box-shadow] duration-150 focus:border-[var(--ring)] focus:outline-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--ring)_22%,transparent)]"
               placeholder="Job specifications..."
               rows={3}
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(event) => setDescription(event.target.value)}
             />
           </div>
+
           <Select
             label="Employment Type"
             options={selectOptions}
             value={employmentType}
-            onChange={(e) => setEmploymentType(Number(e.target.value) as EmploymentType)}
+            onChange={(event) =>
+              setEmploymentType(
+                Number(event.target.value) as EmploymentType,
+              )
+            }
           />
+
           <Input
             label="Minimum Experience (Years)"
             type="number"
+            min={0}
             value={minExp}
-            onChange={(e) => setMinExp(Number(e.target.value))}
+            onChange={(event) => setMinExp(Number(event.target.value))}
+            className="min-h-11 rounded-lg border-[var(--border-strong)] bg-[var(--surface)] text-[var(--text)] focus:border-[var(--ring)] focus:ring-[color-mix(in_srgb,var(--ring)_22%,transparent)]"
           />
-          <div className="sm:col-span-2 flex justify-end mt-2">
-            <Button type="submit" variant="primary" isLoading={createMutation.isPending}>
+
+          <div className="mt-2 flex justify-end sm:col-span-2">
+            <Button
+              type="submit"
+              variant="primary"
+              isLoading={createMutation.isPending}
+              className="min-h-11 rounded-xl bg-[var(--primary)] font-semibold text-[var(--on-primary)] shadow-[var(--shadow-e1)] hover:bg-[var(--primary-hover)] hover:shadow-[var(--glow-primary)] focus:ring-[var(--ring)]"
+            >
               Create Job Posting
             </Button>
           </div>
@@ -134,58 +203,81 @@ export default function JobPostingsPage() {
       </Card>
 
       {jobsQuery.isLoading && <Spinner label="Loading postings…" />}
-      {jobsQuery.isError && <ErrorBanner message={toErrorMessage(jobsQuery.error)} />}
+
+      {jobsQuery.isError && (
+        <ErrorBanner message={toErrorMessage(jobsQuery.error)} />
+      )}
 
       <div className="space-y-4">
         {jobsQuery.data?.map((job) => (
-          <Card key={job.id} variant="glass" className="p-6">
+          <Card
+            key={job.id}
+            variant="glass"
+            className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-e1)]"
+          >
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <div className="flex items-center gap-3">
-                  <h3 className="text-lg font-bold">{job.title}</h3>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h3 className="font-display text-lg font-semibold tracking-tight text-[var(--heading)]">
+                    {job.title}
+                  </h3>
+
                   <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider ${
+                    className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] ${
                       job.status === JobPostingStatus.Published
-                        ? 'bg-ok/10 text-ok border border-ok/20'
+                        ? 'border-[var(--success-border)] bg-[var(--success-subtle)] text-[var(--success)]'
                         : job.status === JobPostingStatus.Closed
-                        ? 'bg-alert/10 text-alert border border-alert/20'
-                        : 'bg-line text-muted'
+                          ? 'border-[var(--danger-border)] bg-[var(--danger-subtle)] text-[var(--danger)]'
+                          : 'border-[var(--border)] bg-[var(--surface-2)] text-[var(--muted)]'
                     }`}
                   >
                     {STATUS_LABEL[job.status]}
                   </span>
                 </div>
-                <p className="text-xs text-muted mt-1.5">
-                  {job.location || 'Remote'} · {EmploymentTypeLabels[job.employmentType]} ·{' '}
+
+                <p className="mt-1.5 text-xs text-[var(--muted)]">
+                  {job.location || 'Remote'} ·{' '}
+                  {EmploymentTypeLabels[job.employmentType]} ·{' '}
                   {job.minExperienceYears}+ yrs
                 </p>
+
                 {job.description && (
-                  <p className="mt-3 text-sm text-text leading-relaxed max-w-2xl">{job.description}</p>
+                  <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[var(--text)]">
+                    {job.description}
+                  </p>
                 )}
               </div>
 
               <div className="flex flex-wrap gap-2">
                 <Link to={`/recruiter/jobs/${job.id}/pipeline`}>
-                  <Button variant="secondary" size="sm">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="min-h-11 rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] font-semibold text-[var(--text)] hover:bg-[var(--surface-2)] focus:ring-[var(--ring)]"
+                  >
                     View Pipeline
                   </Button>
                 </Link>
+
                 {job.status === JobPostingStatus.Draft && (
                   <Button
                     variant="outline"
                     size="sm"
                     isLoading={publishMutation.isPending}
                     onClick={() => publishMutation.mutate(job.id)}
+                    className="min-h-11 rounded-xl border border-[var(--border-strong)] bg-transparent font-semibold text-[var(--text)] hover:border-[var(--primary)] hover:bg-[var(--surface-2)] focus:ring-[var(--ring)]"
                   >
                     Publish
                   </Button>
                 )}
+
                 {job.status === JobPostingStatus.Published && (
                   <Button
                     variant="danger"
                     size="sm"
                     isLoading={closeMutation.isPending}
                     onClick={() => closeMutation.mutate(job.id)}
+                    className="min-h-11 rounded-xl bg-[var(--danger)] font-semibold text-white hover:bg-[var(--danger-hover)] focus:ring-[var(--danger)]"
                   >
                     Close
                   </Button>

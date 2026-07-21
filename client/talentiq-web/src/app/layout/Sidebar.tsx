@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import logo from "../../assets/logo.jpeg";
+
+
+
+
+import logo from '@/assets/logo.jpeg'
 
 interface SidebarProps {
   isOpen: boolean
@@ -97,6 +101,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
 
   return (
     <aside
+    
       className={`fixed top-0 bottom-0 left-0 z-20 flex flex-col w-64 bg-[#001845] border-r border-white/10 transition-all duration-300 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } md:translate-x-0 shadow-xl`}
@@ -117,6 +122,44 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     <span className="text-[10px] uppercase tracking-[0.15em] text-white/60">
       AI Recruitment Platform
     </span>
+
+      className={`fixed top-0 bottom-0 left-0 z-20 flex flex-col w-64 bg-[#001233] border-r border-white/10 transition-all duration-300 ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      } md:translate-x-0 shadow-xl`}
+    >
+      {/* Brand Logo Header */}
+      <div className="flex items-center gap-3">
+  <img
+    src={logo}
+    alt="TalentIQ logo"
+    className="h-9 w-9 rounded-lg object-cover"
+  />
+
+  <span className="text-lg font-bold text-head">
+    TalentIQ
+  </span>
+</div>
+
+      {/* Role Tag Banner */}
+      <div className="px-6 py-3 border-b border-line bg-ink/40">
+        <div className="text-[10px] font-bold uppercase tracking-wider text-muted mb-0.5">Portal Portal</div>
+        <div className="text-xs font-semibold text-head flex items-center gap-1.5">
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{
+              backgroundColor:
+                user.role === 'Candidate'
+                  ? 'var(--color-m3)'
+                  : user.role === 'Recruiter'
+                  ? 'var(--color-m2)'
+                  : user.role === 'HiringManager'
+                  ? 'var(--color-m4)'
+                  : 'var(--color-m6)',
+            }}
+  />
+
+    {user.role} Portal
+
   </div>
 </div>
 
@@ -128,7 +171,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             placeholder="Search menu..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:border-m2 focus:ring-1 focus:ring-m2/25 outline-none transition-all duration-150"
+            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:border-[#2D7FDE] focus:ring-1 focus:ring-[rgba(45,127,222,0.25)] outline-none transition-all duration-150"
           />
           <svg className="absolute left-3 top-2.5 w-3.5 h-3.5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -146,8 +189,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 text-xs font-medium rounded-xl border border-transparent transition-all duration-200 ${
                 isActive
-                  ? 'bg-white/5 text-m2 border-l-2 border-m2 font-bold'
-                  : 'text-white/70 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#002855] text-[#63A3EC] border-l-2 border-[#2D7FDE] font-bold'
+                  : 'text-white/70 hover:text-white hover:bg-[#002855]/70'
               }`
             }
           >
@@ -163,8 +206,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-3 text-xs font-medium rounded-xl border border-transparent transition-all duration-200 ${
                 isActive
-                  ? 'bg-white/5 text-m2 border-l-2 border-m2 font-bold'
-                  : 'text-white/70 hover:text-white hover:bg-white/5'
+                  ? 'bg-[#002855] text-[#63A3EC] border-l-2 border-[#2D7FDE] font-bold'
+                  : 'text-white/70 hover:text-white hover:bg-[#002855]/70'
               }`
             }
           >
@@ -173,7 +216,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           </NavLink>
           <div
             onClick={() => alert('Settings are configured by system administrators.')}
-            className="flex items-center gap-3 px-4 py-3 text-xs font-medium rounded-xl text-white/70 hover:text-white hover:bg-white/5 cursor-pointer transition-all duration-200"
+            className="flex items-center gap-3 px-4 py-3 text-xs font-medium rounded-xl text-white/70 hover:text-white hover:bg-[#002855]/70 cursor-pointer transition-all duration-200"
           >
             {icons.settings}
             Settings
@@ -184,7 +227,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
       {/* Footer / Profile */}
       <div className="p-4 border-t border-white/10 bg-white/5">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-m2 flex items-center justify-center text-white font-bold text-sm uppercase shadow-sm">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0466C8] to-[#7B2CBF] flex items-center justify-center text-white font-bold text-sm uppercase shadow-sm">
             {user.email.substring(0, 2).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">

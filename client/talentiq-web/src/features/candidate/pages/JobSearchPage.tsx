@@ -10,6 +10,20 @@ import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
 
+import logo from '@/assets/logo.jpeg'
+
+<div className="flex items-center gap-3 px-5 py-4">
+  <img
+    src={logo}
+    alt="TalentIQ"
+    className="h-10 w-10 rounded-xl object-cover"
+  />
+
+  <span className="text-xl font-bold text-white">
+    TalentIQ
+  </span>
+</div>
+
 export default function JobSearchPage() {
   const [filters, setFilters] = useState<JobSearchFilters>({})
   const [applied, setApplied] = useState<Record<string, string>>({})

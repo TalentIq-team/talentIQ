@@ -1,146 +1,395 @@
 import React, { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { apiClient, toErrorMessage } from '@/lib/api'
-import { Spinner, ErrorBanner, EmptyState } from '@/components/Feedback'
-import Card from '@/components/ui/Card'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { toErrorMessage } from '@/lib/api'
+import {
+  ErrorBanner,
+  Spinner,
+} from '@/components/Feedback'
 import Button from '@/components/ui/Button'
 import StageBadge from '@/components/ui/StageBadge'
 import AiMatchBreakdown from '@/features/ai/components/AiMatchBreakdown'
 import ScheduleInterviewModal from '../components/ScheduleInterviewModal'
-
-interface CandidateSummary {
-  id: string
-  jobPostingId: string
-  candidateProfileId: string
-  stage: number
-  aiMatchScore: number | null
-  appliedAt: string
-}
+import {
+  advanceApplicationStage,
+  getShortlistedApplications,
+} from '../api/interviewApi'
 
 export const ShortlistReviewPage: React.FC = () => {
   const queryClient = useQueryClient()
-  const [selectedAppId, setSelectedAppId] = useState<string | null>(null)
-  const [selectedCandidateEmail, setSelectedCandidateEmail] = useState<string>('')
+
+  const [selectedAppId, setSelectedAppId] =
+    useState<string | null>(null)
+
   const [isScheduleOpen, setIsScheduleOpen] = useState(false)
 
-  // Query applications in 'Shortlisted' stage (stage = 3)
-  const { data: applications = [], isLoading, isError, error } = useQuery<CandidateSummary[]>({
-    queryKey: ['shortlisted-applications'],
-    queryFn: async () => {
-      const { data } = await apiClient.get('/api/v1/applications/search', {
-        params: { stage: 3 },
-      })
-      return data
-    },
+  const [successMessage, setSuccessMessage] =
+    useState<string | null>(null)
+
+  const applicationsQuery = useQuery({
+    queryKey: ['interview', 'shortlisted-applications'],
+    queryFn: getShortlistedApplications,
   })
 
-  const handleOpenSchedule = (appId: string) => {
-    setSelectedAppId(appId)
-    // Pre-fill a dummy email based on applicant details for dev simplicity
-    setSelectedCandidateEmail(`applicant.${appId.substring(0, 4)}@talentiq.dev`)
-    setIsScheduleOpen(true)
+  if (applicationsQuery.isLoading) {
+    return <Spinner label="Loading shortlisted candidates..." />
   }
 
-  if (isLoading) return <Spinner label="Loading shortlisted candidates..." />
-  if (isError) return <ErrorBanner message={toErrorMessage(error)} />
+  if (applicationsQuery.isError) {
+    return (
+      <ErrorBanner
+        message={toErrorMessage(applicationsQuery.error)}
+      />
+    )
+  }
+
+  const applications = applicationsQuery.data ?? []
+
+  const selectedApplication = applications.find(
+    (application) => application.id === selectedAppId,
+  )
+
+  const strongMatches = applications.filter(
+    (application) =>
+      application.aiMatchScore !== null &&
+      application.aiMatchScore >= 70,
+  ).length
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <header>
-        <h1 className="text-2xl font-black text-head tracking-tight">Shortlist Review</h1>
-        <p className="text-xs text-muted mt-1">Review top-tier candidate matches and schedule interviews.</p>
+    <div className="iv-page animate-fade-in">
+      <header className="iv-hero">
+        <div className="iv-hero-content">
+          <div>
+            <div className="iv-eyebrow">
+              <span className="iv-eyebrow-dot" />
+              Interview Intelligence
+            </div>
+
+            <h1 className="iv-title">Shortlist Review</h1>
+
+            <p className="iv-subtitle">
+              Review shortlisted candidates, inspect AI match
+              insights, and move the strongest applicants into
+              the interview stage.
+            </p>
+          </div>
+
+          <div className="iv-hero-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M19 8v6M22 11h-6" />
+            </svg>
+          </div>
+        </div>
       </header>
 
-      {applications.length === 0 ? (
-        <EmptyState message="No candidates have been shortlisted for review yet." />
-      ) : (
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Candidates List Column */}
-          <div className="lg:col-span-1 space-y-4">
-            <h3 className="text-xs font-bold text-head uppercase tracking-wider mb-2">Shortlisted Applicants</h3>
-            <div className="space-y-3">
-              {applications.map((app) => {
-                const isSelected = selectedAppId === app.id
-                return (
-                  <Card
-                    key={app.id}
-                    variant="glass"
-                    onClick={() => {
-                      setSelectedAppId(app.id)
-                      setSelectedCandidateEmail(`applicant.${app.id.substring(0, 4)}@talentiq.dev`)
-                    }}
-                    className={`p-4 border transition-all duration-200 cursor-pointer ${
-                      isSelected
-                        ? 'border-m2/70 bg-m2/5 ring-1 ring-m2/30'
-                        : 'border-line hover:border-line-2'
-                    }`}
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
-                          Applicant ID: {app.id.substring(0, 8)}
-                        </span>
-                        <StageBadge stage={app.stage} />
-                      </div>
-                      <div>
-                        <h4 className="text-xs font-bold text-head">
-                          Profile ID: {app.candidateProfileId.substring(0, 8)}
-                        </h4>
-                        <p className="text-[10px] text-muted mt-0.5">
-                          Applied: {new Date(app.appliedAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex items-center justify-between pt-1">
-                        <span className="text-[10px] text-m2 font-bold bg-m2/10 px-1.5 py-0.5 rounded-md">
-                          Score: {app.aiMatchScore ? `${app.aiMatchScore}%` : 'N/A'}
-                        </span>
-                        <span className="text-[9px] text-muted">Click to view breakdown</span>
-                      </div>
-                    </div>
-                  </Card>
-                )
-              })}
+      <section className="iv-stat-grid">
+        <article className="iv-stat-card">
+          <div className="iv-stat-top">
+            <div className="iv-stat-icon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              >
+                <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+              </svg>
             </div>
           </div>
 
-          {/* Candidate AI Matching breakdown Column */}
-          <div className="lg:col-span-2 space-y-4">
-            {selectedAppId ? (
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-xs font-bold text-head uppercase tracking-wider mb-2">Match Analysis</h3>
-                  <AiMatchBreakdown applicationId={selectedAppId} />
+          <div className="iv-stat-value">
+            {applications.length}
+          </div>
+          <div className="iv-stat-label">
+            Shortlisted candidates
+          </div>
+        </article>
+
+        <article className="iv-stat-card">
+          <div className="iv-stat-top">
+            <div className="iv-stat-icon accent">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              >
+                <path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z" />
+                <path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="iv-stat-value">{strongMatches}</div>
+          <div className="iv-stat-label">
+            Strong AI matches
+          </div>
+        </article>
+
+        <article className="iv-stat-card">
+          <div className="iv-stat-top">
+            <div className="iv-stat-icon success">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+              >
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </div>
+          </div>
+
+          <div className="iv-stat-value">
+            {selectedApplication ? 1 : 0}
+          </div>
+          <div className="iv-stat-label">
+            Candidate selected
+          </div>
+        </article>
+      </section>
+
+      {successMessage && (
+        <div className="rounded-2xl border border-ok/20 bg-ok/10 px-4 py-3 text-xs font-semibold text-head shadow-sm">
+          {successMessage}
+        </div>
+      )}
+
+      {applications.length === 0 ? (
+        <section className="iv-empty">
+          <div className="iv-empty-icon">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+            >
+              <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M17 11h5M19.5 8.5v5" />
+            </svg>
+          </div>
+
+          <h2 className="iv-empty-title">
+            No shortlisted candidates yet
+          </h2>
+
+          <p className="iv-empty-description">
+            Candidates moved into the Shortlisted stage will
+            appear here for AI review and interview scheduling.
+          </p>
+        </section>
+      ) : (
+        <div className="iv-layout">
+          <section>
+            <div className="iv-section-heading">
+              <h2 className="iv-section-title">
+                Candidate Queue
+              </h2>
+
+              <span className="iv-count-pill">
+                {applications.length}
+              </span>
+            </div>
+
+            <div className="iv-candidate-list">
+              {applications.map((application) => {
+                const isSelected =
+                  selectedAppId === application.id
+
+                return (
+                  <article
+                    key={application.id}
+                    className="iv-candidate-card"
+                    data-selected={isSelected}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => {
+                      setSelectedAppId(application.id)
+                      setSuccessMessage(null)
+                    }}
+                    onKeyDown={(event) => {
+                      if (
+                        event.key === 'Enter' ||
+                        event.key === ' '
+                      ) {
+                        setSelectedAppId(application.id)
+                        setSuccessMessage(null)
+                      }
+                    }}
+                  >
+                    <div className="iv-candidate-top">
+                      <div className="iv-candidate-identity">
+                        <div className="iv-candidate-avatar">
+                          CP
+                        </div>
+
+                        <div className="min-w-0">
+                          <p className="iv-candidate-name">
+                            Candidate Profile
+                          </p>
+
+                          <p className="iv-candidate-id">
+                            {application.candidateProfileId}
+                          </p>
+                        </div>
+                      </div>
+
+                      <StageBadge
+                        stage={application.stage}
+                      />
+                    </div>
+
+                    <div className="iv-candidate-meta">
+                      <span className="iv-score-pill">
+                        {application.aiMatchScore !== null
+                          ? `${application.aiMatchScore}% match`
+                          : 'Match pending'}
+                      </span>
+
+                      <span className="iv-date">
+                        {new Date(
+                          application.appliedAt,
+                        ).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            {selectedApplication ? (
+              <>
+                <div className="iv-ai-panel">
+                  <div className="iv-ai-header">
+                    <div className="iv-ai-title-wrap">
+                      <div className="iv-ai-icon">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                        >
+                          <path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z" />
+                          <circle cx="18" cy="17" r="3" />
+                        </svg>
+                      </div>
+
+                      <div>
+                        <h2 className="iv-ai-title">
+                          AI Match Intelligence
+                        </h2>
+
+                        <p className="iv-ai-description">
+                          Candidate compatibility and skill
+                          alignment analysis
+                        </p>
+                      </div>
+                    </div>
+
+                    <span className="iv-ai-badge">
+                      AI Generated
+                    </span>
+                  </div>
+
+                  <div className="relative z-[1]">
+                    <AiMatchBreakdown
+                      applicationId={selectedApplication.id}
+                    />
+                  </div>
                 </div>
 
-                <div className="flex justify-end gap-3 p-4 bg-panel rounded-2xl border border-line">
+                <div className="iv-action-panel">
+                  <div>
+                    <h3 className="iv-action-title">
+                      Ready to move forward?
+                    </h3>
+
+                    <p className="iv-action-description">
+                      Schedule the candidate interview and move
+                      this application into the Interview
+                      Scheduled stage.
+                    </p>
+                  </div>
+
                   <Button
-                    size="sm"
+                    type="button"
+                    size="md"
                     variant="primary"
-                    onClick={() => handleOpenSchedule(selectedAppId)}
+                    className="iv-primary-action"
+                    onClick={() => setIsScheduleOpen(true)}
                   >
                     Schedule Interview
                   </Button>
                 </div>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center justify-center h-48 border border-dashed border-line rounded-2xl bg-panel/30 text-xs text-muted">
-                Select an applicant from the list to view their AI match analysis and schedule interviews.
+              <div className="iv-empty">
+                <div className="iv-empty-icon">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                  >
+                    <path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z" />
+                    <path d="M4 20h16" />
+                  </svg>
+                </div>
+
+                <h2 className="iv-empty-title">
+                  Select a candidate
+                </h2>
+
+                <p className="iv-empty-description">
+                  Choose an applicant from the candidate queue to
+                  inspect the AI match analysis and schedule an
+                  interview.
+                </p>
               </div>
             )}
-          </div>
+          </section>
         </div>
       )}
 
-      {/* Schedule Interview Modal Overlay */}
-      {selectedAppId && (
+      {selectedApplication && isScheduleOpen && (
         <ScheduleInterviewModal
-          isOpen={isScheduleOpen}
+          isOpen
+          mode="schedule"
+          applicationId={selectedApplication.id}
           onClose={() => setIsScheduleOpen(false)}
-          applicationId={selectedAppId}
-          candidateEmail={selectedCandidateEmail}
-          onSuccess={() => {
-            queryClient.invalidateQueries({ queryKey: ['shortlisted-applications'] })
-            alert('Interview has been scheduled successfully. Notification sent.')
+          onSuccess={async () => {
+            await advanceApplicationStage(
+              selectedApplication.id,
+              4,
+              'Interview scheduled by the hiring team.',
+            )
+
+            setSuccessMessage(
+              'Interview scheduled successfully. The application stage was updated.',
+            )
+
+            setSelectedAppId(null)
+
+            await queryClient.invalidateQueries({
+              queryKey: [
+                'interview',
+                'shortlisted-applications',
+              ],
+            })
+
+            await queryClient.invalidateQueries({
+              queryKey: ['interview', 'list'],
+            })
           }}
         />
       )}

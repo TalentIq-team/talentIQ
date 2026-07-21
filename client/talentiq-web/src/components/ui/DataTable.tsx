@@ -72,7 +72,9 @@ export function DataTable<T extends { id: string | number }>({
                     key={col.key}
                     className={`px-6 py-4.5 text-sm text-text ${col.className || ''}`}
                   >
-                    {col.render ? col.render(item) : (item as any)[col.key]}
+                    {col.render
+                      ? col.render(item)
+                      : String(item[col.key as keyof T] ?? '')}
                   </td>
                 ))}
               </tr>

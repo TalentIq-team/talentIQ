@@ -2,6 +2,7 @@ using Interview.Application.Commands.RescheduleInterview;
 using Interview.Application.Commands.ScheduleInterview;
 using Interview.Application.Commands.SubmitEvaluation;
 using Interview.Infrastructure;
+using Interview.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -70,4 +71,36 @@ public class InterviewController : ControllerBase
             Message = "Candidate evaluation submitted successfully."
         });
     }
+
+    [HttpPut("{id:guid}/cancel")]
+    public async Task<IActionResult> CancelInterview(Guid id)
+    {
+        var interview = await _dbContext.Interviews
+            .FirstOrDefaultAsync(item => item.Id == id);
+
+        if (interview is null)
+        {
+            return NotFound(new
+            {
+                Message = "Interview not found."
+            });
+        }
+
+        if (interview.Status == InterviewStatus.Completed)
+        {
+            return Conflict(new
+            {
+                Message = "A completed interview cannot be cancelled."
+            });
+        }
+
+        interview.Status = InterviewStatus.Cancelled;
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new
+        {
+            Message = "Interview cancelled successfully."
+        });
+    }
+
 }

@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import AppLayout from '@/app/layout/AppLayout'
 import DashboardPage from '@/features/admin/pages/DashboardPage'
+import LandingPage from '@/features/landing/pages/LandingPage'
 import authRoutes from '@/features/auth/routes'
 import candidateRoutes from '@/features/candidate/routes'
 import recruitmentRoutes from '@/features/recruitment/routes'
@@ -13,13 +14,15 @@ import { RoleGuard } from '@/app/guards/RoleGuard'
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <LandingPage />,
+  },
+  {
     element: (
       <RoleGuard>
         <AppLayout />
       </RoleGuard>
     ),
     children: [
-      { index: true, element: <Navigate to="/dashboard" replace /> },
       { path: 'dashboard', element: <DashboardPage /> },
       ...candidateRoutes,
       ...recruitmentRoutes,
@@ -32,8 +35,9 @@ export const router = createBrowserRouter([
   ...authRoutes,
   {
     path: '*',
-    element: <Navigate to="/login" replace />,
+    element: <Navigate to="/" replace />,
   },
 ])
 
 export default router
+

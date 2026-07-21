@@ -1,4 +1,5 @@
 import type { RouteObject } from 'react-router-dom'
+import './interview.css'
 import { RoleGuard } from '@/app/guards/RoleGuard'
 import ShortlistReviewPage from './pages/ShortlistReviewPage'
 import EvaluationFormPage from './pages/EvaluationFormPage'

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import logo from '@/assets/logo.jpeg'
 
 export const LandingNavbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth()
@@ -35,12 +36,13 @@ export const LandingNavbar: React.FC = () => {
         
         {/* Brand Lockup */}
         <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 p-0.5 shadow-sm group-hover:shadow-md transition-shadow">
-            <div className="w-full h-full bg-surface rounded-[10px] flex items-center justify-center">
-              <span className="font-display font-bold text-lg bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">
-                T
-              </span>
-            </div>
+          <div className="relative group">
+            <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 opacity-50 blur-sm group-hover:opacity-75 transition-opacity"></div>
+            <img
+              src={logo}
+              alt="TalentIQ Logo"
+              className="relative w-9 h-9 rounded-xl object-cover border border-white/20 shadow-md"
+            />
           </div>
           <div className="flex flex-col">
             <span className="font-display font-bold text-lg tracking-tight text-head flex items-center gap-1.5">

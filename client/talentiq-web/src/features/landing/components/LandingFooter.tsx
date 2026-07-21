@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import logo from '@/assets/logo.jpeg'
 
 export const LandingFooter: React.FC = () => {
   const scrollToTop = () => {
@@ -15,10 +16,13 @@ export const LandingFooter: React.FC = () => {
           {/* Brand Info */}
           <div className="md:col-span-5 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 p-0.5 shadow-sm">
-                <div className="w-full h-full bg-surface rounded-[10px] flex items-center justify-center font-display font-bold text-base text-primary">
-                  T
-                </div>
+              <div className="relative">
+                <div className="absolute -inset-0.5 rounded-xl bg-gradient-to-r from-primary-500 to-accent-500 opacity-50 blur-sm"></div>
+                <img
+                  src={logo}
+                  alt="TalentIQ Logo"
+                  className="relative w-8 h-8 rounded-xl object-cover border border-white/20 shadow-sm"
+                />
               </div>
               <span className="font-display font-bold text-xl text-head">
                 TalentIQ

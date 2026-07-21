@@ -7,7 +7,7 @@ import Input from '@/components/ui/Input'
 import Card from '@/components/ui/Card'
 import { toErrorMessage } from '@/lib/api'
 import { isValidEmail } from '@/lib/validators'
-import logoMark from '@/assets/talentiq-mark.png'
+import logoMark from '@/assets/logo.jpeg'
 
 interface FormErrors {
   email?: string
@@ -88,12 +88,25 @@ export const LoginPage: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-radial-gradient px-4 py-12 sm:px-6 lg:px-8 bg-ink">
+    <div className="flex min-h-screen items-center justify-center bg-radial-gradient px-4 py-12 sm:px-6 lg:px-8 bg-ink relative">
+      {/* Top Left Back Navigation */}
+      <div className="absolute top-6 left-6">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-muted hover:text-head bg-surface/50 border border-line px-3.5 py-2 rounded-xl transition-all hover:bg-panel-2 shadow-sm"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Home
+        </Link>
+      </div>
+
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="inline-flex flex-col items-center gap-3">
-            <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white p-2.5 shadow-lg shadow-accent/25 ring-1 ring-accent/20">
-              <img src={logoMark} alt="TalentIQ" className="h-full w-full object-contain" />
+            <span className="inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white p-1 shadow-lg shadow-accent/25 ring-1 ring-accent/20 overflow-hidden">
+              <img src={logoMark} alt="TalentIQ" className="h-full w-full object-cover rounded-xl" />
             </span>
             <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted">
               Building Better Teams Together
@@ -177,6 +190,19 @@ export const LoginPage: React.FC = () => {
             </div>
           </div>
         </Card>
+
+        {/* Footer Link back to Landing Page */}
+        <div className="text-center">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-xs text-muted hover:text-head transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Return to Landing Page
+          </Link>
+        </div>
       </div>
     </div>
   )

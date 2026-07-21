@@ -34,7 +34,6 @@ export const router = createBrowserRouter([
       </RoleGuard>
     ),
     children: [
-      { index: true, element: <RoleBasedRedirect /> },
       { path: 'dashboard', element: <RoleBasedRedirect /> },
       ...candidateRoutes,
       ...recruitmentRoutes,

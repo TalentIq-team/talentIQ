@@ -1,200 +1,334 @@
-import React, { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { apiClient, toErrorMessage } from '@/lib/api'
-import { getCandidateProfileId } from '@/api/session'
-import { Spinner, ErrorBanner } from '@/components/Feedback'
-import Card from '@/components/ui/Card'
+import '../../analytics/m6-design.css'
+import { useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import Button from '@/components/ui/Button'
+import Card from '@/components/ui/Card'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { EmptyState } from '@/components/ui/EmptyState'
+import { ErrorState } from '@/components/ui/ErrorState'
+import { getCandidateProfileId } from '@/api/session'
+import { toErrorMessage } from '@/lib/api'
+import {
+  ConsentStatus,
+  getTalentPoolEntries,
+  respondToTalentPoolConsent,
+  withdrawTalentPoolConsent,
+  type TalentPoolEntry,
+} from '../api/talentPoolApi'
 
-interface TalentPoolEntry {
-  id: string
-  candidateProfileId: string
-  consentStatus: number // 1 = Pending, 2 = Accepted, 3 = Declined, 4 = Expired, 5 = Withdrawn
-  isActive: boolean
-  createdAt: string
-  consentExpiryDate: string | null
-  skillTags: string
+const STATUS_LABEL: Record<number, string> = {
+  [ConsentStatus.Pending]: 'Pending',
+  [ConsentStatus.Accepted]: 'Accepted',
+  [ConsentStatus.Declined]: 'Declined',
+  [ConsentStatus.Withdrawn]: 'Withdrawn',
+  [ConsentStatus.Expired]: 'Expired',
 }
 
-export const TalentPoolConsentPage: React.FC = () => {
-  const queryClient = useQueryClient()
-  const candidateProfileId = getCandidateProfileId()
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
-
-  // Query all talent pool dashboard entries and filter for this candidate
-  const { data: entries = [], isLoading, isError } = useQuery<TalentPoolEntry[]>({
-    queryKey: ['talent-pool-candidate', candidateProfileId],
-    queryFn: async () => {
-      const { data } = await apiClient.get('/api/v1/talent-pool/dashboard')
-      return (data || []).filter((e: any) => e.candidateProfileId === candidateProfileId || e.CandidateProfileId === candidateProfileId)
-    },
-    enabled: !!candidateProfileId,
-  })
-
-  // Respond consent mutation
-  const respondMutation = useMutation({
-    mutationFn: async ({ entryId, accept }: { entryId: string; accept: boolean }) => {
-      setError(null)
-      setSuccess(null)
-      const request = {
-        talentPoolEntryId: entryId,
-        accept,
-        profileSnapshotJson: JSON.stringify({
-          optInDate: new Date().toISOString(),
-          skillsSnapshot: ['Software Engineering', 'System Design'],
-        }),
-      }
-      await apiClient.post('/api/v1/talent-pool/respond-consent', request)
-    },
-    onSuccess: (_, variables) => {
-      setSuccess(variables.accept ? 'You have successfully opted into the Talent Pool.' : 'You have declined the request.')
-      queryClient.invalidateQueries({ queryKey: ['talent-pool-candidate', candidateProfileId] })
-    },
-    onError: (err) => setError(toErrorMessage(err)),
-  })
-
-  // Withdraw consent mutation
-  const withdrawMutation = useMutation({
-    mutationFn: async (entryId: string) => {
-      setError(null)
-      setSuccess(null)
-      await apiClient.post('/api/v1/talent-pool/withdraw-consent', { talentPoolEntryId: entryId })
-    },
-    onSuccess: () => {
-      setSuccess('Your consent has been successfully withdrawn. You are no longer in the Talent Pool.')
-      queryClient.invalidateQueries({ queryKey: ['talent-pool-candidate', candidateProfileId] })
-    },
-    onError: (err) => setError(toErrorMessage(err)),
-  })
-
-  if (!candidateProfileId) {
-    return (
-      <div className="space-y-6">
-        <header>
-          <h1 className="text-2xl font-black text-head">Talent Pool Consent</h1>
-          <p className="text-xs text-muted mt-1">Manage your professional talent pool listing and consent settings.</p>
-        </header>
-        <Card variant="glass" className="p-6 text-center text-xs text-muted border border-dashed border-line">
-          Please create and save your candidate profile first in the "My Profile" page before accessing the Talent Pool.
-        </Card>
-      </div>
-    )
+function formatDate(value: string | null): string {
+  if (!value) {
+    return 'Not available'
   }
 
-  if (isLoading) return <Spinner label="Loading consent dashboard..." />
+  return new Intl.DateTimeFormat('en-GB', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date(value))
+}
 
-  // Filter entry states
-  const activeEntry = entries.find((e) => e.consentStatus === 2 && e.isActive)
-  const pendingEntry = entries.find((e) => e.consentStatus === 1 && e.isActive)
-
-  const statusLabel = (status: number) => {
-    switch (status) {
-      case 1: return <span className="px-2 py-0.5 text-[9px] font-bold bg-m6/10 text-m6 border border-m6/10 rounded-md">Pending Response</span>
-      case 2: return <span className="px-2 py-0.5 text-[9px] font-bold bg-ok/10 text-ok border border-ok/10 rounded-md">Consent Active</span>
-      case 3: return <span className="px-2 py-0.5 text-[9px] font-bold bg-muted/10 text-muted border border-line rounded-md">Declined</span>
-      case 4: return <span className="px-2 py-0.5 text-[9px] font-bold bg-alert/10 text-alert border border-alert/10 rounded-md">Expired</span>
-      case 5: return <span className="px-2 py-0.5 text-[9px] font-bold bg-alert/10 text-alert border border-alert/10 rounded-md">Withdrawn</span>
-      default: return null
-    }
+function getStatusClass(status: number): string {
+  if (status === ConsentStatus.Accepted) {
+    return 'border-ok/20 bg-ok/10 text-ok'
   }
+
+  if (
+    status === ConsentStatus.Declined ||
+    status === ConsentStatus.Withdrawn ||
+    status === ConsentStatus.Expired
+  ) {
+    return 'border-alert/20 bg-alert/10 text-alert'
+  }
+
+  return 'border-m2/20 bg-m2/10 text-m2'
+}
+
+function ConsentDetails({ entry }: { entry: TalentPoolEntry }) {
+  const skills = entry.skillTags
+    .split(',')
+    .map((skill) => skill.trim())
+    .filter(Boolean)
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-4xl">
-      <header>
-        <h1 className="text-2xl font-black text-head tracking-tight">Talent Pool Consent</h1>
-        <p className="text-xs text-muted mt-1">Control your data privacy, opt-in settings, and re-engagement listings.</p>
-      </header>
-
-      {error && <ErrorBanner message={error} />}
-      {success && (
-        <Card variant="borderless" className="bg-ok/10 border border-ok/20 px-4 py-3 text-xs text-head font-medium">
-          {success}
-        </Card>
-      )}
-
-      {/* Information disclosure */}
-      <Card variant="glass" className="p-6 border border-line space-y-4">
-        <h3 className="text-sm font-bold text-head uppercase tracking-wider">About the Talent Pool</h3>
-        <p className="text-xs text-text leading-relaxed">
-          The TalentIQ Talent Pool allows our recruitment teams to keep your details on file even if your current application is not selected. By joining the pool:
-        </p>
-        <ul className="list-disc pl-5 text-xs text-muted space-y-2">
-          <li>We will run a monthly automated analysis of your profile skill improvements to check for new job fit.</li>
-          <li>You will be proposed for matching positions across our business divisions.</li>
-          <li>Your consent automatically expires after 12 months, and you can withdraw it at any time.</li>
-        </ul>
-      </Card>
-
-      {/* Dynamic proposal action cards */}
-      {pendingEntry && (
-        <Card variant="glass" className="p-6 border border-m6/30 bg-m6/5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xs font-bold text-head uppercase tracking-wider">Recruiter Invitation Pending</h4>
-            {statusLabel(pendingEntry.consentStatus)}
-          </div>
-          <p className="text-xs text-muted">
-            A recruiter has requested to add you to the Talent Pool for future matches with skill tags: <strong className="text-head">{pendingEntry.skillTags || 'General skills'}</strong>.
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted">
+            Talent Pool Invitation
           </p>
-          <div className="flex justify-end gap-3 pt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              isLoading={respondMutation.isPending}
-              onClick={() => respondMutation.mutate({ entryId: pendingEntry.id, accept: false })}
-            >
-              Decline Request
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              isLoading={respondMutation.isPending}
-              onClick={() => respondMutation.mutate({ entryId: pendingEntry.id, accept: true })}
-            >
-              Accept & Share Profile
-            </Button>
-          </div>
-        </Card>
-      )}
 
-      {activeEntry ? (
-        <Card variant="glass" className="p-6 border border-ok/20 bg-ok/5 space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-xs font-bold text-head uppercase tracking-wider">Your Listing is Active</h4>
-            {statusLabel(activeEntry.consentStatus)}
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 text-xs">
-            <div>
-              <span className="text-[10px] text-muted uppercase font-semibold block">Joined On</span>
-              <span className="font-medium text-head">{new Date(activeEntry.createdAt).toLocaleDateString()}</span>
-            </div>
-            <div>
-              <span className="text-[10px] text-muted uppercase font-semibold block">Expires On</span>
-              <span className="font-medium text-head">
-                {activeEntry.consentExpiryDate ? new Date(activeEntry.consentExpiryDate).toLocaleDateString() : '1 Year'}
+          <h2 className="mt-1 text-xl font-bold text-head">
+            Recruitment Talent Pool
+          </h2>
+        </div>
+
+        <span
+          className={`rounded-full border px-3 py-1 text-xs font-semibold ${getStatusClass(
+            entry.consentStatus,
+          )}`}
+        >
+          {STATUS_LABEL[entry.consentStatus] ?? 'Unknown'}
+        </span>
+      </div>
+
+      <p className="text-sm leading-relaxed text-text">
+        Your profile has been proposed for the TalentIQ talent pool. Accepting
+        allows authorised recruiters to review your stored profile snapshot and
+        contact you about suitable opportunities.
+      </p>
+
+      <div>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted">
+          Skill Tags
+        </p>
+
+        {skills.length === 0 ? (
+          <p className="text-sm text-muted">No skill tags were provided.</p>
+        ) : (
+          <div className="flex flex-wrap gap-2">
+            {skills.map((skill) => (
+              <span
+                key={skill}
+                className="rounded-lg border border-line bg-panel-2 px-3 py-1 text-xs font-medium text-head"
+              >
+                {skill}
               </span>
-            </div>
+            ))}
           </div>
-          <div className="pt-4 border-t border-line/50 flex justify-end">
-            <Button
-              variant="danger"
-              size="sm"
-              isLoading={withdrawMutation.isPending}
-              onClick={() => withdrawMutation.mutate(activeEntry.id)}
-            >
-              Withdraw Consent
-            </Button>
-          </div>
-        </Card>
-      ) : (
-        !pendingEntry && (
-          <Card variant="glass" className="p-6 border border-line text-center text-xs text-muted">
-            You are not currently listed in the Talent Pool. Recruiter invitations will appear here.
-          </Card>
-        )
-      )}
+        )}
+      </div>
+
+      <div className="grid gap-4 rounded-xl border border-line bg-panel-2 p-4 sm:grid-cols-2">
+        <div>
+          <p className="text-xs uppercase tracking-wider text-muted">
+            Invitation received
+          </p>
+          <p className="mt-1 text-sm font-semibold text-head">
+            {formatDate(entry.createdAt)}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs uppercase tracking-wider text-muted">
+            Consent expiry
+          </p>
+          <p className="mt-1 text-sm font-semibold text-head">
+            {formatDate(entry.consentExpiryDate)}
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-m2/20 bg-m2/5 p-4">
+        <h3 className="text-sm font-semibold text-head">
+          Your privacy rights
+        </h3>
+
+        <p className="mt-2 text-xs leading-relaxed text-muted">
+          Participation is voluntary. You may decline the invitation or
+          withdraw previously accepted consent. Withdrawing consent removes
+          your profile from active talent pool use.
+        </p>
+      </div>
     </div>
   )
 }
 
-export default TalentPoolConsentPage
+export default function TalentPoolConsentPage() {
+  const queryClient = useQueryClient()
+  const candidateProfileId = getCandidateProfileId()
+  const [message, setMessage] = useState<string | null>(null)
+
+  const entriesQuery = useQuery({
+    queryKey: ['talent-pool', 'entries'],
+    queryFn: getTalentPoolEntries,
+  })
+
+  const respondMutation = useMutation({
+    mutationFn: ({
+      entry,
+      accept,
+    }: {
+      entry: TalentPoolEntry
+      accept: boolean
+    }) =>
+      respondToTalentPoolConsent(
+        entry.id,
+        accept,
+        accept
+          ? JSON.stringify({
+              candidateProfileId: entry.candidateProfileId,
+              capturedAt: new Date().toISOString(),
+            })
+          : '{}',
+      ),
+
+    onSuccess: (result) => {
+      setMessage(result.message)
+
+      queryClient.invalidateQueries({
+        queryKey: ['talent-pool', 'entries'],
+      })
+    },
+
+    onError: (error) => {
+      setMessage(toErrorMessage(error))
+    },
+  })
+
+  const withdrawMutation = useMutation({
+    mutationFn: (entryId: string) =>
+      withdrawTalentPoolConsent(entryId),
+
+    onSuccess: (result) => {
+      setMessage(result)
+
+      queryClient.invalidateQueries({
+        queryKey: ['talent-pool', 'entries'],
+      })
+    },
+
+    onError: (error) => {
+      setMessage(toErrorMessage(error))
+    },
+  })
+
+  if (entriesQuery.isLoading) {
+    return (
+      <Card variant="glass" className="p-8">
+        <LoadingSpinner label="Loading talent pool invitation..." />
+      </Card>
+    )
+  }
+
+  if (entriesQuery.isError) {
+    return (
+      <ErrorState
+        title="Unable to load consent details"
+        message={toErrorMessage(entriesQuery.error)}
+        onRetry={() => entriesQuery.refetch()}
+      />
+    )
+  }
+
+  if (!candidateProfileId) {
+    return (
+      <EmptyState
+        title="Candidate profile required"
+        message="Create or open your candidate profile before viewing talent pool invitations."
+      />
+    )
+  }
+
+  const candidateEntries =
+    entriesQuery.data
+      ?.filter(
+        (entry) =>
+          entry.candidateProfileId === candidateProfileId,
+      )
+      .sort(
+        (first, second) =>
+          new Date(second.createdAt).getTime() -
+          new Date(first.createdAt).getTime(),
+      ) ?? []
+
+  const entry = candidateEntries[0]
+
+  if (!entry) {
+    return (
+      <EmptyState
+        title="No talent pool invitation"
+        message="You do not currently have a talent pool invitation."
+      />
+    )
+  }
+
+  const isResponding = respondMutation.isPending
+  const isWithdrawing = withdrawMutation.isPending
+
+  return (
+    <div className="m6-page mx-auto max-w-3xl space-y-6">
+      <header>
+        <h1 className="text-2xl font-bold text-head">
+          Talent Pool Consent
+        </h1>
+
+        <p className="mt-1 text-sm text-muted">
+          Review and manage permission for your profile to remain in the
+          recruitment talent pool.
+        </p>
+      </header>
+
+      {message && (
+        <Card
+          variant="borderless"
+          className="border border-m2/20 bg-m2/10 px-4 py-3 text-sm font-medium text-head"
+        >
+          {message}
+        </Card>
+      )}
+
+      <Card variant="glass" className="p-6">
+        <ConsentDetails entry={entry} />
+
+        <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-line pt-5">
+          {entry.consentStatus === ConsentStatus.Pending && (
+            <>
+              <Button
+                variant="danger"
+                disabled={isResponding}
+                onClick={() =>
+                  respondMutation.mutate({
+                    entry,
+                    accept: false,
+                  })
+                }
+              >
+                Decline
+              </Button>
+
+              <Button
+                variant="primary"
+                className="m6-primary-action"
+                isLoading={isResponding}
+                onClick={() =>
+                  respondMutation.mutate({
+                    entry,
+                    accept: true,
+                  })
+                }
+              >
+                Accept Consent
+              </Button>
+            </>
+          )}
+
+          {entry.consentStatus === ConsentStatus.Accepted && (
+            <Button
+              variant="danger"
+              isLoading={isWithdrawing}
+              onClick={() => withdrawMutation.mutate(entry.id)}
+            >
+              Withdraw Consent
+            </Button>
+          )}
+
+          {entry.consentStatus !== ConsentStatus.Pending &&
+            entry.consentStatus !== ConsentStatus.Accepted && (
+              <p className="text-sm text-muted">
+                No further consent action is available for this invitation.
+              </p>
+            )}
+        </div>
+      </Card>
+    </div>
+  )
+}

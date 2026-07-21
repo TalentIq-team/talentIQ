@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-
+import logo from '@/assets/logo.jpeg'
 interface SidebarProps {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
@@ -100,19 +100,40 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } md:translate-x-0 shadow-xl`}
     >
-      {/* Brand Header */}
-      <div className="flex h-16 items-center px-5 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <img
-            src="/TalentIQ-mark.png"
-            alt="TalentIQ logo"
-            className="h-9 w-9 rounded-xl bg-white object-contain p-0.5 shadow-md ring-1 ring-[#7B2CBF]/40"
-          />
-          <span className="text-lg font-bold font-display tracking-tight text-white">
-            TalentIQ
-          </span>
-        </div>
-      </div>
+      {/* Brand Logo Header */}
+      <div className="flex items-center gap-3">
+  <img
+    src={logo}
+    alt="TalentIQ logo"
+    className="h-9 w-9 rounded-lg object-cover"
+  />
+
+  <span className="text-lg font-bold text-head">
+    TalentIQ
+  </span>
+</div>
+
+      {/* Role Tag Banner */}
+      <div className="px-6 py-3 border-b border-line bg-ink/40">
+        <div className="text-[10px] font-bold uppercase tracking-wider text-muted mb-0.5">Portal Portal</div>
+        <div className="text-xs font-semibold text-head flex items-center gap-1.5">
+          <span
+            className="w-1.5 h-1.5 rounded-full"
+            style={{
+              backgroundColor:
+                user.role === 'Candidate'
+                  ? 'var(--color-m3)'
+                  : user.role === 'Recruiter'
+                  ? 'var(--color-m2)'
+                  : user.role === 'HiringManager'
+                  ? 'var(--color-m4)'
+                  : 'var(--color-m6)',
+            }}
+  />
+
+    {user.role} Portal
+  </div>
+</div>
 
       {/* Search Input */}
       <div className="px-4 py-3 border-b border-white/10 bg-white/5">

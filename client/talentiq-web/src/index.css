@@ -1,57 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  /* Classy retro-modern Bohemian/Nordic Palette */
-  --color-ink: #F4F6F6;          /* Clean light gray-blue background */
+  /* TalentIQ Unified Design System — Navy-Blue x Amethyst-Violet (Light) */
+  --color-ink: #F5F8FC;          /* Cool off-white page background */
   --color-panel: #FFFFFF;        /* Solid white cards */
-  --color-panel-2: #EAEFED;      /* Soft verdigris light gray */
-  --color-line: #D5DFDC;         /* Soft slate/verdigris borders */
-  --color-text: #264653;         /* Charcoal Blue - elegant deep text */
-  --color-head: #1D353F;         /* Darker Charcoal Blue for titles */
-  --color-muted: #507683;        /* Muted slate text */
-  --color-alert: #E76F51;        /* Burnt Peach for alerts/errors */
-  --color-ok: #2A9D8F;           /* Verdigris for success/ok states */
+  --color-panel-2: #EEF2F7;      /* Soft blue-tinted surface (inputs, tiles) */
+  --color-line: #DCE3EC;         /* Borders */
+  --color-text: #3B4657;         /* Slate-blue body text */
+  --color-head: #0F1620;         /* Near-black navy for headings (brand echo of dark bg) */
+  --color-muted: #5B6B7F;        /* Muted slate text */
+  --color-alert: #C0272D;        /* Error text/border — darkened for AA on light surfaces */
+  --color-ok: #178A4E;           /* Success text — darkened for AA on light surfaces */
+  --color-accent: #7B2CBF;       /* Amethyst-Violet — reserved for AI-generated content */
+  --color-accent-subtle: #F3E4FF;
   --color-glass: rgba(255, 255, 255, 0.85);
-  --radial-glow: rgba(42, 157, 143, 0.08); /* Verdigris glow */
-  --color-selection: rgba(42, 157, 143, 0.15);
-  --color-glow: rgba(42, 157, 143, 0.2);
-  --button-primary-shadow: rgba(42, 157, 143, 0.25);
-  --button-primary-text: #FFFFFF;
+  --radial-glow: rgba(4, 102, 200, 0.08);
+  --color-selection: rgba(4, 102, 200, 0.15);
+  --color-glow: rgba(4, 102, 200, 0.18);
+  --color-button-primary-shadow: rgba(4, 102, 200, 0.25);
+  --color-button-primary-text: #FFFFFF;
+  --color-button-primary-bg: #0466C8;
 
   /* Accent Palette */
-  --color-m1: #E9F5F3;         /* Very Light Verdigris background tint */
-  --color-m2: #2A9D8F;         /* Verdigris (Primary Accent) */
-  --color-m3: #E9C46A;         /* Jasmine (Secondary Golden) */
-  --color-m4: #F4A261;         /* Sandy Brown (Warm Orange) */
-  --color-m5: #E76F51;         /* Burnt Peach (Terracotta Accent) */
-  --color-m6: #507683;         /* Charcoal Sage */
+  --color-m1: #E3EEFB;         /* Soft primary tint (stage badges) */
+  --color-m2: #0466C8;         /* Smart Blue (Primary Action / links) */
+  --color-m3: #7B2CBF;         /* Amethyst-Violet (secondary/AI accents) */
+  --color-m4: #B45309;         /* Amber (tertiary chart accent) */
+  --color-m5: #C0272D;         /* Mirrors alert */
+  --color-m6: #5B6B7F;         /* Mirrors muted */
 }
 
 .dark {
-  /* Deep Charcoal Blue Midnight Theme */
-  --color-ink: #101F25;          /* Deepest Charcoal Blue */
-  --color-panel: #172C35;        /* Deep Charcoal Blue */
-  --color-panel-2: #1E3944;      /* Secondary Oxford Charcoal */
-  --color-line: #2A4C5A;         /* Charcoal borders */
-  --color-text: #A4C3CC;         /* Cool slate gray-blue contrast text */
-  --color-head: #FFFFFF;         /* White titles */
-  --color-muted: #628A97;        /* Sage slate gray-blue */
-  --color-alert: #E76F51;        /* Burnt Peach */
-  --color-ok: #2A9D8F;           /* Verdigris */
-  --color-glass: rgba(23, 44, 53, 0.8);
-  --radial-glow: rgba(42, 157, 143, 0.12);
-  --color-selection: rgba(42, 157, 143, 0.25);
-  --color-glow: rgba(42, 157, 143, 0.25);
-  --button-primary-shadow: rgba(0, 0, 0, 0.4);
-  --button-primary-text: #FFFFFF;
+  /* TalentIQ Unified Design System — "Ink Mode" (Dark) */
+  --color-ink: #0F1620;          /* Ink background */
+  --color-panel: #18202C;        /* Surface */
+  --color-panel-2: #212B3A;      /* Secondary surface (inputs, tiles) */
+  --color-line: #2A3644;         /* Borders */
+  --color-text: #C7D0DB;         /* Body text */
+  --color-head: #EEF3F8;         /* Headings */
+  --color-muted: #7E8A98;        /* Muted text / placeholders */
+  --color-alert: #E5484D;        /* Error text/border */
+  --color-ok: #4FB477;           /* Success */
+  --color-accent: #7B2CBF;       /* Amethyst-Violet — reserved for AI-generated content */
+  --color-accent-subtle: rgba(123, 44, 191, 0.16);
+  --color-glass: rgba(24, 32, 44, 0.65);
+  --radial-glow: rgba(4, 102, 200, 0.14);
+  --color-selection: rgba(45, 127, 222, 0.28);
+  --color-glow: rgba(4, 102, 200, 0.28);
+  --color-button-primary-shadow: rgba(4, 102, 200, 0.4);
+  --color-button-primary-text: #FFFFFF;
+  --color-button-primary-bg: #0466C8;
 
   /* Accent Palette */
-  --color-m1: #1E3944;
-  --color-m2: #2A9D8F;         /* Verdigris */
-  --color-m3: #E9C46A;         /* Jasmine */
-  --color-m4: #F4A261;         /* Sandy Brown */
-  --color-m5: #E76F51;         /* Burnt Peach */
-  --color-m6: #628A97;
+  --color-m1: #2E4257;         /* Soft primary tint (stage badges) */
+  --color-m2: #2D7FDE;         /* Vivid Blue, tuned for on-ink text + button contrast */
+  --color-m3: #C77DFF;         /* Lighter Amethyst tint — safe as text/border on ink */
+  --color-m4: #FBBF24;         /* Amber (tertiary chart accent) */
+  --color-m5: #E5484D;         /* Mirrors alert */
+  --color-m6: #7E8A98;         /* Mirrors muted */
 }
 
 @theme {
@@ -64,12 +70,15 @@
   --color-muted: var(--color-muted);
   --color-alert: var(--color-alert);
   --color-ok: var(--color-ok);
+  --color-accent: var(--color-accent);
+  --color-accent-subtle: var(--color-accent-subtle);
   --color-glass: var(--color-glass);
   --radial-glow: var(--radial-glow);
   --color-selection: var(--color-selection);
   --color-glow: var(--color-glow);
-  --button-primary-shadow: var(--button-primary-shadow);
-  --button-primary-text: var(--button-primary-text);
+  --color-button-primary-shadow: var(--color-button-primary-shadow);
+  --color-button-primary-text: var(--color-button-primary-text);
+  --color-button-primary-bg: var(--color-button-primary-bg);
 
   --color-m1: var(--color-m1);
   --color-m2: var(--color-m2);
@@ -129,8 +138,8 @@
 /* Glassmorphism & Custom Gradient Effects */
 .bg-glass {
   background: var(--color-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 .border-glow:focus-within {
@@ -138,7 +147,134 @@
   box-shadow: 0 0 0 1px var(--color-glow);
 }
 
-/* Background Gradients similar to the Framer templates */
 .bg-radial-gradient {
   background: radial-gradient(circle at 50% -20%, var(--radial-glow), transparent 70%);
 }
+
+/* Design System Component Utilities from ui-styling.html */
+.btn-design {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 13.5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 12px;
+  padding: 10px 18px;
+  transition: transform 120ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 120ms, background 120ms, border-color 120ms, opacity 120ms;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.btn-design:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn-design-primary {
+  background: #0466C8;
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(16, 21, 31, 0.08);
+}
+
+.btn-design-primary:hover {
+  background: #0353A4;
+  box-shadow: 0 0 0 1px rgba(4, 102, 200, 0.22), 0 0 28px rgba(4, 102, 200, 0.16);
+}
+
+.btn-design-accent {
+  background: linear-gradient(135deg, #7B2CBF, #0353A4);
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(16, 21, 31, 0.08);
+}
+
+.btn-design-accent:hover {
+  box-shadow: 0 0 0 1px rgba(123, 44, 191, 0.22), 0 0 28px rgba(157, 78, 221, 0.20);
+}
+
+.btn-design-secondary {
+  background: var(--color-panel);
+  color: var(--color-text);
+  border: 1px solid var(--color-line);
+}
+
+.btn-design-secondary:hover {
+  background: var(--color-panel-2);
+  border-color: var(--color-muted);
+}
+
+/* Glass AI Panel */
+.glass-ai-panel {
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(165deg, rgba(123, 44, 191, 0.08), var(--color-panel));
+  border: 1px solid rgba(123, 44, 191, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.glass-ai-panel::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 60%;
+  height: 140%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(157, 78, 221, 0.15), transparent 70%);
+}
+
+.glass-ai-rec {
+  background: rgba(123, 44, 191, 0.1);
+  border: 1px solid rgba(123, 44, 191, 0.25);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+/* Status Badges */
+.badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 5px 11px;
+  border-radius: 999px;
+}
+
+.badge-pill::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.badge-pill-applied { background: rgba(4, 102, 200, 0.12); color: #0466C8; }
+.badge-pill-applied::before { background: #0466C8; }
+
+.badge-pill-hired { background: #16A34A; color: #FFFFFF; }
+.badge-pill-hired::before { background: #FFFFFF; }
+
+.badge-pill-ai { background: rgba(123, 44, 191, 0.14); color: #9D4EDD; border: 1px solid rgba(123, 44, 191, 0.3); }
+
+/* Score Ring Tiers */
+.score-ring-container { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+.score-ring-container svg { transform: rotate(-90deg); }
+.score-ring-bg { fill: none; stroke: var(--color-line); stroke-width: 8; }
+.score-ring-fg { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.2, 0, 0, 1); }
+
+.tier-elite .score-ring-fg { stroke: #7B2CBF; }
+.tier-strong .score-ring-fg { stroke: #0466C8; }
+.tier-fair .score-ring-fg { stroke: #F59E0B; }
+.tier-low .score-ring-fg { stroke: #DC2626; }
+
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+.animate-pulse-dot { animation: pulse-dot 2.2s infinite; }
+

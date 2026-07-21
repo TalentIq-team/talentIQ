@@ -179,93 +179,55 @@ export default function ProfilePage() {
       </Card>
 
       {profileId && (
-<<<<<<< HEAD
-        <Card
-          variant="glass"
-          className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-e1)]"
-        >
-          <h3 className="mb-4 font-display text-lg font-semibold tracking-tight text-[var(--heading)]">
-            Resume Document
-          </h3>
-
-          <div className="space-y-4">
-            {profileQuery.data?.resumeBlobUrl ? (
-              <div className="text-sm text-[var(--text)]">
-                Current Resume:{' '}
-                <a
-                  href={profileQuery.data.resumeBlobUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="font-semibold text-[var(--primary)] transition-colors hover:text-[var(--primary-hover)] hover:underline"
-                >
-                  Download PDF/DOCX
-                </a>
-              </div>
-            ) : (
-              <div className="text-sm text-[var(--muted)]">
-                No resume uploaded yet (PDF or DOCX max 5MB).
-              </div>
-            )}
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <input
-                type="file"
-                accept=".pdf,.docx"
-                onChange={(event) =>
-                  setResumeFile(event.target.files?.[0] ?? null)
-                }
-                className="min-h-11 flex-1 cursor-pointer rounded-lg border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-[var(--primary-subtle)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
-              />
-
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={!resumeFile}
-                isLoading={resumeMutation.isPending}
-                onClick={() => resumeMutation.mutate()}
-                className="min-h-11 rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] font-semibold text-[var(--text)] hover:bg-[var(--surface-2)] focus:ring-[var(--ring)] sm:px-5"
-              >
-                Upload
-              </Button>
-=======
         <>
-          <Card variant="glass" className="p-6">
-            <h3 className="text-lg font-bold mb-4">Resume Document</h3>
+          <Card
+            variant="glass"
+            className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-e1)]"
+          >
+            <h3 className="mb-4 font-display text-lg font-semibold tracking-tight text-[var(--heading)]">
+              Resume Document
+            </h3>
+
             <div className="space-y-4">
               {profileQuery.data?.resumeBlobUrl ? (
-                <div className="text-sm text-head">
+                <div className="text-sm text-[var(--text)]">
                   Current Resume:{' '}
                   <a
                     href={profileQuery.data.resumeBlobUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="font-medium text-m3 hover:underline"
+                    className="font-semibold text-[var(--primary)] transition-colors hover:text-[var(--primary-hover)] hover:underline"
                   >
                     Download PDF/DOCX
                   </a>
                 </div>
               ) : (
-                <div className="text-sm text-muted">No resume uploaded yet (PDF or DOCX max 5MB).</div>
+                <div className="text-sm text-[var(--muted)]">
+                  No resume uploaded yet (PDF or DOCX max 5MB).
+                </div>
               )}
 
               <div className="flex flex-col gap-3 sm:flex-row">
                 <input
                   type="file"
                   accept=".pdf,.docx"
-                  onChange={(e) => setResumeFile(e.target.files?.[0] || null)}
-                  className="flex-1 rounded-xl border border-line bg-panel-2 px-4 py-2 text-sm text-head focus:outline-none"
+                  onChange={(event) =>
+                    setResumeFile(event.target.files?.[0] ?? null)
+                  }
+                  className="min-h-11 flex-1 cursor-pointer rounded-lg border border-[var(--border-strong)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text)] file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-[var(--primary-subtle)] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[var(--ring)]"
                 />
+
                 <Button
                   type="button"
                   variant="secondary"
                   disabled={!resumeFile}
                   isLoading={resumeMutation.isPending}
                   onClick={() => resumeMutation.mutate()}
+                  className="min-h-11 rounded-xl border border-[var(--border-strong)] bg-[var(--surface)] font-semibold text-[var(--text)] hover:bg-[var(--surface-2)] focus:ring-[var(--ring)] sm:px-5"
                 >
                   Upload
                 </Button>
               </div>
->>>>>>> develop
             </div>
           </Card>
 

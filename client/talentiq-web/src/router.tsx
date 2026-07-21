@@ -20,6 +20,8 @@ const RoleBasedRedirect = () => {
   return <Navigate to="/candidate/jobs" replace />
 }
 
+import TestAiPanelsPage from '@/features/ai/pages/TestAiPanelsPage'
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -43,6 +45,10 @@ export const router = createBrowserRouter([
     ],
   },
   ...authRoutes,
+  {
+    path: '/test-ai-panels',
+    element: <TestAiPanelsPage />,
+  },
   {
     path: '*',
     element: <Navigate to="/" replace />,

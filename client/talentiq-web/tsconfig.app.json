@@ -23,6 +23,9 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Paths mapping */
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": ["./src/*"]
     }

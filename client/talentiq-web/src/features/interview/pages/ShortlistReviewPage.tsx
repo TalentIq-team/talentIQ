@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { toErrorMessage } from '@/lib/api'
+import { toErrorMessage, apiClient } from '@/lib/api'
 import {
   ErrorBanner,
   Spinner,
@@ -8,6 +8,7 @@ import {
 import Button from '@/components/ui/Button'
 import StageBadge from '@/components/ui/StageBadge'
 import AiMatchBreakdown from '@/features/ai/components/AiMatchBreakdown'
+import GenerateQuestionsPanel from '@/features/ai/components/GenerateQuestionsPanel'
 import ScheduleInterviewModal from '../components/ScheduleInterviewModal'
 import {
   advanceApplicationStage,
@@ -28,6 +29,25 @@ export const ShortlistReviewPage: React.FC = () => {
   const applicationsQuery = useQuery({
     queryKey: ['interview', 'shortlisted-applications'],
     queryFn: getShortlistedApplications,
+  })
+
+  // Fetch details to get job posting title for questions panel
+  const { data: appDetail } = useQuery({
+    queryKey: ['application-detail', selectedAppId],
+    queryFn: async () => {
+      const { data } = await apiClient.get(`/api/v1/applications/${selectedAppId}`)
+      return data
+    },
+    enabled: !!selectedAppId,
+  })
+
+  const { data: jobDetail } = useQuery({
+    queryKey: ['job-detail', appDetail?.jobPostingId],
+    queryFn: async () => {
+      const { data } = await apiClient.get(`/api/v1/jobs/${appDetail.jobPostingId}`)
+      return data
+    },
+    enabled: !!appDetail?.jobPostingId,
   })
 
   if (applicationsQuery.isLoading) {
@@ -307,6 +327,12 @@ export const ShortlistReviewPage: React.FC = () => {
                     />
                   </div>
                 </div>
+
+                <GenerateQuestionsPanel
+                  applicationId={selectedApplication.id}
+                  jobTitle={jobDetail?.title || 'Software Engineer'}
+                  jobDescription={jobDetail?.description}
+                />
 
                 <div className="iv-action-panel">
                   <div>

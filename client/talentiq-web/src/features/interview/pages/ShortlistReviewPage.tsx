@@ -6,6 +6,7 @@ import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import StageBadge from '@/components/ui/StageBadge'
 import AiMatchBreakdown from '@/features/ai/components/AiMatchBreakdown'
+import GenerateQuestionsPanel from '@/features/ai/components/GenerateQuestionsPanel'
 import ScheduleInterviewModal from '../components/ScheduleInterviewModal'
 
 interface CandidateSummary {
@@ -22,6 +23,25 @@ export const ShortlistReviewPage: React.FC = () => {
   const [selectedAppId, setSelectedAppId] = useState<string | null>(null)
   const [selectedCandidateEmail, setSelectedCandidateEmail] = useState<string>('')
   const [isScheduleOpen, setIsScheduleOpen] = useState(false)
+
+  // Fetch details to get job posting title for questions panel
+  const { data: appDetail } = useQuery({
+    queryKey: ['application-detail', selectedAppId],
+    queryFn: async () => {
+      const { data } = await apiClient.get(`/api/v1/applications/${selectedAppId}`)
+      return data
+    },
+    enabled: !!selectedAppId,
+  })
+
+  const { data: jobDetail } = useQuery({
+    queryKey: ['job-detail', appDetail?.jobPostingId],
+    queryFn: async () => {
+      const { data } = await apiClient.get(`/api/v1/jobs/${appDetail.jobPostingId}`)
+      return data
+    },
+    enabled: !!appDetail?.jobPostingId,
+  })
 
   // Query applications in 'Shortlisted' stage (stage = 3)
   const { data: applications = [], isLoading, isError, error } = useQuery<CandidateSummary[]>({
@@ -80,7 +100,7 @@ export const ShortlistReviewPage: React.FC = () => {
                         <span className="text-[10px] font-bold uppercase tracking-wider text-muted">
                           Applicant ID: {app.id.substring(0, 8)}
                         </span>
-                        <StageBadge stage={app.stage} />
+                        <StageBadge stage={app.stage as any} />
                       </div>
                       <div>
                         <h4 className="text-xs font-bold text-head">
@@ -110,6 +130,14 @@ export const ShortlistReviewPage: React.FC = () => {
                 <div>
                   <h3 className="text-xs font-bold text-head uppercase tracking-wider mb-2">Match Analysis</h3>
                   <AiMatchBreakdown applicationId={selectedAppId} />
+                </div>
+
+                <div>
+                  <GenerateQuestionsPanel
+                    applicationId={selectedAppId}
+                    jobTitle={jobDetail?.title || 'Software Engineer'}
+                    jobDescription={jobDetail?.description}
+                  />
                 </div>
 
                 <div className="flex justify-end gap-3 p-4 bg-panel rounded-2xl border border-line">

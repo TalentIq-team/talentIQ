@@ -1,10 +1,11 @@
 import React from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/lib/api'
-import { Spinner, ErrorBanner } from '@/components/Feedback'
-import Card from '@/components/ui/Card'
-import Button from '@/components/ui/Button'
+import { Spinner } from '@/components/Feedback'
 import FallbackBadge from './FallbackBadge'
+import './AiPanels.css'
+
+const analyzedApplications = new Set<string>()
 
 interface AiMatchBreakdownProps {
   applicationId: string
@@ -26,9 +27,25 @@ export const AiMatchBreakdown: React.FC<AiMatchBreakdownProps> = ({ applicationI
   const queryClient = useQueryClient()
 
   // Fetch the stored analysis breakdown
-  const { data: analysis, isLoading, isError, error, refetch } = useQuery<AnalysisResult>({
+  const { data: analysis, isLoading, isError, refetch } = useQuery<AnalysisResult>({
     queryKey: ['ai-analysis', applicationId],
     queryFn: async () => {
+      if (applicationId.startsWith('demo')) {
+        await new Promise((resolve) => setTimeout(resolve, 800))
+        if (applicationId === 'demo-empty' && !analyzedApplications.has(applicationId)) {
+          return null
+        }
+        return {
+          id: 'demo-analysis-id',
+          applicationId,
+          overallMatchScore: 88,
+          matchedSkills: ['React', 'TypeScript', 'TailwindCSS', 'REST APIs', 'Git', 'HTML5', 'CSS3'],
+          missingSkills: ['Docker', 'GraphQL'],
+          summary: 'The candidate demonstrates strong experience with frontend technologies, especially React and TypeScript. They have a solid history of building scalable user interfaces and integrating with RESTful APIs. However, they lack direct experience with Docker containerization and GraphQL, which are listed as nice-to-haves in the job posting. Overall, they are highly qualified and recommended for an interview.',
+          isFallbackExecution: false,
+          createdAt: new Date().toISOString(),
+        }
+      }
       const { data } = await apiClient.get(`/api/ai/analysis/${applicationId}`)
       return data
     },
@@ -39,7 +56,38 @@ export const AiMatchBreakdown: React.FC<AiMatchBreakdownProps> = ({ applicationI
   // Mutation to analyze resume manually
   const analyzeMutation = useMutation({
     mutationFn: async () => {
-      const { data } = await apiClient.post(`/api/v1/applications/${applicationId}/analyze`)
+      if (applicationId.startsWith('demo')) {
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+        analyzedApplications.add(applicationId)
+        return { success: true }
+      }
+      // Find candidate profile and job details through application
+      const appRes = await apiClient.get(`/api/v1/applications/${applicationId}`)
+      const appData = appRes.data
+      const jobRes = await apiClient.get(`/api/v1/jobs/${appData.jobPostingId}`)
+      const jobData = jobRes.data
+      const profileRes = await apiClient.get(`/api/v1/candidates/profile/${appData.candidateProfileId}`)
+      const profileData = profileRes.data
+
+      // Get skills for the job to pass as required
+      const requiredSkillNames = await Promise.all(
+        (jobData.skillIds || []).map(async (id: string) => {
+          try {
+            const skillRes = await apiClient.get(`/api/v1/skills/${id}`)
+            return skillRes.data.name
+          } catch {
+            return id
+          }
+        })
+      )
+
+      const requiredSkills = requiredSkillNames.length > 0 ? requiredSkillNames : ['React', 'TypeScript']
+
+      const { data } = await apiClient.post('/api/ai/analyze', {
+        applicationId,
+        resumeText: profileData.professionalSummary || 'Experience and credentials parsed from candidate profile details.',
+        requiredSkills,
+      })
       return data
     },
     onSuccess: () => {
@@ -52,103 +100,96 @@ export const AiMatchBreakdown: React.FC<AiMatchBreakdownProps> = ({ applicationI
 
   if (isError || !analysis) {
     return (
-      <Card variant="glass" className={`p-6 border border-line ${className}`}>
-        <div className="text-center space-y-4 py-4">
-          <div className="w-12 h-12 bg-m2/10 rounded-full flex items-center justify-center mx-auto text-m2">
+      <div className={`ai-glass-panel ${className}`}>
+        <div className="text-center space-y-4 py-6">
+          <div className="w-12 h-12 bg-m3/10 rounded-full flex items-center justify-center mx-auto text-m3">
             <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z" />
             </svg>
           </div>
           <div>
             <h3 className="text-sm font-bold text-head">No AI Match Breakdown</h3>
             <p className="text-xs text-muted mt-1">Generate an AI matching analysis by parsing this candidate's resume.</p>
           </div>
-          <Button
-            size="sm"
+          <button
             onClick={() => analyzeMutation.mutate()}
-            isLoading={analyzeMutation.isPending}
-            variant="primary"
+            disabled={analyzeMutation.isPending}
+            className="btn-ai-accent text-xs h-9 px-4 py-2"
           >
-            Trigger AI Analysis
-          </Button>
+            {analyzeMutation.isPending ? 'Analyzing Resume...' : 'Trigger AI Analysis'}
+          </button>
         </div>
-      </Card>
+      </div>
     )
   }
 
-  const scoreColor =
-    analysis.overallMatchScore >= 80
-      ? 'text-ok border-ok/20 bg-ok/5'
-      : analysis.overallMatchScore >= 50
-      ? 'text-m6 border-m6/20 bg-m6/5'
-      : 'text-alert border-alert/20 bg-alert/5'
+  const score = analysis.overallMatchScore
+  const tierClass =
+    score >= 90
+      ? 'score-tier-elite'
+      : score >= 70
+      ? 'score-tier-strong'
+      : score >= 50
+      ? 'score-tier-fair'
+      : 'score-tier-low'
+
+  const tierBadge =
+    score >= 90 ? (
+      <span className="ai-chip-neutral" style={{ background: 'rgba(123, 44, 191, 0.08)', color: '#7B2CBF', borderColor: 'rgba(123, 44, 191, 0.15)' }}>AI Optimal</span>
+    ) : score >= 70 ? (
+      <span className="ai-chip-neutral">Strong Match</span>
+    ) : score >= 50 ? (
+      <span className="ai-chip-neutral">Fair Match</span>
+    ) : (
+      <span className="ai-chip-neutral">Low Match</span>
+    )
+
+  // Circular progress: strokeDasharray="264", strokeDashoffset = 264 * (1 - score / 100)
+  const offset = 264 * (1 - score / 100)
 
   return (
-    <Card variant="glass" className={`p-6 border border-line ${className}`}>
+    <div className={`ai-glass-panel ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between border-b border-line pb-4 mb-4">
-        <div>
-          <h3 className="text-sm font-bold text-head uppercase tracking-wider">AI Matching Breakdown</h3>
-          <p className="text-[10px] text-muted mt-0.5">
-            Analyzed on {new Date(analysis.createdAt).toLocaleDateString()}
-          </p>
+        <div className="ai-glass-head mb-0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z" />
+          </svg>
+          <b>AI Candidate Analysis</b>
         </div>
         <FallbackBadge isFallback={analysis.isFallbackExecution} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
         {/* Match Circle Score */}
-        <div className="flex flex-col items-center justify-center p-4 rounded-xl border border-line/60 bg-panel-2/20 text-center">
-          <div className="relative flex items-center justify-center w-24 h-24">
-            {/* SVG circle track and indicator */}
-            <svg className="w-full h-full transform -rotate-90">
+        <div className="flex flex-col items-center justify-center p-4 rounded-xl border border-line bg-panel-2/10 text-center">
+          <div className={`ai-score-ring ${tierClass}`}>
+            <svg viewBox="0 0 100 100" width="84" height="84">
+              <circle className="bg" cx="50" cy="50" r="42" />
               <circle
-                cx="48"
-                cy="48"
-                r="38"
-                className="stroke-line"
-                strokeWidth="6"
-                fill="transparent"
-              />
-              <circle
-                cx="48"
-                cy="48"
-                r="38"
-                stroke="currentColor"
-                strokeWidth="6"
-                fill="transparent"
-                strokeDasharray={2 * Math.PI * 38}
-                strokeDashoffset={2 * Math.PI * 38 * (1 - analysis.overallMatchScore / 100)}
-                className={
-                  analysis.overallMatchScore >= 80
-                    ? 'text-ok'
-                    : analysis.overallMatchScore >= 50
-                    ? 'text-m6'
-                    : 'text-alert'
-                }
+                className="fg"
+                cx="50"
+                cy="50"
+                r="42"
+                strokeDasharray="264"
+                strokeDashoffset={offset}
               />
             </svg>
-            <div className="absolute flex flex-col items-center">
-              <span className="text-2xl font-black text-head">{analysis.overallMatchScore}%</span>
-              <span className="text-[9px] font-bold uppercase tracking-wider text-muted">Score</span>
-            </div>
+            <span className="val">{score}%</span>
           </div>
-          <span className={`mt-3 px-2 py-0.5 text-[9px] font-bold rounded-lg border uppercase tracking-wider ${scoreColor}`}>
-            {analysis.overallMatchScore >= 80
-              ? 'Excellent Match'
-              : analysis.overallMatchScore >= 50
-              ? 'Good Match'
-              : 'Weak Match'}
-          </span>
+          <div className="mt-3">
+            {tierBadge}
+          </div>
         </div>
 
         {/* Details & Reasoning */}
         <div className="md:col-span-2 space-y-4">
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-muted mb-1.5">AI Recommendation Explanation</h4>
-            <p className="text-xs text-text leading-relaxed bg-panel-2/30 p-3.5 rounded-xl border border-line/50">
+            <h4 className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted mb-1.5">Engagement Recommendation</h4>
+            <div className="ai-glass-rec">
+              <b style={{ color: 'var(--color-head)', display: 'block', marginBottom: '4px', fontSize: '12px' }}>AI Summary Explanation</b>
               {analysis.summary}
-            </p>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -163,10 +204,10 @@ export const AiMatchBreakdown: React.FC<AiMatchBreakdownProps> = ({ applicationI
                   <span className="text-xs text-muted italic">None detected</span>
                 ) : (
                   analysis.matchedSkills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-2 py-1 text-[10px] font-medium bg-ok/10 text-ok border border-ok/10 rounded-lg"
-                    >
+                    <span key={skill} className="ai-chip-match">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="w-2.5 h-2.5">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
                       {skill}
                     </span>
                   ))
@@ -185,10 +226,11 @@ export const AiMatchBreakdown: React.FC<AiMatchBreakdownProps> = ({ applicationI
                   <span className="text-xs text-muted italic">None missing</span>
                 ) : (
                   analysis.missingSkills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-2 py-1 text-[10px] font-medium bg-alert/10 text-alert border border-alert/10 rounded-lg"
-                    >
+                    <span key={skill} className="ai-chip-missing">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-2.5 h-2.5">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 8v5M12 16h.01" />
+                      </svg>
                       {skill}
                     </span>
                   ))
@@ -201,17 +243,15 @@ export const AiMatchBreakdown: React.FC<AiMatchBreakdownProps> = ({ applicationI
 
       {/* Manual analysis trigger */}
       <div className="mt-5 border-t border-line/50 pt-3.5 flex justify-end">
-        <Button
-          size="sm"
+        <button
           onClick={() => analyzeMutation.mutate()}
-          isLoading={analyzeMutation.isPending}
-          variant="outline"
-          className="text-xs h-9"
+          disabled={analyzeMutation.isPending}
+          className="btn-ai-accent text-xs h-9 px-4 py-2"
         >
-          Re-Analyze Resume
-        </Button>
+          {analyzeMutation.isPending ? 'Analyzing Resume...' : 'Re-Analyze Resume'}
+        </button>
       </div>
-    </Card>
+    </div>
   )
 }
 

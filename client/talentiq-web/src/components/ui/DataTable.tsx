@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import LoadingSpinner from './LoadingSpinner'
-import EmptyState from './EmptyState'
+import { LoadingSpinner } from './LoadingSpinner'
+import { EmptyState } from './EmptyState'
 
 export interface Column<T> {
   key: string

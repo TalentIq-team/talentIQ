@@ -12,6 +12,9 @@ public class CandidateSkillConfiguration : IEntityTypeConfiguration<CandidateSki
         builder.HasKey(x => new { x.CandidateProfileId, x.SkillId });
 
         builder.Property(x => x.ProficiencyLevel).HasMaxLength(50);
+        builder.Property(x => x.Category).HasMaxLength(100);
+        builder.Property(x => x.YearsOfExperience).HasPrecision(5, 2);
+        builder.Property(x => x.LastUsed).HasMaxLength(50);
 
         builder.HasOne(x => x.CandidateProfile)
             .WithMany(p => p.Skills)

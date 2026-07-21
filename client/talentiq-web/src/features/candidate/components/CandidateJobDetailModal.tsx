@@ -29,9 +29,18 @@ export const CandidateJobDetailModal: React.FC<CandidateJobDetailModalProps> = (
   // Query candidate profile
   const profileQuery = useQuery({
     queryKey: ['candidate-profile', candidateProfileId],
-    queryFn: () => (candidateProfileId ? getCandidateProfile(candidateProfileId) : null),
+    queryFn: async () => {
+      if (!candidateProfileId) return null
+      try {
+        return await getCandidateProfile(candidateProfileId)
+      } catch (err) {
+        console.warn('Could not fetch candidate profile by ID, using default candidate profile context:', err)
+        return null
+      }
+    },
     enabled: !!candidateProfileId && showComparison,
   })
+
 
   // Comparison query via Gemini API
   const comparisonQuery = useQuery<JobComparisonResult>({

@@ -21,6 +21,12 @@ public class CandidateDbContext : DbContext, ICandidateDbContext
     public DbSet<Skill> Skills => Set<Skill>();
     public DbSet<CandidateSkill> CandidateSkills => Set<CandidateSkill>();
     public DbSet<CandidateDocument> CandidateDocuments => Set<CandidateDocument>();
+    public DbSet<CandidateExperience> CandidateExperiences => Set<CandidateExperience>();
+    public DbSet<CandidateEducation> CandidateEducations => Set<CandidateEducation>();
+    public DbSet<CandidateProject> CandidateProjects => Set<CandidateProject>();
+    public DbSet<CandidateCertification> CandidateCertifications => Set<CandidateCertification>();
+    public DbSet<CandidateLanguage> CandidateLanguages => Set<CandidateLanguage>();
+    public DbSet<CandidateAchievement> CandidateAchievements => Set<CandidateAchievement>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

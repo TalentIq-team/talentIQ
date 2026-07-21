@@ -2,7 +2,9 @@ namespace Candidate.Domain.Enums;
 
 public enum CandidateDocumentType
 {
-    Resume = 1,
+    Resume = 0,
+    CoverLetter = 1,
     Certification = 2,
-    SupportingDocument = 3
+    Portfolio = 3,
+    SupportingDocument = 4
 }

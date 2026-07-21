@@ -92,7 +92,7 @@ export const LandingNavbar: React.FC = () => {
           {isAuthenticated && user ? (
             <div className="flex items-center gap-2">
               <Link
-                to="/dashboard"
+                to={user.role === 'Candidate' ? '/candidate/jobs' : '/recruiter/jobs'}
                 className="btn-design btn-design-primary text-xs sm:text-sm py-2 px-3 sm:px-4"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>

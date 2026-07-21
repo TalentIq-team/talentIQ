@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import logo from '@/assets/logo.jpeg'
+
 interface SidebarProps {
   isOpen: boolean
   setIsOpen: (open: boolean) => void
@@ -16,17 +17,11 @@ interface NavItem {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   const { user, logout } = useAuth()
-  const [searchQuery, setSearchQuery] = useState('')
 
   if (!user) return null
 
   // SVGs for Lucide-like icons
   const icons = {
-    dashboard: (
-      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z" />
-      </svg>
-    ),
     recruitment: (
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -75,24 +70,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
     ),
   }
 
-  // Entire catalog of routes. Access is filtered by active role.
+  // Entire catalog of routes focusing on Job Searching and Talent Matching.
   const navigationItems: NavItem[] = [
-    { to: '/dashboard', label: 'Dashboard', icon: icons.dashboard, roles: ['Admin', 'Recruiter', 'HiringManager', 'Candidate'] },
+    { to: '/candidate/jobs', label: 'Job Search', icon: icons.jobs, roles: ['Candidate'] },
     { to: '/recruiter/jobs', label: 'Job Management', icon: icons.jobs, roles: ['Admin', 'Recruiter'] },
-    { to: '/candidate/jobs', label: 'Job Search', icon: icons.recruitment, roles: ['Candidate'] },
-    { to: '/candidate/profile', label: 'My Profile', icon: icons.candidates, roles: ['Candidate'] },
-    { to: '/admin/users', label: 'Candidates', icon: icons.candidates, roles: ['Admin', 'Recruiter'] },
-    { to: '/hiring-manager/evaluations', label: 'Interviews', icon: icons.interviews, roles: ['Admin', 'HiringManager', 'Recruiter'] },
-    { to: '/hiring-manager/shortlist', label: 'Hiring Managers', icon: icons.managers, roles: ['Admin', 'HiringManager', 'Recruiter'] },
-    { to: '/recruiter/talent-pool', label: 'Talent Pool', icon: icons.pool, roles: ['Admin', 'Recruiter'] },
-    { to: '/candidate/talent-pool', label: 'Talent Pool Consent', icon: icons.pool, roles: ['Candidate'] },
-    { to: '/admin/analytics', label: 'Analytics', icon: icons.analytics, roles: ['Admin', 'Recruiter', 'HiringManager'] },
+    { to: '/recruiter/talent-pool', label: 'Talent Pool & AI Match', icon: icons.pool, roles: ['Admin', 'Recruiter'] },
+    { to: '/candidate/talent-pool', label: 'Talent Match Consent', icon: icons.pool, roles: ['Candidate'] },
+    { to: '/candidate/applications', label: 'My Applications', icon: icons.notifications, roles: ['Candidate'] },
+    { to: '/candidate/profile', label: 'My Profile & Skills', icon: icons.candidates, roles: ['Candidate'] },
+    { to: '/admin/users', label: 'Candidates Directory', icon: icons.candidates, roles: ['Admin', 'Recruiter'] },
+    { to: '/hiring-manager/evaluations', label: 'Interviews & Reviews', icon: icons.interviews, roles: ['Admin', 'HiringManager', 'Recruiter'] },
+    { to: '/hiring-manager/shortlist', label: 'Talent Shortlists', icon: icons.managers, roles: ['Admin', 'HiringManager', 'Recruiter'] },
+    { to: '/admin/analytics', label: 'Recruitment Analytics', icon: icons.analytics, roles: ['Admin', 'Recruiter', 'HiringManager'] },
   ]
 
-  // Filter items by role and search query
-  const filteredItems = navigationItems
-    .filter((item) => item.roles.includes(user.role))
-    .filter((item) => item.label.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredItems = navigationItems.filter((item) => item.roles.includes(user.role))
 
   return (
     <aside
@@ -100,54 +92,44 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } md:translate-x-0 shadow-xl`}
     >
-      {/* Brand Logo Header */}
-      <div className="flex items-center gap-3">
-  <img
-    src={logo}
-    alt="TalentIQ logo"
-    className="h-9 w-9 rounded-lg object-cover"
-  />
-
-  <span className="text-lg font-bold text-head">
-    TalentIQ
-  </span>
-</div>
+      {/* Centered Brand Logo Header */}
+      <div className="flex flex-col items-center justify-center pt-7 pb-6 px-4 border-b border-white/10 bg-[#001845]/50 text-center">
+        <div className="relative mb-3 group">
+          <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#2D7FDE] to-[#7B2CBF] opacity-50 blur-md group-hover:opacity-75 transition-opacity"></div>
+          <img
+            src={logo}
+            alt="TalentIQ logo"
+            className="relative h-14 w-14 rounded-2xl object-cover border border-white/20 shadow-xl"
+          />
+        </div>
+        <h1 className="text-xl font-bold text-white tracking-wide">
+          TalentIQ
+        </h1>
+        <span className="text-[10px] font-semibold text-white/60 tracking-wider uppercase mt-1">
+          Job Search & Talent Matching
+        </span>
+      </div>
 
       {/* Role Tag Banner */}
-      <div className="px-6 py-3 border-b border-line bg-ink/40">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-muted mb-0.5">Portal Portal</div>
-        <div className="text-xs font-semibold text-head flex items-center gap-1.5">
+      <div className="px-5 py-3 border-b border-white/10 bg-[#001233]/90">
+        <div className="text-[10px] font-bold uppercase tracking-wider text-white/40 mb-1">
+          Active Workspace
+        </div>
+        <div className="text-xs font-semibold text-white flex items-center gap-2">
           <span
-            className="w-1.5 h-1.5 rounded-full"
+            className="w-2 h-2 rounded-full ring-2 ring-white/20"
             style={{
               backgroundColor:
                 user.role === 'Candidate'
-                  ? 'var(--color-m3)'
+                  ? '#38bdf8'
                   : user.role === 'Recruiter'
-                  ? 'var(--color-m2)'
+                  ? '#818cf8'
                   : user.role === 'HiringManager'
-                  ? 'var(--color-m4)'
-                  : 'var(--color-m6)',
+                  ? '#fb7185'
+                  : '#a78bfa',
             }}
-  />
-
-    {user.role} Portal
-  </div>
-</div>
-
-      {/* Search Input */}
-      <div className="px-4 py-3 border-b border-white/10 bg-white/5">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search menu..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/40 focus:border-[#2D7FDE] focus:ring-1 focus:ring-[rgba(45,127,222,0.25)] outline-none transition-all duration-150"
           />
-          <svg className="absolute left-3 top-2.5 w-3.5 h-3.5 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          {user.role} Workspace
         </div>
       </div>
 
@@ -171,21 +153,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           </NavLink>
         ))}
 
-        {/* Global Settings & Notifications Links */}
+        {/* Global Settings Link */}
         <div className="pt-4 border-t border-white/10 space-y-1">
-          <NavLink
-            to="/candidate/applications"
-            className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-3 text-xs font-medium rounded-xl border border-transparent transition-all duration-200 ${
-                isActive
-                  ? 'bg-[#002855] text-[#63A3EC] border-l-2 border-[#2D7FDE] font-bold'
-                  : 'text-white/70 hover:text-white hover:bg-[#002855]/70'
-              }`
-            }
-          >
-            {icons.notifications}
-            Notifications
-          </NavLink>
           <div
             onClick={() => alert('Settings are configured by system administrators.')}
             className="flex items-center gap-3 px-4 py-3 text-xs font-medium rounded-xl text-white/70 hover:text-white hover:bg-[#002855]/70 cursor-pointer transition-all duration-200"
@@ -211,7 +180,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         </div>
         <button
           onClick={logout}
-          className="flex w-full items-center justify-center gap-2 px-3 py-2.5 text-xs font-semibold rounded-xl border border-white/10 bg-white/5 hover:bg-alert/15 hover:border-alert/30 text-white/80 hover:text-white transition-all duration-150 cursor-pointer"
+          className="flex w-full items-center justify-center gap-2 px-3 py-2.5 text-xs font-semibold rounded-xl border border-white/10 bg-white/5 hover:bg-red-500/20 hover:border-red-500/30 text-white/80 hover:text-white transition-all duration-150 cursor-pointer"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -223,3 +192,4 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   )
 }
 export default Sidebar
+

@@ -43,7 +43,7 @@ export const LandingPage: React.FC = () => {
       }
     } else {
       // If user is Recruiter or Admin, navigate to recruiter pipeline
-      navigate(`/dashboard`)
+      navigate('/recruiter/jobs')
     }
   }
 

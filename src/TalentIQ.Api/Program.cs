@@ -162,6 +162,9 @@ builder.Services.AddAiModule(builder.Configuration);
 builder.Services.AddDbContext<AnalyticsDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDbContext<Notification.Infrastructure.NotificationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
 // ---------------------------------------------------------------------------
@@ -330,6 +333,9 @@ if (app.Environment.IsDevelopment())
             var aiDb = services.GetRequiredService<AiDbContext>();
             await aiDb.Database.MigrateAsync();
 
+            var notificationDb = services.GetRequiredService<Notification.Infrastructure.NotificationDbContext>();
+            await notificationDb.Database.EnsureCreatedAsync();
+
             // Seed default users in IdentityDbContext
             var passwordHasher = services.GetRequiredService<Identity.Application.Interfaces.IAppPasswordHasher>();
             var devUsers = new[]
@@ -381,6 +387,10 @@ if (app.Environment.IsDevelopment())
                 }
             }
             await identityDb.SaveChangesAsync();
+
+            // Run comprehensive seeding for all modules
+            await TalentIQ.Api.Services.DbSeeder.SeedDatabaseAsync(services, logger);
+
             logger.LogInformation("Database migration and seeding completed successfully.");
         }
         catch (Exception ex)

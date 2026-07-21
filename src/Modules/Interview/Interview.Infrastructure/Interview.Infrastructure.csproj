@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
@@ -14,11 +14,13 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.13">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Interview.Application\Interview.Application.csproj" />
 		<ProjectReference Include="..\Interview.Domain\Interview.Domain.csproj" />
+		<ProjectReference Include="..\..\Notification\Notification.Application\Notification.Application.csproj" />
 	</ItemGroup>
 
 </Project>

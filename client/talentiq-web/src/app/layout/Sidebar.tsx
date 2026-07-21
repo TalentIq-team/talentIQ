@@ -129,7 +129,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
                   ? 'var(--color-m4)'
                   : 'var(--color-m6)',
             }}
-  
+  />
+
+    {user.role} Portal
+  </div>
+</div>
 
       {/* Search Input */}
       <div className="px-4 py-3 border-b border-white/10 bg-white/5">

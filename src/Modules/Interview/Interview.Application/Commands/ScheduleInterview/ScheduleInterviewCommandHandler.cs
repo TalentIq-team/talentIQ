@@ -1,7 +1,8 @@
-﻿using Interview.Application.Interfaces;
+using Interview.Application.Interfaces;
 using Interview.Application.Services;
 using Interview.Domain.Entities;
 using Notification.Application.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Interview.Application.Commands.ScheduleInterview;
 
@@ -10,15 +11,18 @@ public class ScheduleInterviewCommandHandler
     private readonly IInterviewRepository _repository;
     private readonly IEmailService _emailService;
     private readonly ICalendarService _calendarService;
+    private readonly ILogger<ScheduleInterviewCommandHandler> _logger;
 
     public ScheduleInterviewCommandHandler(
         IInterviewRepository repository,
         IEmailService emailService,
-        ICalendarService calendarService)
+        ICalendarService calendarService,
+        ILogger<ScheduleInterviewCommandHandler> logger)
     {
         _repository = repository;
         _emailService = emailService;
         _calendarService = calendarService;
+        _logger = logger;
     }
 
     public async Task Handle(ScheduleInterviewCommand command)
@@ -36,7 +40,9 @@ public class ScheduleInterviewCommandHandler
         await _repository.AddInterviewAsync(interview);
         await _repository.SaveChangesAsync();
 
-        var body = $@"
+        try
+        {
+            var body = $@"
 <h2>Interview Invitation</h2>
 
 <p>Your interview has been scheduled.</p>
@@ -55,15 +61,23 @@ public class ScheduleInterviewCommandHandler
 
 <p>Good luck!</p>";
 
-        var calendarFile = _calendarService.GenerateInterviewInvite(
-            command.ScheduledStartTime,
-            command.MeetingLink);
+            var calendarFile = _calendarService.GenerateInterviewInvite(
+                command.ScheduledStartTime,
+                command.MeetingLink);
 
-        await _emailService.SendEmailAsync(
-            command.CandidateEmail,
-            "Interview Scheduled",
-            body,
-            calendarFile,
-            "Interview.ics");
+            await _emailService.SendEmailAsync(
+                command.CandidateEmail,
+                "Interview Scheduled",
+                body,
+                calendarFile,
+                "Interview.ics");
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(
+                exception,
+                "Interview {InterviewId} was scheduled, but the email notification failed.",
+                interview.Id);
+        }
     }
 }

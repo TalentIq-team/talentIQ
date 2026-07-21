@@ -9,4 +9,7 @@ public class User
     public Guid OrganizationId { get; set; }
     public Guid? DepartmentId { get; set; }
     public bool IsActive { get; set; }
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpiresAt { get; set; }
 }
+

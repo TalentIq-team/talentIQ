@@ -28,14 +28,23 @@ namespace Analytics.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<decimal>("AvgTimeToHireDays")
+                    b.Property<decimal>("AverageTimeToHireDays")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("InterviewsScheduled")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OffersAccepted")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("OrganizationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateOnly>("SnapshotDate")
-                        .HasColumnType("date");
+                    b.Property<int>("ShortlistedCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("SnapshotDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("TotalApplications")
                         .HasColumnType("int");
@@ -91,10 +100,17 @@ namespace Analytics.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<decimal>("CurrentMatchScore")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<DateTime>("GeneratedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Recommendation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResumeFreshnessStatus")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

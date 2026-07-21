@@ -1,24 +1,82 @@
 @import "tailwindcss";
 
-@theme {
-  /* Unique & Premium Obsidian/Amethyst Dark Theme Palette */
-  --color-ink: #06050F;
-  --color-panel: #0E0D1F;
-  --color-panel-2: #15132C;
-  --color-line: #201E3D;
-  --color-text: #C3C0DC;
-  --color-head: #F1EDFF;
-  --color-muted: #7F7A9E;
-  --color-alert: #FF4A70;
-  --color-ok: #00E594;
+:root {
+  /* Classy retro-modern Bohemian/Nordic Palette */
+  --color-ink: #F4F6F6;          /* Clean light gray-blue background */
+  --color-panel: #FFFFFF;        /* Solid white cards */
+  --color-panel-2: #EAEFED;      /* Soft verdigris light gray */
+  --color-line: #D5DFDC;         /* Soft slate/verdigris borders */
+  --color-text: #264653;         /* Charcoal Blue - elegant deep text */
+  --color-head: #1D353F;         /* Darker Charcoal Blue for titles */
+  --color-muted: #507683;        /* Muted slate text */
+  --color-alert: #E76F51;        /* Burnt Peach for alerts/errors */
+  --color-ok: #2A9D8F;           /* Verdigris for success/ok states */
+  --color-glass: rgba(255, 255, 255, 0.85);
+  --radial-glow: rgba(42, 157, 143, 0.08); /* Verdigris glow */
+  --color-selection: rgba(42, 157, 143, 0.15);
+  --color-glow: rgba(42, 157, 143, 0.2);
+  --button-primary-shadow: rgba(42, 157, 143, 0.25);
+  --button-primary-text: #FFFFFF;
 
-  /* Teammate Specific Vibrant Accents */
-  --color-m1: #FF6B8B;
-  --color-m2: #A352FA;
-  --color-m3: #00F3D3;
-  --color-m4: #FF1A8B;
-  --color-m5: #00E584;
-  --color-m6: #FFAE00;
+  /* Accent Palette */
+  --color-m1: #E9F5F3;         /* Very Light Verdigris background tint */
+  --color-m2: #2A9D8F;         /* Verdigris (Primary Accent) */
+  --color-m3: #E9C46A;         /* Jasmine (Secondary Golden) */
+  --color-m4: #F4A261;         /* Sandy Brown (Warm Orange) */
+  --color-m5: #E76F51;         /* Burnt Peach (Terracotta Accent) */
+  --color-m6: #507683;         /* Charcoal Sage */
+}
+
+.dark {
+  /* Deep Charcoal Blue Midnight Theme */
+  --color-ink: #101F25;          /* Deepest Charcoal Blue */
+  --color-panel: #172C35;        /* Deep Charcoal Blue */
+  --color-panel-2: #1E3944;      /* Secondary Oxford Charcoal */
+  --color-line: #2A4C5A;         /* Charcoal borders */
+  --color-text: #A4C3CC;         /* Cool slate gray-blue contrast text */
+  --color-head: #FFFFFF;         /* White titles */
+  --color-muted: #628A97;        /* Sage slate gray-blue */
+  --color-alert: #E76F51;        /* Burnt Peach */
+  --color-ok: #2A9D8F;           /* Verdigris */
+  --color-glass: rgba(23, 44, 53, 0.8);
+  --radial-glow: rgba(42, 157, 143, 0.12);
+  --color-selection: rgba(42, 157, 143, 0.25);
+  --color-glow: rgba(42, 157, 143, 0.25);
+  --button-primary-shadow: rgba(0, 0, 0, 0.4);
+  --button-primary-text: #FFFFFF;
+
+  /* Accent Palette */
+  --color-m1: #1E3944;
+  --color-m2: #2A9D8F;         /* Verdigris */
+  --color-m3: #E9C46A;         /* Jasmine */
+  --color-m4: #F4A261;         /* Sandy Brown */
+  --color-m5: #E76F51;         /* Burnt Peach */
+  --color-m6: #628A97;
+}
+
+@theme {
+  --color-ink: var(--color-ink);
+  --color-panel: var(--color-panel);
+  --color-panel-2: var(--color-panel-2);
+  --color-line: var(--color-line);
+  --color-text: var(--color-text);
+  --color-head: var(--color-head);
+  --color-muted: var(--color-muted);
+  --color-alert: var(--color-alert);
+  --color-ok: var(--color-ok);
+  --color-glass: var(--color-glass);
+  --radial-glow: var(--radial-glow);
+  --color-selection: var(--color-selection);
+  --color-glow: var(--color-glow);
+  --button-primary-shadow: var(--button-primary-shadow);
+  --button-primary-text: var(--button-primary-text);
+
+  --color-m1: var(--color-m1);
+  --color-m2: var(--color-m2);
+  --color-m3: var(--color-m3);
+  --color-m4: var(--color-m4);
+  --color-m5: var(--color-m5);
+  --color-m6: var(--color-m6);
 
   /* Premium Typography */
   --font-display: 'Space Grotesk', sans-serif;
@@ -63,24 +121,24 @@
 
   /* Custom selection highlight */
   ::selection {
-    background: rgba(163, 82, 250, 0.25);
+    background: var(--color-selection);
     color: var(--color-head);
   }
 }
 
 /* Glassmorphism & Custom Gradient Effects */
 .bg-glass {
-  background: rgba(14, 13, 31, 0.7);
+  background: var(--color-glass);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 
 .border-glow:focus-within {
   border-color: var(--color-m2);
-  box-shadow: 0 0 0 1px rgba(163, 82, 250, 0.25);
+  box-shadow: 0 0 0 1px var(--color-glow);
 }
 
 /* Background Gradients similar to the Framer templates */
 .bg-radial-gradient {
-  background: radial-gradient(circle at 50% -20%, rgba(163, 82, 250, 0.12), transparent 70%);
+  background: radial-gradient(circle at 50% -20%, var(--radial-glow), transparent 70%);
 }

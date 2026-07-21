@@ -35,6 +35,15 @@ public sealed class AdminController : ControllerBase
             cancellationToken));
     }
 
+    [HttpGet("monitoring")]
+    public async Task<ActionResult<SystemMonitoringDto>> GetMonitoring(
+        CancellationToken cancellationToken)
+    {
+        return Ok(await _sender.Send(
+            new GetSystemMonitoringQuery(),
+            cancellationToken));
+    }
+
     [HttpPost("users")]
     public async Task<ActionResult<AdminUserDto>> CreateUser(
         CreateStaffUserRequest request,

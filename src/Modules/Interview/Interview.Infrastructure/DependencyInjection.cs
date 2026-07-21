@@ -1,4 +1,4 @@
-﻿using Interview.Application.Interfaces;
+using Interview.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +16,7 @@ public static class DependencyInjection
                 configuration.GetConnectionString("DefaultConnection")));
 
         services.AddScoped<IInterviewRepository, Repositories.InterviewRepository>();
+        services.AddHostedService<Services.InterviewReminderBackgroundService>();
 
         return services;
     }

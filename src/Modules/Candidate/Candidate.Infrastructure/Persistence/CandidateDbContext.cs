@@ -20,6 +20,7 @@ public class CandidateDbContext : DbContext, ICandidateDbContext
     public DbSet<CandidateProfile> CandidateProfiles => Set<CandidateProfile>();
     public DbSet<Skill> Skills => Set<Skill>();
     public DbSet<CandidateSkill> CandidateSkills => Set<CandidateSkill>();
+    public DbSet<CandidateDocument> CandidateDocuments => Set<CandidateDocument>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

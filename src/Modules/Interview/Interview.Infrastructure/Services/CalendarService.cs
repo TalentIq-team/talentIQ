@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Interview.Application.Services;
 
 namespace Interview.Infrastructure.Services;
@@ -30,5 +30,22 @@ END:VCALENDAR
 """;
 
         return Encoding.UTF8.GetBytes(ics);
+    }
+
+    public string GenerateGoogleCalendarUrl(
+        DateTime startTime,
+        string title,
+        string description,
+        string location)
+    {
+        var endTime = startTime.AddHours(1);
+        var startIso = startTime.ToUniversalTime().ToString("yyyyMMddTHHmmssZ");
+        var endIso = endTime.ToUniversalTime().ToString("yyyyMMddTHHmmssZ");
+
+        var encodedTitle = Uri.EscapeDataString(title);
+        var encodedDetails = Uri.EscapeDataString(description);
+        var encodedLocation = Uri.EscapeDataString(location);
+
+        return $"https://calendar.google.com/calendar/render?action=TEMPLATE&text={encodedTitle}&dates={startIso}/{endIso}&details={encodedDetails}&location={encodedLocation}";
     }
 }

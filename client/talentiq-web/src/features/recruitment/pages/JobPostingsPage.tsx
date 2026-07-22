@@ -5,7 +5,7 @@ import {
   closeJob,
   createJob,
   publishJob,
-  searchJobs,
+  getManagedJobs,
 } from '@/api/endpoints'
 import {
   EmploymentType,
@@ -40,8 +40,8 @@ export default function JobPostingsPage() {
   const [banner, setBanner] = useState<string | null>(null)
 
   const jobsQuery = useQuery({
-    queryKey: ['jobs', {}],
-    queryFn: () => searchJobs({}),
+    queryKey: ['jobs', 'manage'],
+    queryFn: getManagedJobs,
   })
 
   const invalidate = () =>

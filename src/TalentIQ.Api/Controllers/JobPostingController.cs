@@ -8,6 +8,7 @@ using Recruitment.Application.JobPostings.Commands.CreateJobPosting;
 using Recruitment.Application.JobPostings.Commands.PublishJobPosting;
 using Recruitment.Application.JobPostings.Commands.UpdateJobPosting;
 using Recruitment.Application.JobPostings.Dtos;
+using Recruitment.Application.JobPostings.Queries.GetManagedJobPostings;
 using Recruitment.Application.JobPostings.Queries.SearchJobPostings;
 using Recruitment.Domain.Entities;
 using TalentIQ.Api.Extensions;
@@ -37,6 +38,24 @@ public class JobPostingController : ControllerBase
         CancellationToken ct)
     {
         var result = await _mediator.Send(new SearchJobPostingsQuery(title, skillId, location, employmentType), ct);
+        return Ok(result);
+    }
+
+
+    /// <summary>
+    /// Recruiter workspace: return Draft, Published, and Closed jobs.
+    /// </summary>
+    [HttpGet("manage")]
+    [ProducesResponseType(
+        typeof(IReadOnlyList<JobPostingDto>),
+        StatusCodes.Status200OK)]
+    public async Task<IActionResult> Manage(
+        CancellationToken ct)
+    {
+        var result = await _mediator.Send(
+            new GetManagedJobPostingsQuery(),
+            ct);
+
         return Ok(result);
     }
 

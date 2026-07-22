@@ -183,6 +183,15 @@ export async function searchJobs(filters: JobSearchFilters): Promise<JobPosting[
   })
 }
 
+
+export async function getManagedJobs(): Promise<JobPosting[]> {
+  const { data } = await apiClient.get<JobPosting[]>(
+    '/api/v1/jobs/manage',
+  )
+
+  return Array.isArray(data) ? data : []
+}
+
 export interface JobPostingInput {
   organizationId: string
   recruiterId?: string
@@ -358,7 +367,7 @@ function generateClientSideJobComparison(input: CompareJobInput): JobComparisonR
 
 // ---- Candidate Enterprise Profile Section CRUD ----
 
-export async function addCandidateExperience(profileId: string, input: any): Promise<CandidateProfile> {
+export async function addCandidateExperience(profileId: string, input: unknown): Promise<CandidateProfile> {
   const { data } = await apiClient.post<CandidateProfile>(`/api/v1/candidates/profile/${profileId}/experiences`, input)
   return data
 }
@@ -368,7 +377,7 @@ export async function deleteCandidateExperience(profileId: string, expId: string
   return data
 }
 
-export async function addCandidateEducation(profileId: string, input: any): Promise<CandidateProfile> {
+export async function addCandidateEducation(profileId: string, input: unknown): Promise<CandidateProfile> {
   const { data } = await apiClient.post<CandidateProfile>(`/api/v1/candidates/profile/${profileId}/educations`, input)
   return data
 }
@@ -378,7 +387,7 @@ export async function deleteCandidateEducation(profileId: string, eduId: string)
   return data
 }
 
-export async function addCandidateProject(profileId: string, input: any): Promise<CandidateProfile> {
+export async function addCandidateProject(profileId: string, input: unknown): Promise<CandidateProfile> {
   const { data } = await apiClient.post<CandidateProfile>(`/api/v1/candidates/profile/${profileId}/projects`, input)
   return data
 }
@@ -388,7 +397,7 @@ export async function deleteCandidateProject(profileId: string, projId: string):
   return data
 }
 
-export async function addCandidateCertification(profileId: string, input: any): Promise<CandidateProfile> {
+export async function addCandidateCertification(profileId: string, input: unknown): Promise<CandidateProfile> {
   const { data } = await apiClient.post<CandidateProfile>(`/api/v1/candidates/profile/${profileId}/certifications`, input)
   return data
 }
@@ -398,7 +407,7 @@ export async function deleteCandidateCertification(profileId: string, certId: st
   return data
 }
 
-export async function addCandidateLanguage(profileId: string, input: any): Promise<CandidateProfile> {
+export async function addCandidateLanguage(profileId: string, input: unknown): Promise<CandidateProfile> {
   const { data } = await apiClient.post<CandidateProfile>(`/api/v1/candidates/profile/${profileId}/languages`, input)
   return data
 }
@@ -408,7 +417,7 @@ export async function deleteCandidateLanguage(profileId: string, langId: string)
   return data
 }
 
-export async function addCandidateAchievement(profileId: string, input: any): Promise<CandidateProfile> {
+export async function addCandidateAchievement(profileId: string, input: unknown): Promise<CandidateProfile> {
   const { data } = await apiClient.post<CandidateProfile>(`/api/v1/candidates/profile/${profileId}/achievements`, input)
   return data
 }

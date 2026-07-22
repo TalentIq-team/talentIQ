@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import {
   advanceApplicationStage,
   getJobPipeline,
@@ -12,30 +16,30 @@ import {
 } from '@/api/types'
 import { toErrorMessage } from '@/lib/api'
 import {
-  Spinner,
-  ErrorBanner,
   EmptyState,
+  ErrorBanner,
+  Spinner,
 } from '@/components/Feedback'
 import StageBadge from '@/components/ui/StageBadge'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Select from '@/components/ui/Select'
 
-import logo from '@/assets/logo.jpeg'
+const PIPELINE_STAGES: ApplicationStage[] = [
+  ApplicationStage.Applied,
+  ApplicationStage.Screening,
+  ApplicationStage.Shortlisted,
+  ApplicationStage.InterviewScheduled,
+  ApplicationStage.Interviewed,
+  ApplicationStage.Offered,
+  ApplicationStage.Hired,
+  ApplicationStage.Rejected,
+]
 
-<div className="flex items-center gap-3 px-5 py-4">
-  <img
-    src={logo}
-    alt="TalentIQ"
-    className="h-10 w-10 rounded-xl object-cover"
-  />
-
-  <span className="text-xl font-bold text-white">
-    TalentIQ
-  </span>
-</div>
-
-const ALLOWED_TRANSITIONS: Record<ApplicationStage, ApplicationStage[]> = {
+const ALLOWED_TRANSITIONS: Record<
+  ApplicationStage,
+  ApplicationStage[]
+> = {
   [ApplicationStage.Applied]: [
     ApplicationStage.Screening,
     ApplicationStage.Rejected,
@@ -67,7 +71,6 @@ const ALLOWED_TRANSITIONS: Record<ApplicationStage, ApplicationStage[]> = {
 export default function CandidatePipelinePage() {
   const { jobId } = useParams<{ jobId: string }>()
   const queryClient = useQueryClient()
-
   const [error, setError] = useState<string | null>(null)
 
   const pipelineQuery = useQuery({
@@ -93,10 +96,12 @@ export default function CandidatePipelinePage() {
       })
     },
 
-    onError: (err) => {
-      setError(toErrorMessage(err))
+    onError: (mutationError) => {
+      setError(toErrorMessage(mutationError))
     },
   })
+
+  const applications = pipelineQuery.data ?? []
 
   return (
     <div className="space-y-6">
@@ -134,90 +139,136 @@ export default function CandidatePipelinePage() {
         />
       )}
 
-      {pipelineQuery.data?.length === 0 && (
-        <EmptyState message="No applications for this job yet." />
-      )}
+      {!pipelineQuery.isLoading &&
+        !pipelineQuery.isError &&
+        applications.length === 0 && (
+          <EmptyState message="No applications for this job yet." />
+        )}
 
-      <div className="space-y-4">
-        {pipelineQuery.data?.map((app: ApplicationDetail) => {
-          const nextStages = ALLOWED_TRANSITIONS[app.stage]
+      {applications.length > 0 && (
+        <div className="overflow-x-auto pb-4">
+          <div className="grid min-w-[2240px] grid-cols-8 gap-4">
+            {PIPELINE_STAGES.map((stage) => {
+              const stageApplications = applications.filter(
+                (application) => application.stage === stage,
+              )
 
-          const selectOptions = [
-            {
-              value: '',
-              label: 'Move to…',
-            },
-            ...nextStages.map((stage) => ({
-              value: stage,
-              label: ApplicationStageLabels[stage],
-            })),
-          ]
+              return (
+                <section
+                  key={stage}
+                  className="min-h-[420px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3"
+                >
+                  <header className="mb-3 flex items-center justify-between gap-2 border-b border-[var(--border)] pb-3">
+                    <h2 className="text-sm font-semibold text-[var(--heading)]">
+                      {ApplicationStageLabels[stage]}
+                    </h2>
 
-          return (
-            <Card
-              key={app.id}
-              variant="glass"
-              className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[var(--shadow-e1)]"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-                    Candidate Profile ID
-                  </p>
-
-                  <p className="mt-1 font-mono text-sm font-medium text-[var(--text)]">
-                    {app.candidateProfileId}
-                  </p>
-
-                  <p className="mt-1.5 text-xs text-[var(--muted)]">
-                    Applied{' '}
-                    {new Date(app.appliedAt).toLocaleDateString()}
-
-                    {app.aiMatchScore != null && (
-                      <>
-                        {' '}
-                        ·{' '}
-                        <span className="font-semibold text-[var(--ai-accent)]">
-                          AI match {app.aiMatchScore}%
-                        </span>
-                      </>
-                    )}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  <StageBadge stage={app.stage} />
-
-                  {nextStages.length > 0 ? (
-                    <Select
-                      options={selectOptions}
-                      value=""
-                      disabled={advanceMutation.isPending}
-                      className="min-h-11 min-w-[160px] rounded-lg border-[var(--border-strong)] bg-[var(--surface)] text-[var(--text)]"
-                      onChange={(event) => {
-                        if (!event.target.value) return
-
-                        advanceMutation.mutate({
-                          id: app.id,
-                          target: Number(
-                            event.target.value,
-                          ) as ApplicationStage,
-                        })
-
-                        event.target.value = ''
-                      }}
-                    />
-                  ) : (
-                    <span className="inline-flex min-h-11 items-center rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 text-xs font-medium text-[var(--muted)]">
-                      Final stage
+                    <span className="inline-flex min-w-7 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] px-2 py-1 text-xs font-semibold text-[var(--muted)]">
+                      {stageApplications.length}
                     </span>
-                  )}
-                </div>
-              </div>
-            </Card>
-          )
-        })}
-      </div>
+                  </header>
+
+                  <div className="space-y-3">
+                    {stageApplications.length === 0 && (
+                      <div className="rounded-xl border border-dashed border-[var(--border-strong)] bg-[var(--surface)] p-4 text-center text-xs text-[var(--muted)]">
+                        No candidates
+                      </div>
+                    )}
+
+                    {stageApplications.map(
+                      (application: ApplicationDetail) => {
+                        const nextStages =
+                          ALLOWED_TRANSITIONS[application.stage]
+
+                        const selectOptions = [
+                          {
+                            value: '',
+                            label: 'Move to…',
+                          },
+                          ...nextStages.map((nextStage) => ({
+                            value: nextStage,
+                            label:
+                              ApplicationStageLabels[nextStage],
+                          })),
+                        ]
+
+                        return (
+                          <Card
+                            key={application.id}
+                            variant="glass"
+                            className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-[var(--shadow-e1)]"
+                          >
+                            <div className="space-y-3">
+                              <div>
+                                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+                                  Candidate Profile ID
+                                </p>
+
+                                <p className="mt-1 break-all font-mono text-xs font-medium text-[var(--text)]">
+                                  {application.candidateProfileId}
+                                </p>
+
+                                <p className="mt-2 text-xs leading-5 text-[var(--muted)]">
+                                  Applied{' '}
+                                  {new Date(
+                                    application.appliedAt,
+                                  ).toLocaleDateString()}
+
+                                  {application.aiMatchScore != null && (
+                                    <>
+                                      {' '}
+                                      ·{' '}
+                                      <span className="font-semibold text-[var(--ai-accent)]">
+                                        AI match{' '}
+                                        {application.aiMatchScore}%
+                                      </span>
+                                    </>
+                                  )}
+                                </p>
+                              </div>
+
+                              <StageBadge
+                                stage={application.stage}
+                              />
+
+                              {nextStages.length > 0 ? (
+                                <Select
+                                  options={selectOptions}
+                                  value=""
+                                  disabled={
+                                    advanceMutation.isPending
+                                  }
+                                  className="min-h-10 w-full rounded-lg border-[var(--border-strong)] bg-[var(--surface)] text-[var(--text)]"
+                                  onChange={(event) => {
+                                    if (!event.target.value) return
+
+                                    advanceMutation.mutate({
+                                      id: application.id,
+                                      target: Number(
+                                        event.target.value,
+                                      ) as ApplicationStage,
+                                    })
+
+                                    event.target.value = ''
+                                  }}
+                                />
+                              ) : (
+                                <span className="inline-flex min-h-10 w-full items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface-2)] px-3 text-xs font-medium text-[var(--muted)]">
+                                  Final stage
+                                </span>
+                              )}
+                            </div>
+                          </Card>
+                        )
+                      },
+                    )}
+                  </div>
+                </section>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

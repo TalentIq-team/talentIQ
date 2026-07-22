@@ -48,6 +48,27 @@ export async function uploadResume(candidateProfileId: string, file: File): Prom
   return data
 }
 
+export async function uploadAvatar(candidateProfileId: string, file: File): Promise<CandidateProfile> {
+  const form = new FormData()
+  form.append('candidateProfileId', candidateProfileId)
+  form.append('file', file)
+  const { data } = await apiClient.post<CandidateProfile>('/api/v1/candidates/avatar', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data
+}
+
+export async function uploadCoverPhoto(candidateProfileId: string, file: File): Promise<CandidateProfile> {
+  const form = new FormData()
+  form.append('candidateProfileId', candidateProfileId)
+  form.append('file', file)
+  const { data } = await apiClient.post<CandidateProfile>('/api/v1/candidates/cover-photo', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data
+}
+
+
 // ---- Job postings (FR-CD-03 + recruiter management) ----
 
 export const SAMPLE_JOBS: JobPosting[] = [

@@ -101,6 +101,24 @@ public static class DbSeeder
                 };
                 await identityDb.Users.AddAsync(newUser);
             }
+            else
+            {
+                bool updated = false;
+                if (existing.OrganizationId == Guid.Empty)
+                {
+                    existing.OrganizationId = defaultOrg.Id;
+                    updated = true;
+                }
+                if (existing.DepartmentId is null && u.DeptId is not null)
+                {
+                    existing.DepartmentId = u.DeptId;
+                    updated = true;
+                }
+                if (updated)
+                {
+                    identityDb.Users.Update(existing);
+                }
+            }
         }
         await identityDb.SaveChangesAsync();
 

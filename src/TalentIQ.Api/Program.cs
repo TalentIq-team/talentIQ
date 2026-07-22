@@ -68,9 +68,12 @@ const string FrontendCorsPolicy = "frontend";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(FrontendCorsPolicy, policy =>
-        policy.WithOrigins("http://localhost:5173", "http://localhost:4173")
+        policy.SetIsOriginAllowed(origin =>
+            Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
+            (uri.Host == "localhost" || uri.Host == "127.0.0.1"))
             .AllowAnyHeader()
-            .AllowAnyMethod());
+            .AllowAnyMethod()
+            .AllowCredentials());
 });
 
 // ---------------------------------------------------------------------------
@@ -179,7 +182,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseCors(FrontendCorsPolicy);
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

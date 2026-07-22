@@ -26,12 +26,15 @@ public class CandidateController : ControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ICandidateDbContext _db;
+    private readonly IResumeStorageService _storage;
 
-    public CandidateController(IMediator mediator, ICandidateDbContext db)
+    public CandidateController(IMediator mediator, ICandidateDbContext db, IResumeStorageService storage)
     {
         _mediator = mediator;
         _db = db;
+        _storage = storage;
     }
+
 
     /// <summary>Create the current user's candidate profile.</summary>
     [HttpPost("profile")]
@@ -158,6 +161,49 @@ public class CandidateController : ControllerBase
         var result = await _mediator.Send(new UploadResumeCommand(candidateProfileId, upload), ct);
         return Ok(result);
     }
+
+    /// <summary>Upload a profile picture avatar (JPEG/PNG/WebP, max 10 MB).</summary>
+    [HttpPost("avatar")]
+    [ProducesResponseType(typeof(CandidateProfileDto), StatusCodes.Status200OK)]
+    [RequestSizeLimit(10 * 1024 * 1024)]
+    public async Task<IActionResult> UploadAvatar([FromForm] Guid candidateProfileId, IFormFile file, CancellationToken ct)
+    {
+        if (file is null || file.Length == 0) return BadRequest(new { title = "An image file is required." });
+
+        var profile = await _db.CandidateProfiles.FirstOrDefaultAsync(p => p.Id == candidateProfileId, ct);
+        if (profile is null) return NotFound();
+
+        await using var stream = file.OpenReadStream();
+        var upload = new ResumeUpload { FileName = file.FileName, ContentType = file.ContentType, Length = file.Length, Content = stream };
+        var url = await _storage.UploadResumeAsync(candidateProfileId, upload, ct);
+
+        profile.SetProfilePictureUrl(url);
+        await _db.SaveChangesAsync(ct);
+
+        return Ok(await _mediator.Send(new GetCandidateProfileByIdQuery(candidateProfileId), ct));
+    }
+
+    /// <summary>Upload a LinkedIn-style cover banner photo (JPEG/PNG/WebP, max 10 MB).</summary>
+    [HttpPost("cover-photo")]
+    [ProducesResponseType(typeof(CandidateProfileDto), StatusCodes.Status200OK)]
+    [RequestSizeLimit(10 * 1024 * 1024)]
+    public async Task<IActionResult> UploadCoverPhoto([FromForm] Guid candidateProfileId, IFormFile file, CancellationToken ct)
+    {
+        if (file is null || file.Length == 0) return BadRequest(new { title = "An image file is required." });
+
+        var profile = await _db.CandidateProfiles.FirstOrDefaultAsync(p => p.Id == candidateProfileId, ct);
+        if (profile is null) return NotFound();
+
+        await using var stream = file.OpenReadStream();
+        var upload = new ResumeUpload { FileName = file.FileName, ContentType = file.ContentType, Length = file.Length, Content = stream };
+        var url = await _storage.UploadResumeAsync(candidateProfileId, upload, ct);
+
+        profile.SetCoverPictureUrl(url);
+        await _db.SaveChangesAsync(ct);
+
+        return Ok(await _mediator.Send(new GetCandidateProfileByIdQuery(candidateProfileId), ct));
+    }
+
 
     // --- Work Experience CRUD ---
     [HttpPost("profile/{id:guid}/experiences")]

@@ -5,6 +5,8 @@ import {
   getCandidateProfile,
   updateCandidateProfile,
   uploadResume,
+  uploadAvatar,
+  uploadCoverPhoto,
   addCandidateExperience,
   deleteCandidateExperience,
   addCandidateEducation,
@@ -16,6 +18,7 @@ import {
   addCandidateLanguage,
   deleteCandidateLanguage,
 } from '@/api/endpoints'
+
 import { toErrorMessage } from '@/lib/api'
 import { getCandidateProfileId, setCandidateProfileId } from '@/api/session'
 import { Spinner, ErrorBanner } from '@/components/Feedback'
@@ -91,6 +94,27 @@ export default function ProfilePage() {
     },
     onError: (error) => setBanner(toErrorMessage(error)),
   })
+
+  // Avatar profile picture mutation
+  const avatarMutation = useMutation({
+    mutationFn: (file: File) => uploadAvatar(profileId!, file),
+    onSuccess: () => {
+      setBanner('Profile picture updated successfully.')
+      queryClient.invalidateQueries({ queryKey: ['candidate-profile', profileId] })
+    },
+    onError: (error) => setBanner(toErrorMessage(error)),
+  })
+
+  // Cover photo banner mutation
+  const coverMutation = useMutation({
+    mutationFn: (file: File) => uploadCoverPhoto(profileId!, file),
+    onSuccess: () => {
+      setBanner('LinkedIn cover photo updated successfully.')
+      queryClient.invalidateQueries({ queryKey: ['candidate-profile', profileId] })
+    },
+    onError: (error) => setBanner(toErrorMessage(error)),
+  })
+
 
   // Section CRUD mutations
   const expMutation = useMutation({
@@ -178,9 +202,13 @@ export default function ProfilePage() {
       {profile && (
         <ProfileHeaderCard
           profile={profile}
-          onAvatarUpload={(file) => saveMutation.mutate({ profilePictureUrl: URL.createObjectURL(file) })}
+          onAvatarUpload={(file) => avatarMutation.mutate(file)}
+          onCoverUpload={(file) => coverMutation.mutate(file)}
+          isUploadingAvatar={avatarMutation.isPending}
+          isUploadingCover={coverMutation.isPending}
         />
       )}
+
 
       {/* Main Tabbed Profile Suite */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

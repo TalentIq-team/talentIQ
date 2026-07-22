@@ -23,7 +23,9 @@ public class CandidateProfile
     // --- Personal Information ---
     public string? PreferredName { get; private set; }
     public string? ProfilePictureUrl { get; private set; }
+    public string? CoverPictureUrl { get; private set; }
     public DateTime? DateOfBirth { get; private set; }
+
     public string? Gender { get; private set; }
     public string? Nationality { get; private set; }
     public string? Address { get; private set; }
@@ -242,6 +244,19 @@ public class CandidateProfile
         ResumeBlobUrl = resumeBlobUrl;
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public void SetProfilePictureUrl(string profilePictureUrl)
+    {
+        ProfilePictureUrl = profilePictureUrl;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void SetCoverPictureUrl(string coverPictureUrl)
+    {
+        CoverPictureUrl = coverPictureUrl;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
 
     public void ReplaceSkills(IEnumerable<Guid> skillIds)
         => ReplaceSkills(skillIds.Select(id => new SkillAssignment(id, null)));

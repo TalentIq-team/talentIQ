@@ -80,8 +80,8 @@ export const LoginPage: React.FC = () => {
       const session = await login(cred.email, cred.password)
       toast.success(`Dev Mode: Logged in as ${session.role}`)
       redirectForRole(session.role)
-    } catch {
-      toast.error('Dev account login failed. Make sure the API is running and seeded.')
+    } catch (err) {
+      toast.error(toErrorMessage(err) || 'Dev account login failed. Make sure the API is running and seeded.')
     } finally {
       setIsSubmitting(false)
     }

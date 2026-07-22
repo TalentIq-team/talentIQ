@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const ApplicationStage = {
+const ApplicationStage = {
   Applied: 1,
   Screening: 2,
   Shortlisted: 3,
@@ -27,19 +27,19 @@ export const StageBadge: React.FC<StageBadgeProps> = ({ stage }) => {
       style: 'bg-panel-2 text-text border-line',
     },
     [ApplicationStage.Screening]: {
-      label: 'AI Screening',
+      label: 'Screening',
       style: 'bg-m1/40 text-text border-m1',
     },
     [ApplicationStage.Shortlisted]: {
-      label: 'HR Review',
+      label: 'Shortlisted',
       style: 'bg-m1/70 text-text border-m1',
     },
     [ApplicationStage.InterviewScheduled]: {
-      label: 'Technical Interview',
+      label: 'Interview scheduled',
       style: 'bg-m2/10 text-m2 border-m2/25',
     },
     [ApplicationStage.Interviewed]: {
-      label: 'Final Interview',
+      label: 'Interviewed',
       style: 'bg-m2/15 text-m2 border-m2/30',
     },
     [ApplicationStage.Offered]: {

@@ -7,6 +7,7 @@ import DataTable, { type Column } from '@/components/ui/DataTable'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { toErrorMessage } from '@/lib/api'
 import {
+  ConsentStatus,
   getTalentPoolDashboardData,
   reEngageCandidate,
   runMonthlyTalentPoolAnalysis,
@@ -102,6 +103,34 @@ export default function TalentPoolDashboardPage() {
           </p>
         </div>
       ),
+    },
+    {
+      key: 'consent',
+      header: 'Consent',
+      render: (entry) => {
+        const isAccepted =
+          entry.consentStatus === ConsentStatus.Accepted
+
+        const labels = {
+          [ConsentStatus.Pending]: 'Pending',
+          [ConsentStatus.Accepted]: 'Accepted',
+          [ConsentStatus.Declined]: 'Declined',
+          [ConsentStatus.Withdrawn]: 'Withdrawn',
+          [ConsentStatus.Expired]: 'Expired',
+        }
+
+        return (
+          <span
+            className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${
+              isAccepted
+                ? 'border-ok/20 bg-ok/10 text-ok'
+                : 'border-line bg-panel-2 text-muted'
+            }`}
+          >
+            {labels[entry.consentStatus] ?? 'Unknown'}
+          </span>
+        )
+      },
     },
     {
       key: 'skills',

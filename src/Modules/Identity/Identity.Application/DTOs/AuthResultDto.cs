@@ -13,4 +13,6 @@ public sealed class AuthResultDto
     public string RefreshToken { get; set; } = string.Empty;
 
     public DateTime ExpiresAt { get; set; }
+
+    public Guid? CandidateProfileId { get; set; }
 }

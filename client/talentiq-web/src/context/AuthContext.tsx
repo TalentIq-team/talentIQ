@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { apiClient, getStoredToken, setStoredToken, clearStoredToken } from '@/lib/api'
+import { clearCandidateProfileId, setCandidateProfileId } from '@/api/session'
 import type { UserRole, UserSession } from '@/types/auth'
 
 export interface AuthContextType {
@@ -29,6 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     clearStoredToken()
     localStorage.removeItem('talentiq.refreshToken')
     localStorage.removeItem('talentiq.user')
+    clearCandidateProfileId()
   }
 
   useEffect(() => {
@@ -69,8 +71,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   const login = async (email: string, password: string): Promise<UserSession> => {
+    clearCandidateProfileId()
     const { data } = await apiClient.post<UserSession>('/api/v1/auth/login', { email, password })
     saveSession(data)
+    if (data.candidateProfileId) {
+      setCandidateProfileId(data.candidateProfileId)
+    }
     return data
   }
 

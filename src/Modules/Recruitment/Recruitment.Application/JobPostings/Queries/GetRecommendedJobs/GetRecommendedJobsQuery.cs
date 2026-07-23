@@ -37,7 +37,7 @@ public class GetRecommendedJobsQueryHandler
         var jobs = await _db.JobPostings
             .AsNoTracking()
             .Include(j => j.Skills)
-            .Where(j => j.Status == JobPostingStatus.Published)
+            .Where(j => j.Status != JobPostingStatus.Closed)
             .ToListAsync(cancellationToken);
 
         var recommendations = new List<JobRecommendationDto>();

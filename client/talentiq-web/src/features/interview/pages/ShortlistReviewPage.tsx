@@ -257,7 +257,10 @@ export const ShortlistReviewPage: React.FC = () => {
                           </p>
 
                           <p className="iv-candidate-id">
-                            {application.candidateProfileId}
+                            Profile ID: {application.candidateProfileId.slice(0, 8)}...
+                          </p>
+                          <p className="text-[11px] font-mono text-[#38bdf8] font-semibold mt-0.5">
+                            Job ID: {application.jobPostingId}
                           </p>
                         </div>
                       </div>

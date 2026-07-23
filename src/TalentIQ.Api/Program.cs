@@ -337,29 +337,149 @@ if (app.Environment.IsDevelopment())
         {
             logger.LogInformation("Applying migrations and seeding database...");
 
-            // List of DbContexts to migrate
             var identityDb = services.GetRequiredService<IdentityDbContext>();
-            await identityDb.Database.MigrateAsync();
-
             var candidateDb = services.GetRequiredService<CandidateDbContext>();
-            await candidateDb.Database.MigrateAsync();
-
             var recruitmentDb = services.GetRequiredService<RecruitmentDbContext>();
-            await recruitmentDb.Database.MigrateAsync();
-
             var interviewDb = services.GetRequiredService<InterviewDbContext>();
-            await interviewDb.Database.MigrateAsync();
-
             var analyticsDb = services.GetRequiredService<AnalyticsDbContext>();
-            await analyticsDb.Database.MigrateAsync();
-
             var aiDb = services.GetRequiredService<AiDbContext>();
-            await aiDb.Database.MigrateAsync();
-
             var notificationDb = services.GetRequiredService<Notification.Infrastructure.NotificationDbContext>();
-            await notificationDb.Database.EnsureCreatedAsync();
 
-            // Seed default users in IdentityDbContext
+            // 1. Identity, Candidate, Recruitment migrations
+            try { await identityDb.Database.MigrateAsync(); } catch (Exception ex) { logger.LogWarning(ex, "Identity migration warning"); }
+            try { await candidateDb.Database.MigrateAsync(); } catch (Exception ex) { logger.LogWarning(ex, "Candidate migration warning"); }
+            try { await recruitmentDb.Database.MigrateAsync(); } catch (Exception ex) { logger.LogWarning(ex, "Recruitment migration warning"); }
+
+            // 2. Ensure interview schema & tables exist BEFORE interviewDb migration
+            try
+            {
+                await interviewDb.Database.ExecuteSqlRawAsync(@"
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'interview')
+BEGIN
+    EXEC('CREATE SCHEMA [interview]');
+END;
+
+IF EXISTS (SELECT * FROM sys.tables WHERE schema_id = SCHEMA_ID('interview') AND name = 'Interviews')
+   AND NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('[interview].[Interviews]') AND name = 'ApplicationId')
+BEGIN
+    DROP TABLE [interview].[Interviews];
+END;
+
+IF EXISTS (SELECT * FROM sys.tables WHERE schema_id = SCHEMA_ID('interview') AND name = 'CandidateEvaluations')
+   AND NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('[interview].[CandidateEvaluations]') AND name = 'TechnicalScore')
+BEGIN
+    DROP TABLE [interview].[CandidateEvaluations];
+END;
+
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE schema_id = SCHEMA_ID('interview') AND name = 'Interviews')
+BEGIN
+    CREATE TABLE [interview].[Interviews] (
+        [Id] uniqueidentifier NOT NULL PRIMARY KEY,
+        [ApplicationId] uniqueidentifier NOT NULL,
+        [ScheduledStartTime] datetime2 NOT NULL,
+        [InterviewerUserId] uniqueidentifier NOT NULL,
+        [MeetingLink] nvarchar(max) NOT NULL DEFAULT '',
+        [Status] int NOT NULL
+    );
+END;
+
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE schema_id = SCHEMA_ID('interview') AND name = 'CandidateEvaluations')
+BEGIN
+    CREATE TABLE [interview].[CandidateEvaluations] (
+        [Id] uniqueidentifier NOT NULL PRIMARY KEY,
+        [InterviewId] uniqueidentifier NOT NULL,
+        [TechnicalScore] decimal(18,2) NOT NULL,
+        [BehavioralScore] decimal(18,2) NOT NULL,
+        [Recommendation] nvarchar(max) NOT NULL DEFAULT ''
+    );
+END;
+");
+                await interviewDb.Database.MigrateAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Interview migration/table setup warning");
+            }
+
+            // 3. Ensure Analytics tables exist
+            try
+            {
+                await analyticsDb.Database.MigrateAsync();
+                await analyticsDb.Database.ExecuteSqlRawAsync(@"
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TalentPoolEntries')
+BEGIN
+    CREATE TABLE [TalentPoolEntries] (
+        [Id] uniqueidentifier NOT NULL PRIMARY KEY,
+        [CandidateProfileId] uniqueidentifier NOT NULL,
+        [AddedByRecruiterId] uniqueidentifier NOT NULL,
+        [ConsentStatus] int NOT NULL,
+        [SkillTags] nvarchar(max) NOT NULL,
+        [ProfileSnapshotJson] nvarchar(max) NOT NULL,
+        [CreatedAt] datetime2 NOT NULL,
+        [ConsentRespondedAt] datetime2 NULL,
+        [ConsentExpiryDate] datetime2 NULL,
+        [IsActive] bit NOT NULL
+    );
+END;
+
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'TalentPoolProgressReports')
+BEGIN
+    CREATE TABLE [TalentPoolProgressReports] (
+        [Id] uniqueidentifier NOT NULL PRIMARY KEY,
+        [TalentPoolEntryId] uniqueidentifier NOT NULL,
+        [GeneratedAt] datetime2 NOT NULL,
+        [SkillsGainedJson] nvarchar(max) NOT NULL,
+        [ResumeFreshnessStatus] nvarchar(max) NOT NULL,
+        [CurrentMatchScore] decimal(18,2) NOT NULL,
+        [Recommendation] nvarchar(max) NOT NULL
+    );
+END;
+");
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Analytics migration/table setup warning");
+            }
+
+            // 4. Ensure Notification schema & tables exist
+            try
+            {
+                await notificationDb.Database.ExecuteSqlRawAsync(@"
+IF NOT EXISTS (SELECT * FROM sys.schemas WHERE name = 'notification')
+BEGIN
+    EXEC('CREATE SCHEMA [notification]');
+END;
+
+IF EXISTS (SELECT * FROM sys.tables WHERE schema_id = SCHEMA_ID('notification') AND name = 'Notifications')
+   AND NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID('[notification].[Notifications]') AND name = 'RecipientId')
+BEGIN
+    DROP TABLE [notification].[Notifications];
+END;
+
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE schema_id = SCHEMA_ID('notification') AND name = 'Notifications')
+BEGIN
+    CREATE TABLE [notification].[Notifications] (
+        [Id] uniqueidentifier NOT NULL PRIMARY KEY,
+        [RecipientId] uniqueidentifier NOT NULL,
+        [Channel] int NOT NULL,
+        [Subject] nvarchar(max) NOT NULL,
+        [Body] nvarchar(max) NOT NULL,
+        [Status] int NOT NULL,
+        [CreatedAt] datetime2 NOT NULL
+    );
+END;
+");
+                await notificationDb.Database.EnsureCreatedAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Notification table setup warning");
+            }
+
+            // 5. AI DB migration
+            try { await aiDb.Database.MigrateAsync(); } catch (Exception ex) { logger.LogWarning(ex, "AI DB migration warning"); }
+
+            // 6. Seed default users in IdentityDbContext
             var passwordHasher = services.GetRequiredService<Identity.Application.Interfaces.IAppPasswordHasher>();
             var devUsers = new[]
             {
@@ -374,24 +494,11 @@ if (app.Environment.IsDevelopment())
                 var existingUser = await identityDb.Users.FirstOrDefaultAsync(u => u.Email == devUser.Email);
                 if (existingUser is not null)
                 {
-                    bool modified = false;
-                    if (existingUser.Role != devUser.Role)
-                    {
-                        existingUser.Role = devUser.Role;
-                        modified = true;
-                    }
-
-                    if (!passwordHasher.VerifyPassword(existingUser.PasswordHash, "Password123!"))
-                    {
-                        existingUser.PasswordHash = passwordHasher.HashPassword("Password123!");
-                        modified = true;
-                    }
-
-                    if (modified)
-                    {
-                        identityDb.Users.Update(existingUser);
-                        logger.LogInformation("Updated existing dev user: {Email} to role {Role}", devUser.Email, devUser.Role);
-                    }
+                    existingUser.Role = devUser.Role;
+                    existingUser.PasswordHash = passwordHasher.HashPassword("Password123!");
+                    existingUser.IsActive = true;
+                    identityDb.Users.Update(existingUser);
+                    logger.LogInformation("Updated dev user: {Email} ({Role})", devUser.Email, devUser.Role);
                 }
                 else
                 {
@@ -411,7 +518,7 @@ if (app.Environment.IsDevelopment())
             }
             await identityDb.SaveChangesAsync();
 
-            // Run comprehensive seeding for all modules
+            // 7. Run comprehensive seeding for all modules
             await TalentIQ.Api.Services.DbSeeder.SeedDatabaseAsync(services, logger);
 
             logger.LogInformation("Database migration and seeding completed successfully.");

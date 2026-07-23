@@ -143,6 +143,7 @@ export interface CandidateProfile {
   // Enterprise additions
   preferredName?: string
   profilePictureUrl?: string
+  coverPictureUrl?: string
   dateOfBirth?: string
   gender?: string
   nationality?: string

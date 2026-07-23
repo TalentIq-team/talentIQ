@@ -98,6 +98,10 @@ export default function TalentPoolDashboardPage() {
             Candidate {shortenId(entry.candidateProfileId)}
           </p>
 
+          <p className="mt-0.5 text-xs text-[#38bdf8] font-mono font-semibold">
+            Job ID: {entry.id.slice(0, 8)}...
+          </p>
+
           <p className="mt-1 text-xs text-muted">
             Added {formatDate(entry.createdAt)}
           </p>

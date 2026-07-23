@@ -68,20 +68,41 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
       </svg>
     ),
+    audit: (
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+    ),
+  }
+
+  const getSettingsPath = (role: string) => {
+    switch (role) {
+      case 'Candidate':
+        return '/candidate/settings'
+      case 'Recruiter':
+        return '/recruiter/settings'
+      case 'HiringManager':
+        return '/hiring-manager/settings'
+      case 'Admin':
+        return '/admin/settings'
+      default:
+        return '/candidate/settings'
+    }
   }
 
   // Entire catalog of routes focusing on Job Searching and Talent Matching.
   const navigationItems: NavItem[] = [
     { to: '/candidate/jobs', label: 'Job Search', icon: icons.jobs, roles: ['Candidate'] },
     { to: '/recruiter/jobs', label: 'Job Management', icon: icons.jobs, roles: ['Admin', 'Recruiter'] },
-    { to: '/recruiter/talent-pool', label: 'Talent Pool & AI Match', icon: icons.pool, roles: ['Admin', 'Recruiter'] },
+    { to: '/recruiter/talent-pool', label: 'Talent Pool & AI Match', icon: icons.pool, roles: ['Admin', 'Recruiter', 'HiringManager'] },
     { to: '/candidate/talent-pool', label: 'Talent Match Consent', icon: icons.pool, roles: ['Candidate'] },
     { to: '/candidate/applications', label: 'My Applications', icon: icons.notifications, roles: ['Candidate'] },
     { to: '/candidate/profile', label: 'My Profile & Skills', icon: icons.candidates, roles: ['Candidate'] },
-    { to: '/admin/users', label: 'Candidates Directory', icon: icons.candidates, roles: ['Admin', 'Recruiter'] },
+    { to: '/admin/users', label: 'Candidates Directory', icon: icons.candidates, roles: ['Admin'] },
     { to: '/hiring-manager/evaluations', label: 'Interviews & Reviews', icon: icons.interviews, roles: ['Admin', 'HiringManager', 'Recruiter'] },
     { to: '/hiring-manager/shortlist', label: 'Talent Shortlists', icon: icons.managers, roles: ['Admin', 'HiringManager', 'Recruiter'] },
     { to: '/admin/analytics', label: 'Recruitment Analytics', icon: icons.analytics, roles: ['Admin', 'Recruiter', 'HiringManager'] },
+    { to: '/admin/audit-logs', label: 'Audit Logs', icon: icons.audit, roles: ['Admin'] },
   ]
 
   const filteredItems = navigationItems.filter((item) => item.roles.includes(user.role))
@@ -153,15 +174,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
           </NavLink>
         ))}
 
-        {/* Global Settings Link */}
+        {/* Role-Based Settings Link */}
         <div className="pt-4 border-t border-white/10 space-y-1">
-          <div
-            onClick={() => alert('Settings are configured by system administrators.')}
-            className="flex items-center gap-3 px-4 py-3 text-xs font-medium rounded-xl text-white/70 hover:text-white hover:bg-[#002855]/70 cursor-pointer transition-all duration-200"
+          <NavLink
+            to={getSettingsPath(user.role)}
+            onClick={() => setIsOpen(false)}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 text-xs font-medium rounded-xl border border-transparent transition-all duration-200 ${
+                isActive
+                  ? 'bg-[#002855] text-[#63A3EC] border-l-2 border-[#2D7FDE] font-bold'
+                  : 'text-white/70 hover:text-white hover:bg-[#002855]/70'
+              }`
+            }
           >
             {icons.settings}
             Settings
-          </div>
+          </NavLink>
         </div>
       </nav>
 

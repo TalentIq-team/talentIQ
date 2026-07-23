@@ -6,6 +6,7 @@ using Identity.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace TalentIQ.Api.Controllers;
 
@@ -155,6 +156,31 @@ public sealed class AdminController : ControllerBase
         {
             return NotFound(new { message = exception.Message });
         }
+    }
+
+    [HttpGet("audit-logs")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetAuditLogs(
+        [FromServices] Identity.Infrastructure.IdentityDbContext identityDb,
+        CancellationToken cancellationToken)
+    {
+        var logs = await (
+            from log in identityDb.AuditLogs.AsNoTracking()
+            join user in identityDb.Users.AsNoTracking() on log.UserId equals user.Id into userGroup
+            from user in userGroup.DefaultIfEmpty()
+            orderby log.Timestamp descending
+            select new
+            {
+                log.Id,
+                log.UserId,
+                UserEmail = user != null ? user.Email : "system@talentiq.dev",
+                log.Action,
+                log.Timestamp,
+                log.IpAddress
+            }
+        ).Take(200).ToListAsync(cancellationToken);
+
+        return Ok(logs);
     }
 
     private bool TryGetCurrentUserId(out Guid userId)

@@ -1,5 +1,6 @@
 import React from 'react'
 import type { CandidateProfile } from '@/api/types'
+import { env } from '@/lib/env'
 
 interface ProfileHeaderCardProps {
   profile: CandidateProfile | null
@@ -19,15 +20,24 @@ export const ProfileHeaderCard: React.FC<ProfileHeaderCardProps> = ({
   if (!profile) return null
 
   const completion = profile.profileCompletionPercentage ?? 40
-  const avatarUrl = profile.profilePictureUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.preferredName || 'Candidate')}&background=7B2CBF&color=fff&size=128`
+
+  const getFullImageUrl = (url?: string | null) => {
+    if (!url) return null
+    if (url.startsWith('http://') || url.startsWith('https://')) return url
+    const baseUrl = env.API_BASE_URL || 'https://localhost:7001'
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`
+  }
+
+  const avatarUrl = getFullImageUrl(profile.profilePictureUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.preferredName || 'Candidate')}&background=7B2CBF&color=fff&size=128`
+  const coverUrl = getFullImageUrl(profile.coverPictureUrl)
 
   return (
     <div className="rounded-2xl border border-line bg-panel shadow-md relative overflow-hidden text-left">
       {/* LinkedIn-Style Cover Banner Container */}
       <div className="relative h-44 sm:h-52 w-full bg-gradient-to-r from-accent/40 via-primary/30 to-purple-800/40 overflow-hidden">
-        {profile.coverPictureUrl ? (
+        {coverUrl ? (
           <img
-            src={profile.coverPictureUrl}
+            src={coverUrl}
             alt="LinkedIn Cover"
             className="w-full h-full object-cover"
           />

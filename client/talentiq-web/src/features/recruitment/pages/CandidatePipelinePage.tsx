@@ -107,9 +107,16 @@ export default function CandidatePipelinePage() {
     <div className="space-y-6">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-semibold tracking-tight text-[var(--heading)]">
-            Candidate Pipeline
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="font-display text-2xl font-semibold tracking-tight text-[var(--heading)]">
+              Candidate Pipeline
+            </h1>
+            {jobId && (
+              <span className="inline-flex items-center rounded-md border border-white/10 bg-[#001845] px-2.5 py-1 text-xs font-mono font-bold text-[#38bdf8]">
+                Job ID: {jobId}
+              </span>
+            )}
+          </div>
 
           <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
             Advance candidates through the recruitment stages.

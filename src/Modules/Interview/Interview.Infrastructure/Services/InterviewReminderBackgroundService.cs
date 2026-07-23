@@ -26,6 +26,9 @@ public class InterviewReminderBackgroundService : BackgroundService
     {
         _logger.LogInformation("Interview Reminder Background Service starting...");
 
+        // Wait 10s on startup for database migrations and seeding to complete
+        await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+
         while (!stoppingToken.IsCancellationRequested)
         {
             try

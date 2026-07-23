@@ -3,6 +3,7 @@ import ProfilePage from './pages/ProfilePage'
 import JobSearchPage from './pages/JobSearchPage'
 import ApplicationTrackerPage from './pages/ApplicationTrackerPage'
 import TalentPoolConsentPage from '../talent-pool/pages/TalentPoolConsentPage'
+import CandidateSettingsPage from './pages/CandidateSettingsPage'
 import { RoleGuard } from '@/app/guards/RoleGuard'
 
 export const candidateRoutes: RouteObject[] = [
@@ -11,6 +12,14 @@ export const candidateRoutes: RouteObject[] = [
     element: (
       <RoleGuard allowedRoles={['Candidate', 'Admin']}>
         <ProfilePage />
+      </RoleGuard>
+    ),
+  },
+  {
+    path: 'candidate/settings',
+    element: (
+      <RoleGuard allowedRoles={['Candidate', 'Admin']}>
+        <CandidateSettingsPage />
       </RoleGuard>
     ),
   },

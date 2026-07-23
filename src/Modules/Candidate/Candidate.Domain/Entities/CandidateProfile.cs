@@ -143,7 +143,10 @@ public class CandidateProfile
         string? timeZone)
     {
         PreferredName = preferredName?.Trim();
-        ProfilePictureUrl = profilePictureUrl?.Trim();
+        if (profilePictureUrl != null)
+        {
+            ProfilePictureUrl = profilePictureUrl.Trim();
+        }
         DateOfBirth = dateOfBirth;
         Gender = gender?.Trim();
         Nationality = nationality?.Trim();

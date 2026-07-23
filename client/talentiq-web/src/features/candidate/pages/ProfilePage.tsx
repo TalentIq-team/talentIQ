@@ -98,8 +98,9 @@ export default function ProfilePage() {
   // Avatar profile picture mutation
   const avatarMutation = useMutation({
     mutationFn: (file: File) => uploadAvatar(profileId!, file),
-    onSuccess: () => {
+    onSuccess: (updatedProfile) => {
       setBanner('Profile picture updated successfully.')
+      queryClient.setQueryData(['candidate-profile', profileId], updatedProfile)
       queryClient.invalidateQueries({ queryKey: ['candidate-profile', profileId] })
     },
     onError: (error) => setBanner(toErrorMessage(error)),
@@ -108,8 +109,9 @@ export default function ProfilePage() {
   // Cover photo banner mutation
   const coverMutation = useMutation({
     mutationFn: (file: File) => uploadCoverPhoto(profileId!, file),
-    onSuccess: () => {
+    onSuccess: (updatedProfile) => {
       setBanner('LinkedIn cover photo updated successfully.')
+      queryClient.setQueryData(['candidate-profile', profileId], updatedProfile)
       queryClient.invalidateQueries({ queryKey: ['candidate-profile', profileId] })
     },
     onError: (error) => setBanner(toErrorMessage(error)),

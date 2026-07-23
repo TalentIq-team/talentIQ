@@ -12,17 +12,20 @@ public sealed class LoginCommandHandler
     private readonly IAppPasswordHasher _passwordHasher;
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
+    private readonly IAuditLogRepository _auditLogRepository;
 
     public LoginCommandHandler(
         IUserRepository userRepository,
         IAppPasswordHasher passwordHasher,
         IJwtTokenGenerator jwtTokenGenerator,
-        IRefreshTokenRepository refreshTokenRepository)
+        IRefreshTokenRepository refreshTokenRepository,
+        IAuditLogRepository auditLogRepository)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
         _jwtTokenGenerator = jwtTokenGenerator;
         _refreshTokenRepository = refreshTokenRepository;
+        _auditLogRepository = auditLogRepository;
     }
 
     public async Task<AuthResultDto> Handle(
@@ -69,6 +72,17 @@ public sealed class LoginCommandHandler
 
         await _refreshTokenRepository.AddAsync(
             refreshToken,
+            cancellationToken);
+
+        await _auditLogRepository.AddAsync(
+            new AuditLog
+            {
+                Id = Guid.NewGuid(),
+                UserId = user.Id,
+                Action = "User.Login",
+                Timestamp = DateTime.UtcNow,
+                IpAddress = "127.0.0.1"
+            },
             cancellationToken);
 
         await _refreshTokenRepository.SaveChangesAsync(

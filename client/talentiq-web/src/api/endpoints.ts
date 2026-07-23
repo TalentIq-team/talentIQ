@@ -55,9 +55,7 @@ export async function uploadResume(candidateProfileId: string, file: File): Prom
   const form = new FormData()
   form.append('candidateProfileId', candidateProfileId)
   form.append('file', file)
-  const { data } = await apiClient.post<CandidateProfile>('/api/v1/candidates/resume', form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const { data } = await apiClient.post<CandidateProfile>('/api/v1/candidates/resume', form)
   return data
 }
 
@@ -65,9 +63,7 @@ export async function uploadAvatar(candidateProfileId: string, file: File): Prom
   const form = new FormData()
   form.append('candidateProfileId', candidateProfileId)
   form.append('file', file)
-  const { data } = await apiClient.post<CandidateProfile>('/api/v1/candidates/avatar', form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const { data } = await apiClient.post<CandidateProfile>('/api/v1/candidates/avatar', form)
   return data
 }
 
@@ -75,9 +71,7 @@ export async function uploadCoverPhoto(candidateProfileId: string, file: File): 
   const form = new FormData()
   form.append('candidateProfileId', candidateProfileId)
   form.append('file', file)
-  const { data } = await apiClient.post<CandidateProfile>('/api/v1/candidates/cover-photo', form, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const { data } = await apiClient.post<CandidateProfile>('/api/v1/candidates/cover-photo', form)
   return data
 }
 
@@ -128,6 +122,21 @@ export async function closeJob(id: string): Promise<JobPosting> {
   const { data } = await apiClient.post<JobPosting>(`/api/v1/jobs/${id}/close`)
   return data
 }
+
+export interface AuditLogItem {
+  id: string
+  userId: string
+  userEmail: string
+  action: string
+  timestamp: string
+  ipAddress?: string
+}
+
+export async function getAuditLogs(): Promise<AuditLogItem[]> {
+  const { data } = await apiClient.get<AuditLogItem[]>('/api/v1/admin/audit-logs')
+  return Array.isArray(data) ? data : []
+}
+
 
 export async function getJobPipeline(jobId: string): Promise<ApplicationDetail[]> {
   const { data } = await apiClient.get<ApplicationDetail[]>(`/api/v1/jobs/${jobId}/applications`)

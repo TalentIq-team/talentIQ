@@ -1,6 +1,7 @@
 import type { RouteObject } from 'react-router-dom'
 import JobPostingsPage from './pages/JobPostingsPage'
 import CandidatePipelinePage from './pages/CandidatePipelinePage'
+import RecruiterSettingsPage from './pages/RecruiterSettingsPage'
 import { RoleGuard } from '@/app/guards/RoleGuard'
 
 export const recruitmentRoutes: RouteObject[] = [
@@ -9,6 +10,14 @@ export const recruitmentRoutes: RouteObject[] = [
     element: (
       <RoleGuard allowedRoles={['Recruiter', 'Admin']}>
         <JobPostingsPage />
+      </RoleGuard>
+    ),
+  },
+  {
+    path: 'recruiter/settings',
+    element: (
+      <RoleGuard allowedRoles={['Recruiter', 'Admin']}>
+        <RecruiterSettingsPage />
       </RoleGuard>
     ),
   },

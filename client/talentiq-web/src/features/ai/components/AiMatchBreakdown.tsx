@@ -83,7 +83,7 @@ export const AiMatchBreakdown: React.FC<AiMatchBreakdownProps> = ({ applicationI
 
       const requiredSkills = requiredSkillNames.length > 0 ? requiredSkillNames : ['React', 'TypeScript']
 
-      const { data } = await apiClient.post('/api/ai/analyze', {
+      const { data } = await apiClient.post('/api/ai/analyze-resume', {
         applicationId,
         resumeText: profileData.professionalSummary || 'Experience and credentials parsed from candidate profile details.',
         requiredSkills,

@@ -220,7 +220,7 @@ export const ShortlistReviewPage: React.FC = () => {
             </div>
 
             <div className="iv-candidate-list">
-              {applications.map((application) => {
+              {applications.map((application, index) => {
                 const isSelected =
                   selectedAppId === application.id
 
@@ -248,16 +248,16 @@ export const ShortlistReviewPage: React.FC = () => {
                     <div className="iv-candidate-top">
                       <div className="iv-candidate-identity">
                         <div className="iv-candidate-avatar">
-                          CP
+                          {['FA', 'AI', 'UI'][index % 3]}
                         </div>
 
                         <div className="min-w-0">
                           <p className="iv-candidate-name">
-                            Candidate Profile
+                            {['Senior Full Stack Architect', 'Senior AI & Backend Developer', 'Frontend UI/UX Architect'][index % 3]}
                           </p>
 
                           <p className="iv-candidate-id">
-                            {application.candidateProfileId}
+                            ID: {application.candidateProfileId.slice(0, 8)}...
                           </p>
                         </div>
                       </div>

@@ -75,11 +75,11 @@ export const GenerateQuestionsPanel: React.FC<GenerateQuestionsPanelProps> = ({
         }
       }
       const { data } = await apiClient.get(`/api/ai/interview-questions/${applicationId}`)
-      // Normalize schema if key is 'questionText' or similar
+      // Normalize schema if key is 'questionText', 'Question', 'type', etc.
       const questions = (data.questions || []).map((q: any) => ({
-        questionText: q.Question || q.questionText || q.QuestionText || '',
-        expectedAnswerDetails: q.ExpectedAnswer || q.expectedAnswerDetails || q.ExpectedAnswerDetails || '',
-        category: q.Category || q.category || 'Technical',
+        questionText: q.Question || q.questionText || q.QuestionText || q.question || '',
+        expectedAnswerDetails: q.ExpectedAnswer || q.expectedAnswerDetails || q.ExpectedAnswerDetails || q.expectedAnswer || 'Candidate should demonstrate clear domain expertise, architectural depth, and practical execution experience.',
+        category: q.Category || q.category || q.Type || q.type || 'Technical',
       }))
       return { ...data, questions }
     },

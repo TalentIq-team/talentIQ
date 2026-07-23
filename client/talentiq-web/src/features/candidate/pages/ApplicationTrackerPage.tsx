@@ -63,12 +63,12 @@ export default function ApplicationTrackerPage() {
           >
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-                  Application Ref
+                <p className="text-base font-bold text-[var(--heading)]">
+                  {app.jobTitle || 'Untitled Job Posting'}
                 </p>
 
-                <p className="mt-1 font-mono text-sm font-medium text-[var(--text)]">
-                  {app.id}
+                <p className="mt-1 font-mono text-[10px] text-[var(--muted)]">
+                  Ref: {app.id}
                 </p>
               </div>
 

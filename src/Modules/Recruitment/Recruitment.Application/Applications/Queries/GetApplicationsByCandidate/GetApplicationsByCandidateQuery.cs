@@ -28,6 +28,16 @@ public class GetApplicationsByCandidateQueryHandler
             .OrderByDescending(a => a.AppliedAt)
             .ToListAsync(cancellationToken);
 
-        return applications.Select(ApplicationDetailDto.FromEntity).ToList();
+        var jobPostingIds = applications.Select(a => a.JobPostingId).Distinct().ToList();
+        var jobTitles = await _db.JobPostings
+            .AsNoTracking()
+            .Where(j => jobPostingIds.Contains(j.Id))
+            .Select(j => new { j.Id, j.Title })
+            .ToDictionaryAsync(j => j.Id, j => j.Title, cancellationToken);
+
+        return applications
+            .Select(a => ApplicationDetailDto.FromEntity(a).WithJobTitle(
+                jobTitles.TryGetValue(a.JobPostingId, out var title) ? title : null))
+            .ToList();
     }
 }

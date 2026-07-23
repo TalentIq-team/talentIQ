@@ -6,9 +6,22 @@ import type {
   JobPosting,
   JobSearchFilters,
 } from './types'
-import { ApplicationStage, EmploymentType, JobPostingStatus } from './types'
+import { ApplicationStage, EmploymentType } from './types'
 
 export type { JobSearchFilters }
+
+// ---- Skills lookup ----
+
+export interface SkillOption {
+  id: string
+  name: string
+  category: string
+}
+
+export async function getSkills(): Promise<SkillOption[]> {
+  const { data } = await apiClient.get<SkillOption[]>('/api/v1/skills')
+  return Array.isArray(data) ? data : []
+}
 
 
 // ---- Candidate profile (FR-CD-01 / FR-CD-02) ----
@@ -71,116 +84,9 @@ export async function uploadCoverPhoto(candidateProfileId: string, file: File): 
 
 // ---- Job postings (FR-CD-03 + recruiter management) ----
 
-export const SAMPLE_JOBS: JobPosting[] = [
-  {
-    id: '10000000-0000-0000-0000-000000000101',
-    organizationId: '00000000-0000-0000-0000-000000000001',
-    recruiterId: '00000000-0000-0000-0000-000000000002',
-    title: 'Senior React & Frontend Architect',
-    description: 'Lead the modernization of frontend web applications using React 19, Vite, TypeScript, and TailwindCSS. Implement high-performance UI components aligned with enterprise design token systems.',
-    location: 'Colombo, Sri Lanka (Hybrid)',
-    employmentType: EmploymentType.FullTime,
-    status: JobPostingStatus.Published,
-    minExperienceYears: 5,
-    skillIds: [],
-    createdAt: new Date().toISOString(),
-    publishedAt: new Date().toISOString(),
-    closedAt: null,
-  },
-  {
-    id: '10000000-0000-0000-0000-000000000102',
-    organizationId: '00000000-0000-0000-0000-000000000001',
-    recruiterId: '00000000-0000-0000-0000-000000000002',
-    title: 'Full Stack .NET & C# Engineer',
-    description: 'Architect scalable web APIs and backend services using ASP.NET Core 8, EF Core, and SQL Server. Build secure identity integrations and microservice endpoints.',
-    location: 'Remote / Kandy, Sri Lanka',
-    employmentType: EmploymentType.FullTime,
-    status: JobPostingStatus.Published,
-    minExperienceYears: 3,
-    skillIds: [],
-    createdAt: new Date().toISOString(),
-    publishedAt: new Date().toISOString(),
-    closedAt: null,
-  },
-  {
-    id: '10000000-0000-0000-0000-000000000103',
-    organizationId: '00000000-0000-0000-0000-000000000001',
-    recruiterId: '00000000-0000-0000-0000-000000000002',
-    title: 'AI / ML Integration Specialist (Gemini API)',
-    description: 'Integrate Gemini LLM models and vector search capabilities into recruitment pipelines. Develop explainable AI match scoring and automated candidate evaluation algorithms.',
-    location: 'Remote (Global)',
-    employmentType: EmploymentType.FullTime,
-    status: JobPostingStatus.Published,
-    minExperienceYears: 3,
-    skillIds: [],
-    createdAt: new Date().toISOString(),
-    publishedAt: new Date().toISOString(),
-    closedAt: null,
-  },
-  {
-    id: '10000000-0000-0000-0000-000000000104',
-    organizationId: '00000000-0000-0000-0000-000000000001',
-    recruiterId: '00000000-0000-0000-0000-000000000002',
-    title: 'Cloud Infrastructure & DevOps Engineer',
-    description: 'Manage cloud infrastructure, CI/CD automation pipelines, Kubernetes clusters, and Docker container orchestration with high availability standards.',
-    location: 'Colombo, Sri Lanka (On-site)',
-    employmentType: EmploymentType.Contract,
-    status: JobPostingStatus.Published,
-    minExperienceYears: 4,
-    skillIds: [],
-    createdAt: new Date().toISOString(),
-    publishedAt: new Date().toISOString(),
-    closedAt: null,
-  },
-  {
-    id: '10000000-0000-0000-0000-000000000105',
-    organizationId: '00000000-0000-0000-0000-000000000001',
-    recruiterId: '00000000-0000-0000-0000-000000000002',
-    title: 'UI/UX Product Designer',
-    description: 'Design intuitive design systems, interactive prototypes, and design token scales. Conduct user research and accessibility audits for enterprise applications.',
-    location: 'Colombo, Sri Lanka',
-    employmentType: EmploymentType.FullTime,
-    status: JobPostingStatus.Published,
-    minExperienceYears: 2,
-    skillIds: [],
-    createdAt: new Date().toISOString(),
-    publishedAt: new Date().toISOString(),
-    closedAt: null,
-  },
-  {
-    id: '10000000-0000-0000-0000-000000000106',
-    organizationId: '00000000-0000-0000-0000-000000000001',
-    recruiterId: '00000000-0000-0000-0000-000000000002',
-    title: 'Data Engineer & BigQuery Specialist',
-    description: 'Build automated ELT pipelines using dbt, BigQuery, and Python. Design scalable analytics schemas and real-time streaming architectures.',
-    location: 'Remote',
-    employmentType: EmploymentType.FullTime,
-    status: JobPostingStatus.Published,
-    minExperienceYears: 4,
-    skillIds: [],
-    createdAt: new Date().toISOString(),
-    publishedAt: new Date().toISOString(),
-    closedAt: null,
-  }
-]
-
 export async function searchJobs(filters: JobSearchFilters): Promise<JobPosting[]> {
-  try {
-    const { data } = await apiClient.get<JobPosting[]>('/api/v1/jobs', { params: filters })
-    if (Array.isArray(data) && data.length > 0) {
-      return data
-    }
-  } catch (err) {
-    console.warn('API jobs fetch failed, using fallback sample jobs:', err)
-  }
-
-  // Filter sample jobs
-  return SAMPLE_JOBS.filter((j) => {
-    if (filters.title && !j.title.toLowerCase().includes(filters.title.toLowerCase())) return false
-    if (filters.location && !j.location.toLowerCase().includes(filters.location.toLowerCase())) return false
-    if (filters.employmentType && j.employmentType !== filters.employmentType) return false
-    return true
-  })
+  const { data } = await apiClient.get<JobPosting[]>('/api/v1/jobs', { params: filters })
+  return Array.isArray(data) ? data : []
 }
 
 
@@ -426,6 +332,3 @@ export async function deleteCandidateAchievement(profileId: string, achId: strin
   const { data } = await apiClient.delete<CandidateProfile>(`/api/v1/candidates/profile/${profileId}/achievements/${achId}`)
   return data
 }
-
-
-

@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import type { CandidateSkill } from '@/api/types'
-import Input from '@/components/ui/Input'
+import { getSkills, type SkillOption } from '@/api/endpoints'
 import Select from '@/components/ui/Select'
 import Button from '@/components/ui/Button'
 
@@ -12,9 +12,13 @@ interface SkillsSectionProps {
 
 export const SkillsSection: React.FC<SkillsSectionProps> = ({ skills = [], onSaveSkills, isPending }) => {
   const [showAddModal, setShowAddModal] = useState(false)
-  const [newSkillName, setNewSkillName] = useState('')
+  const [availableSkills, setAvailableSkills] = useState<SkillOption[]>([])
+  const [selectedSkillId, setSelectedSkillId] = useState('')
   const [proficiency, setProficiency] = useState('Intermediate')
-  const [category, setCategory] = useState('Technical')
+
+  useEffect(() => {
+    getSkills().then(setAvailableSkills).catch(() => setAvailableSkills([]))
+  }, [])
 
   const proficiencyOptions = [
     { value: 'Beginner', label: 'Beginner' },
@@ -23,39 +27,30 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({ skills = [], onSav
     { value: 'Expert', label: 'Expert' },
   ]
 
-  const categoryOptions = [
-    { value: 'Technical', label: 'Technical / Core' },
-    { value: 'Frontend', label: 'Frontend & UI' },
-    { value: 'Backend', label: 'Backend & APIs' },
-    { value: 'Cloud & DevOps', label: 'Cloud & Infrastructure' },
-    { value: 'Database', label: 'Database & Analytics' },
-    { value: 'Soft Skills', label: 'Leadership & Soft Skills' },
-  ]
+  const skillOptions = availableSkills
+    .filter((s) => !skills.some((existing) => existing.skillId === s.id))
+    .map((s) => ({ value: s.id, label: `${s.name} (${s.category})` }))
 
   const handleAddSkill = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newSkillName.trim()) return
+    if (!selectedSkillId) return
 
-    // Prevent duplicates
-    const exists = skills.some(s => (s.skillName || '').toLowerCase() === newSkillName.trim().toLowerCase())
-    if (exists) {
-      alert(`Skill '${newSkillName}' is already added to your profile.`)
-      return
-    }
+    const chosen = availableSkills.find((s) => s.id === selectedSkillId)
+    if (!chosen) return
 
     const updated = [
       ...skills.map(s => ({ skillId: s.skillId, skillName: s.skillName, proficiencyLevel: s.proficiencyLevel, category: s.category })),
-      { skillName: newSkillName.trim(), proficiencyLevel: proficiency, category },
+      { skillId: chosen.id, skillName: chosen.name, proficiencyLevel: proficiency, category: chosen.category },
     ]
 
     onSaveSkills(updated)
-    setNewSkillName('')
+    setSelectedSkillId('')
     setShowAddModal(false)
   }
 
-  const handleDeleteSkill = (skillToDelete: string) => {
+  const handleDeleteSkill = (skillIdToDelete?: string) => {
     const updated = skills
-      .filter(s => (s.skillName || s.skillId) !== skillToDelete)
+      .filter(s => s.skillId !== skillIdToDelete)
       .map(s => ({ skillId: s.skillId, skillName: s.skillName, proficiencyLevel: s.proficiencyLevel, category: s.category }))
     onSaveSkills(updated)
   }
@@ -83,15 +78,20 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({ skills = [], onSav
         <form onSubmit={handleAddSkill} className="p-4 rounded-xl bg-panel-2/40 border border-line/60 space-y-4 mb-6 animate-fade-in">
           <h4 className="text-xs font-bold text-head uppercase tracking-wider">Add Competency</h4>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Input label="Skill Name" required value={newSkillName} onChange={(e) => setNewSkillName(e.target.value)} placeholder="e.g. React 19, TypeScript, Docker" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Select
+              label="Skill"
+              required
+              options={[{ value: '', label: skillOptions.length ? 'Select a skill…' : 'No skills available' }, ...skillOptions]}
+              value={selectedSkillId}
+              onChange={(e) => setSelectedSkillId(e.target.value)}
+            />
             <Select label="Proficiency Level" options={proficiencyOptions} value={proficiency} onChange={(e) => setProficiency(e.target.value)} />
-            <Select label="Category" options={categoryOptions} value={category} onChange={(e) => setCategory(e.target.value)} />
           </div>
 
           <div className="flex justify-end gap-3">
             <Button type="button" variant="outline" onClick={() => setShowAddModal(false)}>Cancel</Button>
-            <Button type="submit" variant="primary" isLoading={isPending}>Save Skill</Button>
+            <Button type="submit" variant="primary" isLoading={isPending} disabled={!selectedSkillId}>Save Skill</Button>
           </div>
         </form>
       )}
@@ -104,14 +104,14 @@ export const SkillsSection: React.FC<SkillsSectionProps> = ({ skills = [], onSav
         <div className="flex flex-wrap gap-2">
           {skills.map((skill) => (
             <span
-              key={skill.skillName || skill.skillId}
+              key={skill.skillId}
               className="px-3 py-1.5 rounded-xl bg-primary-500/10 border border-primary/20 text-xs font-mono font-semibold text-primary flex items-center gap-2 group"
             >
               <span>{skill.skillName || 'Skill'}</span>
               <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-head">{skill.proficiencyLevel || 'Intermediate'}</span>
               <button
                 type="button"
-                onClick={() => handleDeleteSkill(skill.skillName || skill.skillId)}
+                onClick={() => handleDeleteSkill(skill.skillId)}
                 className="text-red-400 opacity-0 group-hover:opacity-100 hover:text-red-300 font-bold ml-1 transition-opacity cursor-pointer"
               >
                 ×

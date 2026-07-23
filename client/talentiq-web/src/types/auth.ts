@@ -7,6 +7,7 @@ export interface UserSession {
   accessToken: string
   refreshToken: string
   expiresAt: string
+  candidateProfileId?: string | null
 }
 
 export interface AuthState {

@@ -13,6 +13,10 @@ export function setCandidateProfileId(id: string): void {
   localStorage.setItem(PROFILE_KEY, id)
 }
 
+export function clearCandidateProfileId(): void {
+  localStorage.removeItem(PROFILE_KEY)
+}
+
 export function getOrganizationId(): string {
   let id = localStorage.getItem(ORG_KEY)
   if (!id) {

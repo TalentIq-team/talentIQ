@@ -234,6 +234,7 @@ export interface ApplicationSummary {
   aiMatchScore: number | null
   appliedAt: string
   updatedAt: string
+  jobTitle?: string | null
 }
 
 export interface ApplicationDetail extends ApplicationSummary {

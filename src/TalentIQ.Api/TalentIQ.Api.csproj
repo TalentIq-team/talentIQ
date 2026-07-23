@@ -43,6 +43,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Modules\Analytics\Analytics.Infrastructure\Analytics.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Candidate\Candidate.Application\Candidate.Application.csproj" />
   </ItemGroup>
 
 </Project>

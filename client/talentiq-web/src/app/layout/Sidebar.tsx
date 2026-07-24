@@ -220,4 +220,3 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, setIsOpen }) => {
   )
 }
 export default Sidebar
-

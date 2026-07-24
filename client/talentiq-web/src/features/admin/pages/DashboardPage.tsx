@@ -1,6 +1,4 @@
 import React from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { apiClient } from '@/lib/api'
 import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { Link } from 'react-router-dom'

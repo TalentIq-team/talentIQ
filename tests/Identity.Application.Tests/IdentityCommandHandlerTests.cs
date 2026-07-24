@@ -19,7 +19,8 @@ public sealed class IdentityCommandHandlerTests
             userRepository,
             passwordHasher,
             jwtGenerator,
-            refreshTokenRepository);
+            refreshTokenRepository,
+            new FakeAuditLogRepository());
 
         var result = await handler.Handle(
             new LoginCommand(
@@ -50,7 +51,8 @@ public sealed class IdentityCommandHandlerTests
             new FakeUserRepository(user),
             new FakePasswordHasher(),
             new FakeJwtTokenGenerator(),
-            new FakeRefreshTokenRepository());
+            new FakeRefreshTokenRepository(),
+            new FakeAuditLogRepository());
 
         await Assert.ThrowsAsync<UnauthorizedAccessException>(
             () => handler.Handle(
@@ -70,7 +72,8 @@ public sealed class IdentityCommandHandlerTests
             new FakeUserRepository(user),
             new FakePasswordHasher(),
             new FakeJwtTokenGenerator(),
-            new FakeRefreshTokenRepository());
+            new FakeRefreshTokenRepository(),
+            new FakeAuditLogRepository());
 
         await Assert.ThrowsAsync<UnauthorizedAccessException>(
             () => handler.Handle(
@@ -271,6 +274,19 @@ public sealed class IdentityCommandHandlerTests
         public Task SaveChangesAsync(
             CancellationToken cancellationToken = default)
         {
+            return Task.CompletedTask;
+        }
+    }
+
+    private sealed class FakeAuditLogRepository : IAuditLogRepository
+    {
+        public List<AuditLog> Logs { get; } = new();
+
+        public Task AddAsync(
+            AuditLog auditLog,
+            CancellationToken cancellationToken = default)
+        {
+            Logs.Add(auditLog);
             return Task.CompletedTask;
         }
     }

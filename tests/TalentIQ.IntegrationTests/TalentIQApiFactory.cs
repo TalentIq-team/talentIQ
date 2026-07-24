@@ -1,6 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using AI.Application.Interfaces;
+using AI.Infrastructure;
 using Candidate.Application.Common.Interfaces;
 using Candidate.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
@@ -29,11 +31,13 @@ public class TalentIQApiFactory : WebApplicationFactory<Program>
     // Kept open for the factory's lifetime so the in-memory databases persist across requests.
     private readonly SqliteConnection _candidateConnection = new("DataSource=:memory:");
     private readonly SqliteConnection _recruitmentConnection = new("DataSource=:memory:");
+    private readonly SqliteConnection _aiConnection = new("DataSource=:memory:");
 
     public TalentIQApiFactory()
     {
         _candidateConnection.Open();
         _recruitmentConnection.Open();
+        _aiConnection.Open();
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -44,9 +48,17 @@ public class TalentIQApiFactory : WebApplicationFactory<Program>
         {
             ReplaceWithSqlite<CandidateDbContext>(services, _candidateConnection);
             ReplaceWithSqlite<RecruitmentDbContext>(services, _recruitmentConnection);
+            ReplaceWithSqlite<AiDbContext>(services, _aiConnection);
 
             services.RemoveAll<IResumeStorageService>();
             services.AddScoped<IResumeStorageService, FakeResumeStorageService>();
+
+            // Swap the real Gemini HTTP client for a controllable fake so tests can force
+            // both the success path and the failure path that triggers the fallback scorer,
+            // without needing a live Gemini API key or making real network calls.
+            services.RemoveAll<IGeminiClient>();
+            services.AddSingleton<FakeGeminiClient>();
+            services.AddSingleton<IGeminiClient>(sp => sp.GetRequiredService<FakeGeminiClient>());
         });
     }
 
@@ -57,9 +69,13 @@ public class TalentIQApiFactory : WebApplicationFactory<Program>
         using var scope = host.Services.CreateScope();
         scope.ServiceProvider.GetRequiredService<CandidateDbContext>().Database.EnsureCreated();
         scope.ServiceProvider.GetRequiredService<RecruitmentDbContext>().Database.EnsureCreated();
+        scope.ServiceProvider.GetRequiredService<AiDbContext>().Database.EnsureCreated();
 
         return host;
     }
+
+    /// <summary>Retrieves the fake Gemini client shared by every request this factory serves.</summary>
+    public FakeGeminiClient GeminiClient => Services.GetRequiredService<FakeGeminiClient>();
 
     private static void ReplaceWithSqlite<TContext>(IServiceCollection services, SqliteConnection connection)
         where TContext : DbContext
@@ -109,6 +125,7 @@ public class TalentIQApiFactory : WebApplicationFactory<Program>
         {
             _candidateConnection.Dispose();
             _recruitmentConnection.Dispose();
+            _aiConnection.Dispose();
         }
     }
 }

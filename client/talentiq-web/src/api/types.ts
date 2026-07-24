@@ -49,6 +49,86 @@ export const ApplicationStageLabels: Record<ApplicationStage, string> = {
   [ApplicationStage.Rejected]: 'Rejected',
 }
 
+export interface CandidateSkill {
+  skillId: string
+  skillName?: string
+  proficiencyLevel?: string
+  category?: string
+  yearsOfExperience?: number
+  lastUsed?: string
+}
+
+export interface CandidateExperience {
+  id: string
+  company: string
+  jobTitle: string
+  employmentType: string
+  location: string
+  startDate: string
+  endDate?: string | null
+  currentlyWorking: boolean
+  responsibilities: string
+  achievements: string
+  technologiesUsed: string
+}
+
+export interface CandidateEducation {
+  id: string
+  institution: string
+  degree: string
+  fieldOfStudy: string
+  gpa: string
+  startDate: string
+  endDate?: string | null
+  description: string
+}
+
+export interface CandidateProject {
+  id: string
+  projectName: string
+  description: string
+  role: string
+  technologies: string
+  gitHubUrl: string
+  liveDemoUrl: string
+  startDate?: string | null
+  endDate?: string | null
+}
+
+export interface CandidateCertification {
+  id: string
+  name: string
+  organization: string
+  issueDate: string
+  expiryDate?: string | null
+  credentialId: string
+  credentialUrl: string
+}
+
+export interface CandidateLanguage {
+  id: string
+  language: string
+  readingLevel: string
+  writingLevel: string
+  speakingLevel: string
+}
+
+export interface CandidateAchievement {
+  id: string
+  title: string
+  description: string
+  issuedBy: string
+  awardDate: string
+}
+
+export interface CandidateDocument {
+  id: string
+  documentType: string
+  fileName: string
+  blobUrl: string
+  uploadedAt: string
+}
+
 export interface CandidateProfile {
   id: string
   userId: string
@@ -56,8 +136,64 @@ export interface CandidateProfile {
   resumeBlobUrl: string | null
   yearsOfExperience: number
   skillIds: string[]
+  skills: CandidateSkill[]
   createdAt: string
   updatedAt: string
+
+  // Enterprise additions
+  preferredName?: string
+  profilePictureUrl?: string
+  coverPictureUrl?: string
+  dateOfBirth?: string
+  gender?: string
+  nationality?: string
+  address?: string
+  city?: string
+  country?: string
+  postalCode?: string
+  timeZone?: string
+
+  headline?: string
+  currentJobTitle?: string
+  currentCompany?: string
+
+  linkedInUrl?: string
+  gitHubUrl?: string
+  portfolioUrl?: string
+  stackOverflowUrl?: string
+  behanceUrl?: string
+  mediumUrl?: string
+  twitterUrl?: string
+
+  preferredJobTitles?: string
+  preferredLocations?: string
+  expectedSalary?: number
+  currency?: string
+  employmentTypePreference?: string
+  workMode?: string
+  noticePeriod?: string
+  willingToRelocate?: boolean
+  openToOpportunities?: boolean
+
+  allowRecruiterSearch?: boolean
+  showEmail?: boolean
+  showPhone?: boolean
+  showResume?: boolean
+  receiveEmails?: boolean
+  receiveSms?: boolean
+  talentPoolConsent?: boolean
+  allowAiAnalysis?: boolean
+
+  experiences?: CandidateExperience[]
+  educations?: CandidateEducation[]
+  projects?: CandidateProject[]
+  certifications?: CandidateCertification[]
+  languages?: CandidateLanguage[]
+  achievements?: CandidateAchievement[]
+  documents?: CandidateDocument[]
+
+  profileCompletionPercentage?: number
+  missingSectionSuggestions?: string[]
 }
 
 export interface JobPosting {
@@ -76,6 +212,13 @@ export interface JobPosting {
   closedAt: string | null
 }
 
+export interface JobSearchFilters {
+  title?: string
+  skillId?: string
+  location?: string
+  employmentType?: EmploymentType
+}
+
 export interface ApplicationStageHistory {
   fromStage: ApplicationStage
   toStage: ApplicationStage
@@ -92,6 +235,7 @@ export interface ApplicationSummary {
   aiMatchScore: number | null
   appliedAt: string
   updatedAt: string
+  jobTitle?: string | null
 }
 
 export interface ApplicationDetail extends ApplicationSummary {

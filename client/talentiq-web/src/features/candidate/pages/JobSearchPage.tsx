@@ -5,28 +5,18 @@ import { EmploymentType, EmploymentTypeLabels, type JobPosting } from '@/api/typ
 import { toErrorMessage } from '@/lib/api'
 import { getCandidateProfileId } from '@/api/session'
 import { EmptyState, Spinner, ErrorBanner } from '@/components/Feedback'
-import Card from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import Select from '@/components/ui/Select'
-
-import logo from '@/assets/logo.jpeg'
-
-<div className="flex items-center gap-3 px-5 py-4">
-  <img
-    src={logo}
-    alt="TalentIQ"
-    className="h-10 w-10 rounded-xl object-cover"
-  />
-
-  <span className="text-xl font-bold text-white">
-    TalentIQ
-  </span>
-</div>
+import JobRecommendations from '@/features/ai/components/JobRecommendations'
+import CandidateJobDetailModal from '@/features/candidate/components/CandidateJobDetailModal'
+import '@/features/ai/components/AiPanels.css'
 
 export default function JobSearchPage() {
   const [filters, setFilters] = useState<JobSearchFilters>({})
   const [applied, setApplied] = useState<Record<string, string>>({})
+  const [selectedJob, setSelectedJob] = useState<JobPosting | null>(null)
+  const profileId = getCandidateProfileId()
 
   const jobsQuery = useQuery({
     queryKey: ['jobs', filters],
@@ -50,23 +40,49 @@ export default function JobSearchPage() {
       .map((t) => ({ value: t, label: EmploymentTypeLabels[t] })),
   ]
 
+  const titleIcon = (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+      <circle cx="11" cy="11" r="7" />
+      <path d="M21 21l-4.3-4.3" />
+    </svg>
+  )
+
+  const locationIcon = (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  )
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in text-left">
       <header>
-        <h1 className="text-2xl font-bold">Job Search</h1>
-        <p className="text-sm text-muted">Browse open positions and apply.</p>
+        <h1 className="text-2xl font-black text-head tracking-tight">Job Opportunities</h1>
+        <p className="text-xs text-muted mt-1">Browse open positions, check AI Gemini skill matching suggestions, and apply.</p>
       </header>
 
-      <Card variant="glass" className="p-4 grid gap-4 sm:grid-cols-4 items-end">
+      {/* AI Recommendations Section */}
+      {profileId ? (
+        <JobRecommendations candidateProfileId={profileId} className="mb-6" />
+      ) : (
+        <div className="ai-glass-panel p-4 text-center text-xs text-muted border border-dashed">
+          💡 Create your candidate profile (via the Profile tab) to view personalized AI match suggestions!
+        </div>
+      )}
+
+      {/* Search Filters Card */}
+      <div className="ai-glass-panel p-5 grid gap-4 sm:grid-cols-4 items-end" style={{ padding: '20px' }}>
         <Input
-          label="Title"
-          placeholder="e.g. Software Engineer"
+          label="Job Title"
+          placeholder="e.g. Frontend Engineer"
+          icon={titleIcon}
           value={filters.title ?? ''}
           onChange={(e) => setFilters((f) => ({ ...f, title: e.target.value || undefined }))}
         />
         <Input
           label="Location"
-          placeholder="e.g. Colombo"
+          placeholder="e.g. Remote"
+          icon={locationIcon}
           value={filters.location ?? ''}
           onChange={(e) => setFilters((f) => ({ ...f, location: e.target.value || undefined }))}
         />
@@ -85,42 +101,92 @@ export default function JobSearchPage() {
           type="button"
           onClick={() => jobsQuery.refetch()}
           variant="primary"
-          className="w-full h-[42px]"
+          className="w-full h-[42px] font-bold rounded-xl cursor-pointer"
         >
-          Search
+          Search Jobs
         </Button>
-      </Card>
+      </div>
 
       {jobsQuery.isLoading && <Spinner label="Searching jobs…" />}
       {jobsQuery.isError && <ErrorBanner message={toErrorMessage(jobsQuery.error)} />}
       {jobsQuery.data?.length === 0 && <EmptyState message="No open positions match your filters." />}
 
       <div className="space-y-4">
-        {jobsQuery.data?.map((job: JobPosting) => (
-          <Card key={job.id} variant="glass" className="p-6 hover:border-m2/30 duration-200">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h3 className="text-lg font-semibold">{job.title}</h3>
-                <p className="text-xs text-muted mt-1">
-                  {job.location || 'Remote'} · {EmploymentTypeLabels[job.employmentType]} ·{' '}
-                  {job.minExperienceYears}+ yrs
-                </p>
-                {job.description && <p className="mt-3 text-sm text-text leading-relaxed">{job.description}</p>}
-              </div>
-              <div className="text-right">
-                <Button
-                  type="button"
-                  variant="primary"
-                  disabled={applyMutation.isPending || applied[job.id] === 'Applied ✓'}
-                  onClick={() => applyMutation.mutate(job.id)}
-                >
-                  {applied[job.id] || 'Apply'}
-                </Button>
+        {jobsQuery.data?.map((job: JobPosting) => {
+          const isApplied = applied[job.id] === 'Applied ✓'
+          const buttonText = applied[job.id] || 'Quick Apply'
+
+          return (
+            <div
+              key={job.id}
+              onClick={() => setSelectedJob(job)}
+              className="group rounded-xl border border-line bg-panel p-6 shadow-sm hover:border-accent/60 transition-all duration-200 cursor-pointer hover:shadow-md"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="space-y-2 flex-1">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-head group-hover:text-accent transition-colors">
+                        {job.title}
+                      </h3>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-accent/10 text-accent border border-accent/20 opacity-0 group-hover:opacity-100 transition-opacity">
+                        View Description & Compare →
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 items-center text-[11px] text-muted mt-1 font-mono">
+                      <span>{job.location || 'Remote'}</span>
+                      <span>•</span>
+                      <span>{EmploymentTypeLabels[job.employmentType]}</span>
+                      <span>•</span>
+                      <span>Min. {job.minExperienceYears} yrs experience required</span>
+                    </div>
+                  </div>
+                  {job.description && (
+                    <p className="mt-3 text-xs text-text leading-relaxed bg-panel-2/10 p-3 rounded-lg border border-line/50 line-clamp-2">
+                      {job.description}
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2 self-center" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedJob(job)}
+                    className="btn-ai-accent text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5 font-bold"
+                  >
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 3l1.8 4.6L18 9l-4.2 1.4L12 15l-1.8-4.6L6 9l4.2-1.4L12 3z" />
+                    </svg>
+                    Compare Me
+                  </button>
+                  <Button
+                    type="button"
+                    variant={isApplied ? 'outline' : 'primary'}
+                    disabled={applyMutation.isPending || isApplied}
+                    onClick={() => applyMutation.mutate(job.id)}
+                    className="font-semibold text-xs px-4 py-2 rounded-xl"
+                  >
+                    {buttonText}
+                  </Button>
+                </div>
               </div>
             </div>
-          </Card>
-        ))}
+          )
+        })}
       </div>
+
+      {/* Job Detail & Gemini Compare Me Modal */}
+      {selectedJob && (
+        <CandidateJobDetailModal
+          job={selectedJob}
+          onClose={() => setSelectedJob(null)}
+          onApply={(jobId) => applyMutation.mutate(jobId)}
+          isApplied={applied[selectedJob.id] === 'Applied ✓'}
+          appliedText={applied[selectedJob.id]}
+          candidateProfileId={profileId}
+        />
+      )}
     </div>
   )
 }
+

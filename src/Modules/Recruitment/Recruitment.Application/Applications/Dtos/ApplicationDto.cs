@@ -21,7 +21,8 @@ public record ApplicationDto(
     ApplicationStage Stage,
     decimal? AiMatchScore,
     DateTime AppliedAt,
-    DateTime UpdatedAt)
+    DateTime UpdatedAt,
+    string? JobTitle = null)
 {
     public static ApplicationDto FromEntity(ApplicationEntity a) =>
         new(a.Id, a.JobPostingId, a.CandidateProfileId, a.Stage, a.AiMatchScore, a.AppliedAt, a.UpdatedAt);
@@ -36,7 +37,8 @@ public record ApplicationDetailDto(
     decimal? AiMatchScore,
     DateTime AppliedAt,
     DateTime UpdatedAt,
-    IReadOnlyList<ApplicationStageHistoryDto> StageHistory)
+    IReadOnlyList<ApplicationStageHistoryDto> StageHistory,
+    string? JobTitle = null)
 {
     public static ApplicationDetailDto FromEntity(ApplicationEntity a) => new(
         a.Id,
@@ -50,4 +52,6 @@ public record ApplicationDetailDto(
             .OrderBy(h => h.ChangedAt)
             .Select(ApplicationStageHistoryDto.FromEntity)
             .ToList());
+
+    public ApplicationDetailDto WithJobTitle(string? title) => this with { JobTitle = title };
 }

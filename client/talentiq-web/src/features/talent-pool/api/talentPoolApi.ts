@@ -14,6 +14,7 @@ export type ConsentStatus =
 export interface TalentPoolEntry {
   id: string
   candidateProfileId: string
+  candidateName?: string
   addedByRecruiterId: string
   consentStatus: ConsentStatus
   skillTags: string

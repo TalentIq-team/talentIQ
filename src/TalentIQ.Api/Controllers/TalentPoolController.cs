@@ -1,4 +1,4 @@
-﻿using Analytics.Domain.Entities;
+using Analytics.Domain.Entities;
 using Analytics.Domain.Enums;
 using Analytics.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
@@ -166,13 +166,57 @@ public class TalentPoolController : ControllerBase
     }
 
     [HttpGet("dashboard")]
-    public async Task<IActionResult> GetDashboard()
+    public async Task<IActionResult> GetDashboard(
+        [FromServices] Candidate.Infrastructure.Persistence.CandidateDbContext candidateDb,
+        [FromServices] Identity.Infrastructure.IdentityDbContext identityDb)
     {
         var entries = await _context.TalentPoolEntries
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
 
-        return Ok(entries);
+        var profiles = await candidateDb.CandidateProfiles.AsNoTracking().ToListAsync();
+        var users = await identityDb.Users.AsNoTracking().ToListAsync();
+
+        var profileMap = profiles.ToDictionary(p => p.Id, p => p);
+        var userMap = users.ToDictionary(u => u.Id, u => u);
+
+        var result = entries.Select(entry =>
+        {
+            string candidateName = string.Empty;
+
+            if (!string.IsNullOrEmpty(entry.ProfileSnapshotJson) && entry.ProfileSnapshotJson.Contains(" - "))
+            {
+                candidateName = entry.ProfileSnapshotJson.Split(" - ")[0];
+            }
+            else if (profileMap.TryGetValue(entry.CandidateProfileId, out var prof))
+            {
+                if (!string.IsNullOrEmpty(prof.PreferredName))
+                {
+                    candidateName = prof.PreferredName;
+                }
+                else if (userMap.TryGetValue(prof.UserId, out var usr) && !string.IsNullOrEmpty(usr.Email))
+                {
+                    candidateName = usr.Email.Split('@')[0];
+                }
+            }
+
+            return new
+            {
+                entry.Id,
+                entry.CandidateProfileId,
+                CandidateName = string.IsNullOrEmpty(candidateName) ? "Candidate Profile" : candidateName,
+                entry.AddedByRecruiterId,
+                entry.ConsentStatus,
+                entry.SkillTags,
+                entry.ProfileSnapshotJson,
+                entry.CreatedAt,
+                entry.ConsentRespondedAt,
+                entry.ConsentExpiryDate,
+                entry.IsActive
+            };
+        });
+
+        return Ok(result);
     }
 
     [HttpPost("generate-report")]

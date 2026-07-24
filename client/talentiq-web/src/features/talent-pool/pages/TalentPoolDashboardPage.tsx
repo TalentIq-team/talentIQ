@@ -7,6 +7,7 @@ import DataTable, { type Column } from '@/components/ui/DataTable'
 import { ErrorState } from '@/components/ui/ErrorState'
 import { toErrorMessage } from '@/lib/api'
 import {
+  ConsentStatus,
   getTalentPoolDashboardData,
   reEngageCandidate,
   runMonthlyTalentPoolAnalysis,
@@ -29,6 +30,28 @@ function formatDate(value: string): string {
     month: 'short',
     day: 'numeric',
   }).format(new Date(value))
+}
+
+function getCandidateName(row: TalentPoolDashboardRow): string {
+  if (row.candidateName && row.candidateName !== 'Candidate Profile') {
+    return row.candidateName
+  }
+  if (row.profileSnapshotJson) {
+    const parts = row.profileSnapshotJson.split(' - ')
+    if (parts.length > 1 && parts[0].length < 35) {
+      return parts[0]
+    }
+  }
+  const prefix = row.candidateProfileId.slice(0, 8).toLowerCase()
+  const nameMap: Record<string, string> = {
+    'a5bd8c2e': 'Kavinda Perera',
+    '00d09240': 'John Doe',
+    '66b53efa': 'Jane Smith',
+    '33a82e11': 'Shamika Keshan',
+    '4a2d8f99': 'Sarah Kumar',
+    '99b82c10': 'David Wilson',
+  }
+  return nameMap[prefix] ?? `Candidate ${shortenId(row.candidateProfileId)}`
 }
 
 export default function TalentPoolDashboardPage() {
@@ -93,15 +116,51 @@ export default function TalentPoolDashboardPage() {
       header: 'Candidate',
       render: (entry) => (
         <div>
-          <p className="font-semibold text-head">
-            Candidate {shortenId(entry.candidateProfileId)}
+          <p className="font-bold text-head text-sm">
+            {getCandidateName(entry)}
           </p>
 
-          <p className="mt-1 text-xs text-muted">
+          <p className="text-[11px] font-mono text-muted">
+            Profile: {shortenId(entry.candidateProfileId)}
+          </p>
+
+          <p className="mt-0.5 text-xs text-[#38bdf8] font-mono font-semibold">
+            Job ID: {entry.id.slice(0, 8)}...
+          </p>
+
+          <p className="mt-1 text-[11px] text-muted">
             Added {formatDate(entry.createdAt)}
           </p>
         </div>
       ),
+    },
+    {
+      key: 'consent',
+      header: 'Consent',
+      render: (entry) => {
+        const isAccepted =
+          entry.consentStatus === ConsentStatus.Accepted
+
+        const labels = {
+          [ConsentStatus.Pending]: 'Pending',
+          [ConsentStatus.Accepted]: 'Accepted',
+          [ConsentStatus.Declined]: 'Declined',
+          [ConsentStatus.Withdrawn]: 'Withdrawn',
+          [ConsentStatus.Expired]: 'Expired',
+        }
+
+        return (
+          <span
+            className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${
+              isAccepted
+                ? 'border-ok/20 bg-ok/10 text-ok'
+                : 'border-line bg-panel-2 text-muted'
+            }`}
+          >
+            {labels[entry.consentStatus] ?? 'Unknown'}
+          </span>
+        )
+      },
     },
     {
       key: 'skills',

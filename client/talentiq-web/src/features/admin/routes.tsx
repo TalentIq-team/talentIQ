@@ -3,13 +3,31 @@ import { RoleGuard } from '@/app/guards/RoleGuard'
 import UserManagementPage from './pages/UserManagementPage'
 import OrgDeptPage from './pages/OrgDeptPage'
 import AnalyticsDashboardPage from '@/features/analytics/pages/AnalyticsDashboardPage'
+import AdminSettingsPage from './pages/AdminSettingsPage'
+import AuditLogsPage from './pages/AuditLogsPage'
 
 export const adminRoutes: RouteObject[] = [
   {
     path: 'admin/users',
     element: (
-      <RoleGuard allowedRoles={['Admin', 'Recruiter']}>
+      <RoleGuard allowedRoles={['Admin']}>
         <UserManagementPage />
+      </RoleGuard>
+    ),
+  },
+  {
+    path: 'admin/settings',
+    element: (
+      <RoleGuard allowedRoles={['Admin']}>
+        <AdminSettingsPage />
+      </RoleGuard>
+    ),
+  },
+  {
+    path: 'admin/audit-logs',
+    element: (
+      <RoleGuard allowedRoles={['Admin']}>
+        <AuditLogsPage />
       </RoleGuard>
     ),
   },

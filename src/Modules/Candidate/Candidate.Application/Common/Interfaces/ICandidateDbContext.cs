@@ -12,6 +12,13 @@ public interface ICandidateDbContext
     DbSet<CandidateProfile> CandidateProfiles { get; }
     DbSet<Skill> Skills { get; }
     DbSet<CandidateSkill> CandidateSkills { get; }
+    DbSet<CandidateDocument> CandidateDocuments { get; }
+    DbSet<CandidateExperience> CandidateExperiences { get; }
+    DbSet<CandidateEducation> CandidateEducations { get; }
+    DbSet<CandidateProject> CandidateProjects { get; }
+    DbSet<CandidateCertification> CandidateCertifications { get; }
+    DbSet<CandidateLanguage> CandidateLanguages { get; }
+    DbSet<CandidateAchievement> CandidateAchievements { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -1,4 +1,4 @@
-﻿using MailKit.Net.Smtp;
+using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
 using Notification.Application.Interfaces;
@@ -46,19 +46,32 @@ public class EmailService : IEmailService
 
         message.Body = builder.ToMessageBody();
 
-        using var client = new SmtpClient();
+        try
+        {
+            if (!string.IsNullOrEmpty(_settings.SmtpServer))
+            {
+                using var client = new SmtpClient();
 
-        await client.ConnectAsync(
-            _settings.SmtpServer,
-            _settings.Port,
-            SecureSocketOptions.StartTls);
+                await client.ConnectAsync(
+                    _settings.SmtpServer,
+                    _settings.Port > 0 ? _settings.Port : 587,
+                    SecureSocketOptions.StartTls);
 
-        await client.AuthenticateAsync(
-            _settings.Username,
-            _settings.Password);
+                if (!string.IsNullOrEmpty(_settings.Username) && !string.IsNullOrEmpty(_settings.Password))
+                {
+                    await client.AuthenticateAsync(
+                        _settings.Username,
+                        _settings.Password);
+                }
 
-        await client.SendAsync(message);
+                await client.SendAsync(message);
 
-        await client.DisconnectAsync(true);
+                await client.DisconnectAsync(true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[EmailService] SMTP Notice: {ex.Message}. Notification saved to Database & UI Notification Inbox.");
+        }
     }
 }

@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Identity.Domain.Entities;
 
 public class User
@@ -11,5 +13,11 @@ public class User
     public bool IsActive { get; set; }
     public string? PasswordResetToken { get; set; }
     public DateTime? PasswordResetTokenExpiresAt { get; set; }
+
+    [NotMapped]
+    public DateTime? LastLoginAt { get; set; }
+
+    [NotMapped]
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 

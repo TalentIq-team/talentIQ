@@ -1,7 +1,9 @@
+using Candidate.Application.Common.Interfaces;
 using Identity.Application.Commands;
 using Identity.Application.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace TalentIQ.Api.Controllers;
 
@@ -10,10 +12,12 @@ namespace TalentIQ.Api.Controllers;
 public sealed class AuthController : ControllerBase
 {
     private readonly ISender _sender;
+    private readonly ICandidateDbContext _candidateDb;
 
-    public AuthController(ISender sender)
+    public AuthController(ISender sender, ICandidateDbContext candidateDb)
     {
         _sender = sender;
+        _candidateDb = candidateDb;
     }
 
     [HttpPost("register")]
@@ -53,6 +57,14 @@ public sealed class AuthController : ControllerBase
                     request.Email,
                     request.Password),
                 cancellationToken);
+
+            var candidateProfile = await _candidateDb.CandidateProfiles
+                .AsNoTracking()
+                .Where(p => p.UserId == result.UserId)
+                .Select(p => new { p.Id })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            result.CandidateProfileId = candidateProfile?.Id;
 
             return Ok(result);
         }
@@ -142,4 +154,3 @@ public sealed class AuthController : ControllerBase
         }
     }
 }
-

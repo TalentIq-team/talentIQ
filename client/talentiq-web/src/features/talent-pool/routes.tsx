@@ -7,7 +7,7 @@ export const talentPoolRoutes: RouteObject[] = [
   {
     path: 'candidate/talent-pool',
     element: (
-      <RoleGuard allowedRoles={['Candidate']}>
+      <RoleGuard allowedRoles={['Candidate', 'Admin']}>
         <TalentPoolConsentPage />
       </RoleGuard>
     ),
@@ -15,7 +15,15 @@ export const talentPoolRoutes: RouteObject[] = [
   {
     path: 'recruiter/talent-pool',
     element: (
-      <RoleGuard allowedRoles={['Recruiter']}>
+      <RoleGuard allowedRoles={['Recruiter', 'HiringManager', 'Admin']}>
+        <TalentPoolDashboardPage />
+      </RoleGuard>
+    ),
+  },
+  {
+    path: 'hiring-manager/talent-pool',
+    element: (
+      <RoleGuard allowedRoles={['HiringManager', 'Recruiter', 'Admin']}>
         <TalentPoolDashboardPage />
       </RoleGuard>
     ),

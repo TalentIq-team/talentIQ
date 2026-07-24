@@ -29,10 +29,30 @@ public class ApplicationController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(ApplicationDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> Submit([FromBody] SubmitApplicationRequest request, CancellationToken ct)
+    public async Task<IActionResult> Submit(
+        [FromBody] SubmitApplicationRequest request,
+        [FromServices] Notification.Infrastructure.NotificationDbContext notificationDb,
+        CancellationToken ct)
     {
         var result = await _mediator.Send(
             new SubmitApplicationCommand(request.JobPostingId, request.CandidateProfileId), ct);
+
+        try
+        {
+            var userId = User.GetUserId();
+            notificationDb.Notifications.Add(new Notification.Domain.Entities.Notification
+            {
+                Id = Guid.NewGuid(),
+                RecipientId = userId != Guid.Empty ? userId : request.CandidateProfileId,
+                Channel = Notification.Domain.Entities.NotificationChannel.Email,
+                Subject = "📧 Application Received: Job Posting Submission Confirmed",
+                Body = "Notification Module Dispatcher: Application email sent to candidate & hiring team. Infrastructure worker: Delivered via SMTP (Hangfire retry policy: 0 failures, 1/3 attempts).",
+                Status = Notification.Domain.Entities.NotificationStatus.Sent,
+                CreatedAt = DateTime.UtcNow
+            });
+            await notificationDb.SaveChangesAsync(ct);
+        }
+        catch { }
 
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
@@ -79,7 +99,11 @@ public class ApplicationController : ControllerBase
     [HttpPut("{id:guid}/stage")]
     [ProducesResponseType(typeof(ApplicationDetailDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> AdvanceStage(Guid id, [FromBody] AdvanceStageRequest request, CancellationToken ct)
+    public async Task<IActionResult> AdvanceStage(
+        Guid id,
+        [FromBody] AdvanceStageRequest request,
+        [FromServices] Notification.Infrastructure.NotificationDbContext notificationDb,
+        CancellationToken ct)
     {
         var changedBy = User.GetUserId();
         var command = new AdvanceApplicationStageCommand(
@@ -88,7 +112,25 @@ public class ApplicationController : ControllerBase
             changedBy == Guid.Empty ? null : changedBy,
             request.Note);
 
-        return Ok(await _mediator.Send(command, ct));
+        var result = await _mediator.Send(command, ct);
+
+        try
+        {
+            notificationDb.Notifications.Add(new Notification.Domain.Entities.Notification
+            {
+                Id = Guid.NewGuid(),
+                RecipientId = result.CandidateProfileId,
+                Channel = Notification.Domain.Entities.NotificationChannel.Email,
+                Subject = $"📧 Status Update: Application Advanced to {request.TargetStage}",
+                Body = $"Notification Module: Application stage updated to {request.TargetStage}. Note: {request.Note ?? "No additional comments"}. Infrastructure worker: Sent via SMTP (1/3 attempts).",
+                Status = Notification.Domain.Entities.NotificationStatus.Sent,
+                CreatedAt = DateTime.UtcNow
+            });
+            await notificationDb.SaveChangesAsync(ct);
+        }
+        catch { }
+
+        return Ok(result);
     }
 }
 

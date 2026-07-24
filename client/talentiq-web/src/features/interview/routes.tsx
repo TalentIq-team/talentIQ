@@ -3,6 +3,7 @@ import './interview.css'
 import { RoleGuard } from '@/app/guards/RoleGuard'
 import ShortlistReviewPage from './pages/ShortlistReviewPage'
 import EvaluationFormPage from './pages/EvaluationFormPage'
+import HiringManagerSettingsPage from './pages/HiringManagerSettingsPage'
 
 export const interviewRoutes: RouteObject[] = [
   {
@@ -10,6 +11,14 @@ export const interviewRoutes: RouteObject[] = [
     element: (
       <RoleGuard allowedRoles={['HiringManager', 'Recruiter', 'Admin']}>
         <ShortlistReviewPage />
+      </RoleGuard>
+    ),
+  },
+  {
+    path: 'hiring-manager/settings',
+    element: (
+      <RoleGuard allowedRoles={['HiringManager', 'Recruiter', 'Admin']}>
+        <HiringManagerSettingsPage />
       </RoleGuard>
     ),
   },

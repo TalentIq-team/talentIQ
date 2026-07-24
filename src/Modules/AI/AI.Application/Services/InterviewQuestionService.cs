@@ -116,9 +116,9 @@ public class InterviewQuestionService
 
             {
               "questions": [
-                { "type": "Technical", "question": "Your question here" },
-                { "type": "Behavioral", "question": "Your question here" },
-                { "type": "Scenario", "question": "Your question here" }
+                { "type": "Technical", "question": "Your question here", "expectedAnswerDetails": "What to look for in candidate response" },
+                { "type": "Behavioral", "question": "Your question here", "expectedAnswerDetails": "What to look for in candidate response" },
+                { "type": "Scenario", "question": "Your question here", "expectedAnswerDetails": "What to look for in candidate response" }
               ]
             }
 
@@ -143,8 +143,9 @@ public class InterviewQuestionService
                 .EnumerateArray()
                 .Select(e => new InterviewQuestion
                 {
-                    Type = e.GetProperty("type").GetString() ?? "Technical",
-                    Question = e.GetProperty("question").GetString() ?? ""
+                    Type = e.TryGetProperty("type", out var t) ? t.GetString() ?? "Technical" : "Technical",
+                    Question = e.TryGetProperty("question", out var q) ? q.GetString() ?? "" : (e.TryGetProperty("Question", out var q2) ? q2.GetString() ?? "" : ""),
+                    ExpectedAnswerDetails = e.TryGetProperty("expectedAnswerDetails", out var a) ? a.GetString() ?? "" : (e.TryGetProperty("ExpectedAnswerDetails", out var a2) ? a2.GetString() ?? "" : "")
                 })
                 .Where(q => !string.IsNullOrWhiteSpace(q.Question))
                 .ToList();

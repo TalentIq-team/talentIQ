@@ -1411,62 +1411,62 @@ public static class DbSeeder
                 {
                     Questions = new[]
                     {
-                        new { Type = "Technical", Question = "Explain how you would architect a React application with 50+ pages and shared state management. What patterns would you use?", Difficulty = "Hard" },
-                        new { Type = "Technical", Question = "How would you implement a real-time collaborative editing feature using WebSockets and React?", Difficulty = "Hard" },
-                        new { Type = "Technical", Question = "Describe your approach to implementing a design token system that supports multiple themes and brands.", Difficulty = "Medium" },
-                        new { Type = "Behavioral", Question = "Tell me about a time when you had to refactor a large codebase while maintaining feature development velocity.", Difficulty = "Medium" },
-                        new { Type = "Situational", Question = "A critical production bug is discovered in a feature you built. The fix requires changes to a shared component used by 5 teams. How do you approach this?", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "Explain how you would architect a React application with 50+ pages and shared state management. What patterns would you use?", ExpectedAnswerDetails = "Look for modular feature folder structure, dynamic code-splitting via React.lazy, state slice separation (Zustand/Redux), and custom hooks for business logic.", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "How would you implement a real-time collaborative editing feature using WebSockets and React?", ExpectedAnswerDetails = "Candidate should mention WebSockets/SignalR, Operational Transformation (OT) or CRDTs (e.g. Yjs), optimistic UI updates, and conflict resolution strategy.", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "Describe your approach to implementing a design token system that supports multiple themes and brands.", ExpectedAnswerDetails = "Look for CSS Custom Properties (variables), style dictionary tools, semantic naming conventions (bg-primary, text-muted), and dark/light mode toggle mechanics.", Difficulty = "Medium" },
+                        new { Type = "Behavioral", Question = "Tell me about a time when you had to refactor a large codebase while maintaining feature development velocity.", ExpectedAnswerDetails = "Look for strangler-fig pattern, comprehensive unit/integration test safety net, feature flagging, and incremental delivery without breaking existing contracts.", Difficulty = "Medium" },
+                        new { Type = "Situational", Question = "A critical production bug is discovered in a feature you built. The fix requires changes to a shared component used by 5 teams. How do you approach this?", ExpectedAnswerDetails = "Look for backward compatibility, versioned/deprecated prop strategy, clear cross-team communication, regression testing, and phased deployment.", Difficulty = "Hard" },
                     }
                 },
                 new
                 {
                     Questions = new[]
                     {
-                        new { Type = "Technical", Question = "Design a scalable REST API for a job matching system that handles 100K+ concurrent users. Walk through your architecture decisions.", Difficulty = "Hard" },
-                        new { Type = "Technical", Question = "How would you implement CQRS and Event Sourcing in an ASP.NET Core application? When would you choose this pattern?", Difficulty = "Hard" },
-                        new { Type = "Technical", Question = "Explain the differences between optimistic and pessimistic concurrency in EF Core. When would you use each?", Difficulty = "Medium" },
-                        new { Type = "Behavioral", Question = "Describe a situation where you had to make a significant architectural decision with incomplete information.", Difficulty = "Medium" },
-                        new { Type = "Situational", Question = "You discover that the database schema design chosen by a colleague will cause performance issues at scale. How do you handle this?", Difficulty = "Medium" },
+                        new { Type = "Technical", Question = "Design a scalable REST API for a job matching system that handles 100K+ concurrent users. Walk through your architecture decisions.", ExpectedAnswerDetails = "Look for stateless API design, Redis caching, database read replicas, rate limiting, asynchronous processing via message queues, and horizontal scaling.", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "How would you implement CQRS and Event Sourcing in an ASP.NET Core application? When would you choose this pattern?", ExpectedAnswerDetails = "Candidate should explain MediatR for commands/queries, event store for immutability, read model projections, and trade-offs regarding eventual consistency.", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "Explain the differences between optimistic and pessimistic concurrency in EF Core. When would you use each?", ExpectedAnswerDetails = "Look for RowVersion/Timestamp tokens for optimistic concurrency vs database locks for pessimistic concurrency, and performance implications under high contention.", Difficulty = "Medium" },
+                        new { Type = "Behavioral", Question = "Describe a situation where you had to make a significant architectural decision with incomplete information.", ExpectedAnswerDetails = "Look for risk assessment, prototyping, decision logs (ADRs), soliciting feedback from team members, and designing for adaptability.", Difficulty = "Medium" },
+                        new { Type = "Situational", Question = "You discover that the database schema design chosen by a colleague will cause performance issues at scale. How do you handle this?", ExpectedAnswerDetails = "Look for objective performance metrics/benchmarks, empathetic and constructive technical feedback, proposing alternative schema migrations, and collaboration.", Difficulty = "Medium" },
                     }
                 },
                 new
                 {
                     Questions = new[]
                     {
-                        new { Type = "Technical", Question = "How would you design a resume analysis pipeline using Gemini API that handles multi-format documents and produces explainable match scores?", Difficulty = "Hard" },
-                        new { Type = "Technical", Question = "Explain your approach to implementing RAG (Retrieval-Augmented Generation) for job description matching.", Difficulty = "Hard" },
-                        new { Type = "Technical", Question = "How would you evaluate and mitigate bias in an AI-powered candidate screening system?", Difficulty = "Hard" },
-                        new { Type = "Behavioral", Question = "Tell me about a time when an ML model you built didn't perform as expected in production. How did you diagnose and fix it?", Difficulty = "Medium" },
-                        new { Type = "Situational", Question = "The AI matching system is producing scores that recruiters disagree with. How would you investigate and resolve this?", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "How would you design a resume analysis pipeline using Gemini API that handles multi-format documents and produces explainable match scores?", ExpectedAnswerDetails = "Look for PDF/text parsing, prompt engineering with structured JSON output formats, fallback deterministic scoring, and audit logging of AI decisions.", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "Explain your approach to implementing RAG (Retrieval-Augmented Generation) for job description matching.", ExpectedAnswerDetails = "Look for vector embeddings (e.g. Pgvector), similarity search (cosine distance), chunking strategies, and context window optimization.", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "How would you evaluate and mitigate bias in an AI-powered candidate screening system?", ExpectedAnswerDetails = "Look for anonymization of PII (names, gender, age), auditing score distributions across demographics, human-in-the-loop review, and deterministic fallbacks.", Difficulty = "Hard" },
+                        new { Type = "Behavioral", Question = "Tell me about a time when an ML model you built didn't perform as expected in production. How did you diagnose and fix it?", ExpectedAnswerDetails = "Look for monitoring model drift, checking training-serving data skew, inspecting log tracebacks, re-evaluating prompt constraints, and re-training/re-tuning.", Difficulty = "Medium" },
+                        new { Type = "Situational", Question = "The AI matching system is producing scores that recruiters disagree with. How would you investigate and resolve this?", ExpectedAnswerDetails = "Look for recruiter feedback loops, analyzing score breakdown components (matched vs missing skills), refining weighting prompt rules, and fallback verification.", Difficulty = "Hard" },
                     }
                 },
                 new
                 {
                     Questions = new[]
                     {
-                        new { Type = "Technical", Question = "Design a Kubernetes deployment strategy for a multi-region application with zero-downtime requirements.", Difficulty = "Hard" },
-                        new { Type = "Technical", Question = "How would you implement a comprehensive observability stack for 50+ microservices?", Difficulty = "Hard" },
-                        new { Type = "Behavioral", Question = "Describe a major production incident you handled. What was your approach to diagnosis and resolution?", Difficulty = "Medium" },
-                        new { Type = "Situational", Question = "Your team needs to migrate from a monolithic CI/CD pipeline to a microservices-based approach. How do you plan this?", Difficulty = "Medium" },
+                        new { Type = "Technical", Question = "Design a Kubernetes deployment strategy for a multi-region application with zero-downtime requirements.", ExpectedAnswerDetails = "Look for multi-cluster setup, ingress routing (Global Load Balancing), blue-green or canary deployments, automated health checks, and database replication.", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "How would you implement a comprehensive observability stack for 50+ microservices?", ExpectedAnswerDetails = "Candidate should mention distributed tracing (OpenTelemetry), centralized log aggregation, Prometheus metrics, and alerting threshold configuration.", Difficulty = "Hard" },
+                        new { Type = "Behavioral", Question = "Describe a major production incident you handled. What was your approach to diagnosis and resolution?", ExpectedAnswerDetails = "Look for incident triage, establishing communication channels, isolating root cause via telemetry, applying hotfix, and conducting post-mortem analysis.", Difficulty = "Medium" },
+                        new { Type = "Situational", Question = "Your team needs to migrate from a monolithic CI/CD pipeline to a microservices-based approach. How do you plan this?", ExpectedAnswerDetails = "Look for reusable pipeline templates, container registry security scanning, independent artifact versioning, and environment deployment gates.", Difficulty = "Medium" },
                     }
                 },
                 new
                 {
                     Questions = new[]
                     {
-                        new { Type = "Technical", Question = "How would you build a cross-platform mobile app that works offline and syncs data when connectivity is restored?", Difficulty = "Hard" },
-                        new { Type = "Technical", Question = "Describe your approach to optimizing React Native app performance, especially list rendering and animations.", Difficulty = "Medium" },
-                        new { Type = "Behavioral", Question = "Tell me about a time you had to balance user experience with technical constraints on mobile.", Difficulty = "Medium" },
+                        new { Type = "Technical", Question = "How would you build a cross-platform mobile app that works offline and syncs data when connectivity is restored?", ExpectedAnswerDetails = "Look for local storage (SQLite/WatermelonDB), queueing mutations offline, background sync jobs, conflict resolution rules (server-wins or timestamps).", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "Describe your approach to optimizing React Native app performance, especially list rendering and animations.", ExpectedAnswerDetails = "Look for FlashList/FlatList virtualization, memoization (useMemo/useCallback), native driver animations (Reanimated), and asset compression.", Difficulty = "Medium" },
+                        new { Type = "Behavioral", Question = "Tell me about a time you had to balance user experience with technical constraints on mobile.", ExpectedAnswerDetails = "Look for trade-off decisions around offline capabilities, battery/memory usage vs rich UI animations, and user-centric problem solving.", Difficulty = "Medium" },
                     }
                 },
                 new
                 {
                     Questions = new[]
                     {
-                        new { Type = "Technical", Question = "Design a comprehensive test automation framework for a microservices-based application with 20+ services.", Difficulty = "Hard" },
-                        new { Type = "Technical", Question = "How would you implement visual regression testing in a CI/CD pipeline?", Difficulty = "Medium" },
-                        new { Type = "Technical", Question = "Explain your strategy for testing distributed systems with eventual consistency.", Difficulty = "Hard" },
-                        new { Type = "Behavioral", Question = "Tell me about a time when automated tests caught a critical bug that manual testing missed.", Difficulty = "Medium" },
+                        new { Type = "Technical", Question = "Design a comprehensive test automation framework for a microservices-based application with 20+ services.", ExpectedAnswerDetails = "Look for test pyramid breakdown (unit, integration, contract testing via Pact, e2e Playwright/Cypress), mock server stubs, and CI integration.", Difficulty = "Hard" },
+                        new { Type = "Technical", Question = "How would you implement visual regression testing in a CI/CD pipeline?", ExpectedAnswerDetails = "Candidate should discuss screenshot comparison tools (Percy, Playwright visual comparisons), snapshot baselines, cross-browser rendering, and handling diff thresholds.", Difficulty = "Medium" },
+                        new { Type = "Technical", Question = "Explain your strategy for testing distributed systems with eventual consistency.", ExpectedAnswerDetails = "Look for polling/awaitability libraries, idempotency assertions, dead-letter queue inspection, and chaos engineering testing.", Difficulty = "Hard" },
+                        new { Type = "Behavioral", Question = "Tell me about a time when automated tests caught a critical bug that manual testing missed.", ExpectedAnswerDetails = "Look for boundary value testing, concurrency race condition detection, regression suite reliability, and continuous delivery confidence.", Difficulty = "Medium" },
                     }
                 },
             };

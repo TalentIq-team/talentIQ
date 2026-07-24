@@ -54,14 +54,14 @@ public class FallbackScoringService
     {
         var questions = new List<InterviewQuestion>
         {
-            new() { Type = "Technical", Question = $"Describe your experience with the core technologies required for the {jobTitle} role." },
-            new() { Type = "Technical", Question = $"Walk me through a challenging technical problem you solved in a previous {jobTitle} position." },
-            new() { Type = "Behavioral", Question = "Tell me about a time you had to work under a tight deadline. How did you manage your time?" },
-            new() { Type = "Behavioral", Question = "Describe a situation where you had a conflict with a team member. How did you resolve it?" },
-            new() { Type = "Scenario", Question = $"Imagine you're starting as a {jobTitle} and find that the existing codebase has significant technical debt. How would you approach this?" },
-            new() { Type = "Scenario", Question = "If you were assigned a project with unclear requirements, what steps would you take to move forward?" },
-            new() { Type = "Technical", Question = "What is your approach to code reviews? What do you look for when reviewing others' code?" },
-            new() { Type = "Behavioral", Question = "Give an example of how you've mentored or helped a junior colleague grow." }
+            new() { Type = "Technical", Question = $"Describe your experience with the core technologies required for the {jobTitle} role.", ExpectedAnswerDetails = "Candidate should mention relevant frameworks, design patterns, runtime environments, and concrete architectural experience." },
+            new() { Type = "Technical", Question = $"Walk me through a challenging technical problem you solved in a previous {jobTitle} position.", ExpectedAnswerDetails = "Look for structured debugging techniques, root cause identification, performance analysis, and measurable improvements." },
+            new() { Type = "Behavioral", Question = "Tell me about a time you had to work under a tight deadline. How did you manage your time?", ExpectedAnswerDetails = "Look for task prioritization, proactive stakeholder communication, scope negotiation, and maintaining quality under pressure." },
+            new() { Type = "Behavioral", Question = "Describe a situation where you had a conflict with a team member. How did you resolve it?", ExpectedAnswerDetails = "Look for active listening, empathetic discussion, focusing on shared objectives, and professional resolution." },
+            new() { Type = "Scenario", Question = $"Imagine you're starting as a {jobTitle} and find that the existing codebase has significant technical debt. How would you approach this?", ExpectedAnswerDetails = "Look for incremental refactoring plans, automated test coverage, risk mitigation, and business alignment." },
+            new() { Type = "Scenario", Question = "If you were assigned a project with unclear requirements, what steps would you take to move forward?", ExpectedAnswerDetails = "Look for proactive discovery, prototyping, breaking down ambiguity into manageable user stories, and early feedback loops." },
+            new() { Type = "Technical", Question = "What is your approach to code reviews? What do you look for when reviewing others' code?", ExpectedAnswerDetails = "Look for constructive feedback style, emphasis on readability, security vulnerabilities, edge case coverage, and test reliability." },
+            new() { Type = "Behavioral", Question = "Give an example of how you've mentored or helped a junior colleague grow.", ExpectedAnswerDetails = "Look for active guidance, code pairing, sharing best practices, and supporting professional development." }
         };
 
         return new InterviewQuestionsResult

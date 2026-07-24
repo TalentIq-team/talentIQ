@@ -75,12 +75,24 @@ export const GenerateQuestionsPanel: React.FC<GenerateQuestionsPanelProps> = ({
         }
       }
       const { data } = await apiClient.get(`/api/ai/interview-questions/${applicationId}`)
-      // Normalize schema if key is 'questionText' or similar
-      const questions = (data.questions || []).map((q: any) => ({
-        questionText: q.Question || q.questionText || q.QuestionText || '',
-        expectedAnswerDetails: q.ExpectedAnswer || q.expectedAnswerDetails || q.ExpectedAnswerDetails || '',
-        category: q.Category || q.category || 'Technical',
-      }))
+      // Normalize schema across different API property casing and naming variations
+      const questions = (data.questions || []).map((q: any) => {
+        const questionText = q.question || q.Question || q.questionText || q.QuestionText || ''
+        const category = q.type || q.Type || q.category || q.Category || 'Technical'
+        const expectedAnswerDetails =
+          q.expectedAnswerDetails ||
+          q.ExpectedAnswerDetails ||
+          q.expectedAnswer ||
+          q.ExpectedAnswer ||
+          (q.difficulty || q.Difficulty ? `Difficulty: ${q.difficulty || q.Difficulty}` : '') ||
+          'Look for practical technical depth, clear problem-solving methodology, and past project examples.'
+
+        return {
+          questionText,
+          expectedAnswerDetails,
+          category,
+        }
+      })
       return { ...data, questions }
     },
     enabled: !!applicationId,
